@@ -1,3 +1,4 @@
 python-fasthtml==0.0.8
 aiosqlite
 python-multipart
+uvicorn
