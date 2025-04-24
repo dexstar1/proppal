@@ -1,6 +1,14 @@
-from fasthtml.common import *
-import sqlite3
+from fasthtml.common import (
+    FT, fast_app, serve, Titled, Form, Fieldset, 
+    Input, Button, Article, Header, P, Footer, 
+    Small, Em, A, Div, Hr
+)
 from datetime import datetime
+import sqlite3
+import os
+
+# Use environment variable for database path
+DB_PATH = os.getenv('DB_PATH', "guestbook.db")
 
 # Initialize the app and database
 app, rt = fast_app()
@@ -75,8 +83,7 @@ def render_message(entry):
               hx_post=f"/delete/{entry[0]}",
               hx_target="#message-list",
               hx_swap="outerHTML",
-              style="color: red;",
-              hx_confirm="Are you sure you want to delete this message?"),
+              style="color: red;"),
         )
     )
 
@@ -108,8 +115,8 @@ def create_base_form(action="/add", button_text="Submit"):
         ),
         method="post",
         hx_post=action,
-        hx_target="#message-list",
-        hx_swap="outerHTML",
+        hx_target="#theContent",  # Target the entire body to update both form and list
+        hx_swap="innerHTML"
     )
 
 def render_content():
@@ -128,8 +135,12 @@ async def add(req):
     message = form_data.get('message')
     if name and message:
         add_message(name, message, datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+    # Return both the reset form and updated message list
     return Div(
-        render_message_list()
+        Div(create_base_form(), id="form-container"),
+        Hr(),
+        render_message_list(), 
+        id="theContent",
     )
 
 @rt('/delete/{message_id}', methods=['post'])
@@ -176,13 +187,11 @@ async def update(message_id: int, req):
         # Return both the reset form and updated message list
         return Div(
             Div(create_base_form(), id="form-container"),
-            render_message_list()
+            Hr(),
+            render_message_list(), 
+            id="theContent",
         )
     return "Error updating message"
-
-@rt('/refresh-messages', methods=['get'])
-async def refresh_messages():
-    return render_content()
 
 @rt('/')
 def get():
