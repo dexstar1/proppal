@@ -1,0 +1,28 @@
+body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+.hero-section {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.grid-box {
+  border: 4px solid #000 !important;
+}
+
+table,
+tbody,
+th,
+td,
+tr {
+  width: 100%;
+}
+
+.best-seller-prod:nth-child(1) {
+  left: -150px;
+}
