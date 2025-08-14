@@ -17,7 +17,8 @@ from docs.breadcrumbs import Breadcrumbs
 # from docs.paginations import Paginations
 # from docs.popovers import Popovers 
 # from docs.progress import Progress 
-from docs.rates import Rates
+# from docs.rates import Rates
+from docs.typography import Typography
 
 def design_system():
     return Div(
@@ -42,6 +43,7 @@ def design_system():
                     # Div(Paginations(), cls="col-12 col-md-8 col-lg-9 col-xl-10"),
                     # Div(Popovers(), cls="col-12 col-md-8 col-lg-9 col-xl-10"),
                     # Div(Progress(), cls="col-12 col-md-8 col-lg-9 col-xl-10"),
-                    Div(Rates(), cls="col-12 col-md-8 col-lg-9 col-xl-10"),
+                    # Div(Rates(), cls="col-12 col-md-8 col-lg-9 col-xl-10"),
+                    Div(Typography(), cls="col-12 col-md-8 col-lg-9 col-xl-10"),
                     cls="row" ), cls="container-fluid"
     ) 
