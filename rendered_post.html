@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+img:is([sizes="auto" i], [sizes^="auto," i]) { contain-intrinsic-size: 3000px 1500px }
+
+
+.wp-block-site-logo{box-sizing:border-box;line-height:0}.wp-block-site-logo a{display:inline-block;line-height:0}.wp-block-site-logo.is-default-size img{height:auto;width:120px}.wp-block-site-logo img{height:auto;max-width:100%}.wp-block-site-logo a,.wp-block-site-logo img{border-radius:inherit}.wp-block-site-logo.aligncenter{margin-left:auto;margin-right:auto;text-align:center}:root :where(.wp-block-site-logo.is-style-rounded){border-radius:9999px}
+
+
+
+.wp-block-group{box-sizing:border-box}:where(.wp-block-group.wp-block-group-is-layout-constrained){position:relative}
+
+
+
+.wp-block-navigation .wp-block-navigation-item__label{overflow-wrap:break-word}.wp-block-navigation .wp-block-navigation-item__description{display:none}.link-ui-tools{border-top:1px solid #f0f0f0;padding:8px}.link-ui-block-inserter{padding-top:8px}.link-ui-block-inserter__back{margin-left:8px;text-transform:uppercase}
+
+
+
+.wp-block-button__link{box-sizing:border-box;cursor:pointer;display:inline-block;text-align:center;word-break:break-word}.wp-block-button__link.aligncenter{text-align:center}.wp-block-button__link.alignright{text-align:right}:where(.wp-block-button__link){border-radius:9999px;box-shadow:none;padding:calc(.667em + 2px) calc(1.333em + 2px);text-decoration:none}.wp-block-button[style*=text-decoration] .wp-block-button__link{text-decoration:inherit}.wp-block-buttons>.wp-block-button.has-custom-width{max-width:none}.wp-block-buttons>.wp-block-button.has-custom-width .wp-block-button__link{width:100%}.wp-block-buttons>.wp-block-button.has-custom-font-size .wp-block-button__link{font-size:inherit}.wp-block-buttons>.wp-block-button.wp-block-button__width-25{width:calc(25% - var(--wp--style--block-gap, .5em)*.75)}.wp-block-buttons>.wp-block-button.wp-block-button__width-50{width:calc(50% - var(--wp--style--block-gap, .5em)*.5)}.wp-block-buttons>.wp-block-button.wp-block-button__width-75{width:calc(75% - var(--wp--style--block-gap, .5em)*.25)}.wp-block-buttons>.wp-block-button.wp-block-button__width-100{flex-basis:100%;width:100%}.wp-block-buttons.is-vertical>.wp-block-button.wp-block-button__width-25{width:25%}.wp-block-buttons.is-vertical>.wp-block-button.wp-block-button__width-50{width:50%}.wp-block-buttons.is-vertical>.wp-block-button.wp-block-button__width-75{width:75%}.wp-block-button.is-style-squared,.wp-block-button__link.wp-block-button.is-style-squared{border-radius:0}.wp-block-button.no-border-radius,.wp-block-button__link.no-border-radius{border-radius:0!important}:root :where(.wp-block-button .wp-block-button__link.is-style-outline),:root :where(.wp-block-button.is-style-outline>.wp-block-button__link){border:2px solid;padding:.667em 1.333em}:root :where(.wp-block-button .wp-block-button__link.is-style-outline:not(.has-text-color)),:root :where(.wp-block-button.is-style-outline>.wp-block-button__link:not(.has-text-color)){color:currentColor}:root :where(.wp-block-button .wp-block-button__link.is-style-outline:not(.has-background)),:root :where(.wp-block-button.is-style-outline>.wp-block-button__link:not(.has-background)){background-color:initial;background-image:none}
+
+
+
+.wp-block-buttons.is-vertical{flex-direction:column}.wp-block-buttons.is-vertical>.wp-block-button:last-child{margin-bottom:0}.wp-block-buttons>.wp-block-button{display:inline-block;margin:0}.wp-block-buttons.is-content-justification-left{justify-content:flex-start}.wp-block-buttons.is-content-justification-left.is-vertical{align-items:flex-start}.wp-block-buttons.is-content-justification-center{justify-content:center}.wp-block-buttons.is-content-justification-center.is-vertical{align-items:center}.wp-block-buttons.is-content-justification-right{justify-content:flex-end}.wp-block-buttons.is-content-justification-right.is-vertical{align-items:flex-end}.wp-block-buttons.is-content-justification-space-between{justify-content:space-between}.wp-block-buttons.aligncenter{text-align:center}.wp-block-buttons:not(.is-content-justification-space-between,.is-content-justification-right,.is-content-justification-left,.is-content-justification-center) .wp-block-button.aligncenter{margin-left:auto;margin-right:auto;width:100%}.wp-block-buttons[style*=text-decoration] .wp-block-button,.wp-block-buttons[style*=text-decoration] .wp-block-button__link{text-decoration:inherit}.wp-block-buttons.has-custom-font-size .wp-block-button__link{font-size:inherit}.wp-block-button.aligncenter{text-align:center}
+
+
+
+h1.has-background,h2.has-background,h3.has-background,h4.has-background,h5.has-background,h6.has-background{padding:1.25em 2.375em}h1.has-text-align-left[style*=writing-mode]:where([style*=vertical-lr]),h1.has-text-align-right[style*=writing-mode]:where([style*=vertical-rl]),h2.has-text-align-left[style*=writing-mode]:where([style*=vertical-lr]),h2.has-text-align-right[style*=writing-mode]:where([style*=vertical-rl]),h3.has-text-align-left[style*=writing-mode]:where([style*=vertical-lr]),h3.has-text-align-right[style*=writing-mode]:where([style*=vertical-rl]),h4.has-text-align-left[style*=writing-mode]:where([style*=vertical-lr]),h4.has-text-align-right[style*=writing-mode]:where([style*=vertical-rl]),h5.has-text-align-left[style*=writing-mode]:where([style*=vertical-lr]),h5.has-text-align-right[style*=writing-mode]:where([style*=vertical-rl]),h6.has-text-align-left[style*=writing-mode]:where([style*=vertical-lr]),h6.has-text-align-right[style*=writing-mode]:where([style*=vertical-rl]){rotate:180deg}
+
+
+
+.is-small-text{font-size:.875em}.is-regular-text{font-size:1em}.is-large-text{font-size:2.25em}.is-larger-text{font-size:3em}.has-drop-cap:not(:focus):first-letter{float:left;font-size:8.4em;font-style:normal;font-weight:100;line-height:.68;margin:.05em .1em 0 0;text-transform:uppercase}body.rtl .has-drop-cap:not(:focus):first-letter{float:none;margin-left:.1em}p.has-drop-cap.has-background{overflow:hidden}:root :where(p.has-background){padding:1.25em 2.375em}:where(p.has-text-color:not(.has-link-color)) a{color:inherit}p.has-text-align-left[style*="writing-mode:vertical-lr"],p.has-text-align-right[style*="writing-mode:vertical-rl"]{rotate:180deg}
+
+
+
+.wp-block-columns{align-items:normal!important;box-sizing:border-box;display:flex;flex-wrap:wrap!important}@media (min-width:782px){.wp-block-columns{flex-wrap:nowrap!important}}.wp-block-columns.are-vertically-aligned-top{align-items:flex-start}.wp-block-columns.are-vertically-aligned-center{align-items:center}.wp-block-columns.are-vertically-aligned-bottom{align-items:flex-end}@media (max-width:781px){.wp-block-columns:not(.is-not-stacked-on-mobile)>.wp-block-column{flex-basis:100%!important}}@media (min-width:782px){.wp-block-columns:not(.is-not-stacked-on-mobile)>.wp-block-column{flex-basis:0;flex-grow:1}.wp-block-columns:not(.is-not-stacked-on-mobile)>.wp-block-column[style*=flex-basis]{flex-grow:0}}.wp-block-columns.is-not-stacked-on-mobile{flex-wrap:nowrap!important}.wp-block-columns.is-not-stacked-on-mobile>.wp-block-column{flex-basis:0;flex-grow:1}.wp-block-columns.is-not-stacked-on-mobile>.wp-block-column[style*=flex-basis]{flex-grow:0}:where(.wp-block-columns){margin-bottom:1.75em}:where(.wp-block-columns.has-background){padding:1.25em 2.375em}.wp-block-column{flex-grow:1;min-width:0;overflow-wrap:break-word;word-break:break-word}.wp-block-column.is-vertically-aligned-top{align-self:flex-start}.wp-block-column.is-vertically-aligned-center{align-self:center}.wp-block-column.is-vertically-aligned-bottom{align-self:flex-end}.wp-block-column.is-vertically-aligned-stretch{align-self:stretch}.wp-block-column.is-vertically-aligned-bottom,.wp-block-column.is-vertically-aligned-center,.wp-block-column.is-vertically-aligned-top{width:100%}
+
+
+
+.wp-block-post-featured-image{margin-left:0;margin-right:0}.wp-block-post-featured-image a{display:block;height:100%}.wp-block-post-featured-image :where(img){box-sizing:border-box;height:auto;max-width:100%;vertical-align:bottom;width:100%}.wp-block-post-featured-image.alignfull img,.wp-block-post-featured-image.alignwide img{width:100%}.wp-block-post-featured-image .wp-block-post-featured-image__overlay.has-background-dim{background-color:#000;inset:0;position:absolute}.wp-block-post-featured-image{position:relative}.wp-block-post-featured-image .wp-block-post-featured-image__overlay.has-background-gradient{background-color:initial}.wp-block-post-featured-image .wp-block-post-featured-image__overlay.has-background-dim-0{opacity:0}.wp-block-post-featured-image .wp-block-post-featured-image__overlay.has-background-dim-10{opacity:.1}.wp-block-post-featured-image .wp-block-post-featured-image__overlay.has-background-dim-20{opacity:.2}.wp-block-post-featured-image .wp-block-post-featured-image__overlay.has-background-dim-30{opacity:.3}.wp-block-post-featured-image .wp-block-post-featured-image__overlay.has-background-dim-40{opacity:.4}.wp-block-post-featured-image .wp-block-post-featured-image__overlay.has-background-dim-50{opacity:.5}.wp-block-post-featured-image .wp-block-post-featured-image__overlay.has-background-dim-60{opacity:.6}.wp-block-post-featured-image .wp-block-post-featured-image__overlay.has-background-dim-70{opacity:.7}.wp-block-post-featured-image .wp-block-post-featured-image__overlay.has-background-dim-80{opacity:.8}.wp-block-post-featured-image .wp-block-post-featured-image__overlay.has-background-dim-90{opacity:.9}.wp-block-post-featured-image .wp-block-post-featured-image__overlay.has-background-dim-100{opacity:1}.wp-block-post-featured-image:where(.alignleft,.alignright){width:100%}
+
+
+
+.wp-block-post-title{box-sizing:border-box;word-break:break-word}.wp-block-post-title :where(a){display:inline-block;font-family:inherit;font-size:inherit;font-style:inherit;font-weight:inherit;letter-spacing:inherit;line-height:inherit;text-decoration:inherit}
+
+
+
+.wp-block-post-date{box-sizing:border-box}
+
+
+
+.wp-block-read-more{display:block;width:-moz-fit-content;width:fit-content}.wp-block-read-more:where(:not([style*=text-decoration])){text-decoration:none}.wp-block-read-more:where(:not([style*=text-decoration])):active,.wp-block-read-more:where(:not([style*=text-decoration])):focus{text-decoration:none}
+
+
+
+.wp-block-post-template{list-style:none;margin-bottom:0;margin-top:0;max-width:100%;padding:0}.wp-block-post-template.is-flex-container{display:flex;flex-direction:row;flex-wrap:wrap;gap:1.25em}.wp-block-post-template.is-flex-container>li{margin:0;width:100%}@media (min-width:600px){.wp-block-post-template.is-flex-container.is-flex-container.columns-2>li{width:calc(50% - .625em)}.wp-block-post-template.is-flex-container.is-flex-container.columns-3>li{width:calc(33.33333% - .83333em)}.wp-block-post-template.is-flex-container.is-flex-container.columns-4>li{width:calc(25% - .9375em)}.wp-block-post-template.is-flex-container.is-flex-container.columns-5>li{width:calc(20% - 1em)}.wp-block-post-template.is-flex-container.is-flex-container.columns-6>li{width:calc(16.66667% - 1.04167em)}}@media (max-width:600px){.wp-block-post-template-is-layout-grid.wp-block-post-template-is-layout-grid.wp-block-post-template-is-layout-grid.wp-block-post-template-is-layout-grid{grid-template-columns:1fr}}.wp-block-post-template-is-layout-constrained>li>.alignright,.wp-block-post-template-is-layout-flow>li>.alignright{float:right;margin-inline-end:0;margin-inline-start:2em}.wp-block-post-template-is-layout-constrained>li>.alignleft,.wp-block-post-template-is-layout-flow>li>.alignleft{float:left;margin-inline-end:2em;margin-inline-start:0}.wp-block-post-template-is-layout-constrained>li>.aligncenter,.wp-block-post-template-is-layout-flow>li>.aligncenter{margin-inline-end:auto;margin-inline-start:auto}
+
+
+
+.wp-block-post-content{display:flow-root}
+
+
+
+:root{--wp-admin-theme-color:#007cba;--wp-admin-theme-color--rgb:0,124,186;--wp-admin-theme-color-darker-10:#006ba1;--wp-admin-theme-color-darker-10--rgb:0,107,161;--wp-admin-theme-color-darker-20:#005a87;--wp-admin-theme-color-darker-20--rgb:0,90,135;--wp-admin-border-width-focus:2px;--wp-block-synced-color:#7a00df;--wp-block-synced-color--rgb:122,0,223;--wp-bound-block-color:var(--wp-block-synced-color)}@media (min-resolution:192dpi){:root{--wp-admin-border-width-focus:1.5px}}.wp-element-button{cursor:pointer}:root{--wp--preset--font-size--normal:16px;--wp--preset--font-size--huge:42px}:root .has-very-light-gray-background-color{background-color:#eee}:root .has-very-dark-gray-background-color{background-color:#313131}:root .has-very-light-gray-color{color:#eee}:root .has-very-dark-gray-color{color:#313131}:root .has-vivid-green-cyan-to-vivid-cyan-blue-gradient-background{background:linear-gradient(135deg,#00d084,#0693e3)}:root .has-purple-crush-gradient-background{background:linear-gradient(135deg,#34e2e4,#4721fb 50%,#ab1dfe)}:root .has-hazy-dawn-gradient-background{background:linear-gradient(135deg,#faaca8,#dad0ec)}:root .has-subdued-olive-gradient-background{background:linear-gradient(135deg,#fafae1,#67a671)}:root .has-atomic-cream-gradient-background{background:linear-gradient(135deg,#fdd79a,#004a59)}:root .has-nightshade-gradient-background{background:linear-gradient(135deg,#330968,#31cdcf)}:root .has-midnight-gradient-background{background:linear-gradient(135deg,#020381,#2874fc)}.has-regular-font-size{font-size:1em}.has-larger-font-size{font-size:2.625em}.has-normal-font-size{font-size:var(--wp--preset--font-size--normal)}.has-huge-font-size{font-size:var(--wp--preset--font-size--huge)}.has-text-align-center{text-align:center}.has-text-align-left{text-align:left}.has-text-align-right{text-align:right}#end-resizable-editor-section{display:none}.aligncenter{clear:both}.items-justified-left{justify-content:flex-start}.items-justified-center{justify-content:center}.items-justified-right{justify-content:flex-end}.items-justified-space-between{justify-content:space-between}.screen-reader-text{border:0;clip:rect(1px,1px,1px,1px);clip-path:inset(50%);height:1px;margin:-1px;overflow:hidden;padding:0;position:absolute;width:1px;word-wrap:normal!important}.screen-reader-text:focus{background-color:#ddd;clip:auto!important;clip-path:none;color:#444;display:block;font-size:1em;height:auto;left:5px;line-height:normal;padding:15px 23px 14px;text-decoration:none;top:5px;width:auto;z-index:100000}html :where(.has-border-color){border-style:solid}html :where([style*=border-top-color]){border-top-style:solid}html :where([style*=border-right-color]){border-right-style:solid}html :where([style*=border-bottom-color]){border-bottom-style:solid}html :where([style*=border-left-color]){border-left-style:solid}html :where([style*=border-width]){border-style:solid}html :where([style*=border-top-width]){border-top-style:solid}html :where([style*=border-right-width]){border-right-style:solid}html :where([style*=border-bottom-width]){border-bottom-style:solid}html :where([style*=border-left-width]){border-left-style:solid}html :where(img[class*=wp-image-]){height:auto;max-width:100%}:where(figure){margin:0 0 1em}html :where(.is-position-sticky){--wp-admin--admin-bar--position-offset:var(--wp-admin--admin-bar--height,0px)}@media screen and (max-width:600px){html :where(.is-position-sticky){--wp-admin--admin-bar--position-offset:0px}}
+
+
+
+:root{--wp--preset--aspect-ratio--square: 1;--wp--preset--aspect-ratio--4-3: 4/3;--wp--preset--aspect-ratio--3-4: 3/4;--wp--preset--aspect-ratio--3-2: 3/2;--wp--preset--aspect-ratio--2-3: 2/3;--wp--preset--aspect-ratio--16-9: 16/9;--wp--preset--aspect-ratio--9-16: 9/16;--wp--preset--color--black: #35517d;--wp--preset--color--cyan-bluish-gray: #37352f;--wp--preset--color--white: #7da7d9;--wp--preset--color--pale-pink: #ffffff;--wp--preset--color--vivid-red: #fbc926;--wp--preset--color--luminous-vivid-orange: #ff6900;--wp--preset--color--luminous-vivid-amber: #fcb900;--wp--preset--color--light-green-cyan: #7bdcb5;--wp--preset--color--vivid-green-cyan: #00d084;--wp--preset--color--pale-cyan-blue: #8ed1fc;--wp--preset--color--vivid-cyan-blue: #0693e3;--wp--preset--color--vivid-purple: #9b51e0;--wp--preset--color--custom-primary: #35517d;--wp--preset--color--custom-accent: #7da7d9;--wp--preset--color--custom-secondary: #fcb900;--wp--preset--color--custom-white: #000000;--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple: linear-gradient(135deg,rgba(6,147,227,1) 0%,rgb(155,81,224) 100%);--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan: linear-gradient(135deg,rgb(122,220,180) 0%,rgb(0,208,130) 100%);--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange: linear-gradient(135deg,rgba(252,185,0,1) 0%,rgba(255,105,0,1) 100%);--wp--preset--gradient--luminous-vivid-orange-to-vivid-red: linear-gradient(135deg,rgba(255,105,0,1) 0%,rgb(207,46,46) 100%);--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray: linear-gradient(135deg,rgb(238,238,238) 0%,rgb(169,184,195) 100%);--wp--preset--gradient--cool-to-warm-spectrum: linear-gradient(135deg,rgb(74,234,220) 0%,rgb(151,120,209) 20%,rgb(207,42,186) 40%,rgb(238,44,130) 60%,rgb(251,105,98) 80%,rgb(254,248,76) 100%);--wp--preset--gradient--blush-light-purple: linear-gradient(135deg,rgb(255,206,236) 0%,rgb(152,150,240) 100%);--wp--preset--gradient--blush-bordeaux: linear-gradient(135deg,rgb(254,205,165) 0%,rgb(254,45,45) 50%,rgb(107,0,62) 100%);--wp--preset--gradient--luminous-dusk: linear-gradient(135deg,rgb(255,203,112) 0%,rgb(199,81,192) 50%,rgb(65,88,208) 100%);--wp--preset--gradient--pale-ocean: linear-gradient(135deg,rgb(255,245,203) 0%,rgb(182,227,212) 50%,rgb(51,167,181) 100%);--wp--preset--gradient--electric-grass: linear-gradient(135deg,rgb(202,248,128) 0%,rgb(113,206,126) 100%);--wp--preset--gradient--midnight: linear-gradient(135deg,rgb(2,3,129) 0%,rgb(40,116,252) 100%);--wp--preset--font-size--small: 13px;--wp--preset--font-size--medium: 20px;--wp--preset--font-size--large: clamp(26px, 1.625rem + ((1vw - 3.2px) * 1.136), 36px);--wp--preset--font-size--x-large: clamp(32px, 2rem + ((1vw - 3.2px) * 1.136), 42px);--wp--preset--font-size--custom-1: clamp(42px, 2.625rem + ((1vw - 3.2px) * 2.273), 62px);--wp--preset--font-family--system-font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen-Sans, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif;--wp--preset--font-family--plus-jakarta-sans: "Plus Jakarta Sans", sans-serif;--wp--preset--font-family--outfit: Outfit, sans-serif;--wp--preset--spacing--20: 0.44rem;--wp--preset--spacing--30: 0.67rem;--wp--preset--spacing--40: 1rem;--wp--preset--spacing--50: 1.5rem;--wp--preset--spacing--60: 2.25rem;--wp--preset--spacing--70: 3.38rem;--wp--preset--spacing--80: 5.06rem;--wp--preset--shadow--natural: 6px 6px 9px rgba(0, 0, 0, 0.2);--wp--preset--shadow--deep: 12px 12px 50px rgba(0, 0, 0, 0.4);--wp--preset--shadow--sharp: 6px 6px 0px rgba(0, 0, 0, 0.2);--wp--preset--shadow--outlined: 6px 6px 0px -3px rgba(255, 255, 255, 1), 6px 6px rgba(0, 0, 0, 1);--wp--preset--shadow--crisp: 6px 6px 0px rgba(0, 0, 0, 1);}:root { --wp--style--global--content-size: 1200px;--wp--style--global--wide-size: 1200px; }:where(body) { margin: 0; }.wp-site-blocks { padding-top: var(--wp--style--root--padding-top); padding-bottom: var(--wp--style--root--padding-bottom); }.has-global-padding { padding-right: var(--wp--style--root--padding-right); padding-left: var(--wp--style--root--padding-left); }.has-global-padding > .alignfull { margin-right: calc(var(--wp--style--root--padding-right) * -1); margin-left: calc(var(--wp--style--root--padding-left) * -1); }.has-global-padding :where(:not(.alignfull.is-layout-flow) > .has-global-padding:not(.wp-block-block, .alignfull)) { padding-right: 0; padding-left: 0; }.has-global-padding :where(:not(.alignfull.is-layout-flow) > .has-global-padding:not(.wp-block-block, .alignfull)) > .alignfull { margin-left: 0; margin-right: 0; }.wp-site-blocks > .alignleft { float: left; margin-right: 2em; }.wp-site-blocks > .alignright { float: right; margin-left: 2em; }.wp-site-blocks > .aligncenter { justify-content: center; margin-left: auto; margin-right: auto; }:where(.wp-site-blocks) > * { margin-block-start: 1rem; margin-block-end: 0; }:where(.wp-site-blocks) > :first-child { margin-block-start: 0; }:where(.wp-site-blocks) > :last-child { margin-block-end: 0; }:root { --wp--style--block-gap: 1rem; }:root :where(.is-layout-flow) > :first-child{margin-block-start: 0;}:root :where(.is-layout-flow) > :last-child{margin-block-end: 0;}:root :where(.is-layout-flow) > *{margin-block-start: 1rem;margin-block-end: 0;}:root :where(.is-layout-constrained) > :first-child{margin-block-start: 0;}:root :where(.is-layout-constrained) > :last-child{margin-block-end: 0;}:root :where(.is-layout-constrained) > *{margin-block-start: 1rem;margin-block-end: 0;}:root :where(.is-layout-flex){gap: 1rem;}:root :where(.is-layout-grid){gap: 1rem;}.is-layout-flow > .alignleft{float: left;margin-inline-start: 0;margin-inline-end: 2em;}.is-layout-flow > .alignright{float: right;margin-inline-start: 2em;margin-inline-end: 0;}.is-layout-flow > .aligncenter{margin-left: auto !important;margin-right: auto !important;}.is-layout-constrained > .alignleft{float: left;margin-inline-start: 0;margin-inline-end: 2em;}.is-layout-constrained > .alignright{float: right;margin-inline-start: 2em;margin-inline-end: 0;}.is-layout-constrained > .aligncenter{margin-left: auto !important;margin-right: auto !important;}.is-layout-constrained > :where(:not(.alignleft):not(.alignright):not(.alignfull)){max-width: var(--wp--style--global--content-size);margin-left: auto !important;margin-right: auto !important;}.is-layout-constrained > .alignwide{max-width: var(--wp--style--global--wide-size);}body .is-layout-flex{display: flex;}.is-layout-flex{flex-wrap: wrap;align-items: center;}.is-layout-flex > :is(*, div){margin: 0;}body .is-layout-grid{display: grid;}.is-layout-grid > :is(*, div){margin: 0;}body{background-color: #ebebeb;color: var(--wp--preset--color--cyan-bluish-gray);font-family: var(--wp--preset--font-family--outfit);font-size: 1rem;font-style: normal;font-weight: 300;--wp--style--root--padding-top: 0px;--wp--style--root--padding-right: 0px;--wp--style--root--padding-bottom: 0px;--wp--style--root--padding-left: 0px;}a:where(:not(.wp-element-button)){color: var(--wp--preset--color--black);font-family: var(--wp--preset--font-family--outfit);font-size: 1rem;font-style: normal;font-weight: 700;text-decoration: underline;}:root :where(a:where(:not(.wp-element-button)):hover){color: var(--wp--preset--color--black);}h1, h2, h3, h4, h5, h6{color: var(--wp--preset--color--black);font-family: var(--wp--preset--font-family--outfit);font-style: normal;font-weight: 400;}h1{font-family: var(--wp--preset--font-family--outfit);font-size: var(--wp--preset--font-size--custom-1);}h2{font-family: var(--wp--preset--font-family--outfit);font-size: var(--wp--preset--font-size--x-large);}h3{font-family: var(--wp--preset--font-family--outfit);font-size: var(--wp--preset--font-size--large);}h4{font-family: var(--wp--preset--font-family--outfit);font-size: var(--wp--preset--font-size--medium);}h5{font-size: var(--wp--preset--font-size--small);}h6{font-family: var(--wp--preset--font-family--outfit);font-size: 1rem;}:root :where(.wp-element-button, .wp-block-button__link){background-color: var(--wp--preset--color--white);border-width: 0;color: var(--wp--preset--color--pale-pink);font-family: var(--wp--preset--font-family--outfit);font-size: 1rem;font-style: normal;font-weight: 500;line-height: inherit;padding: calc(0.667em + 2px) calc(1.333em + 2px);text-decoration: none;}:root :where(.wp-element-caption, .wp-block-audio figcaption, .wp-block-embed figcaption, .wp-block-gallery figcaption, .wp-block-image figcaption, .wp-block-table figcaption, .wp-block-video figcaption){color: var(--wp--preset--color--cyan-bluish-gray);font-family: var(--wp--preset--font-family--plus-jakarta-sans);font-size: 0.7rem;font-style: normal;font-weight: 400;}.has-black-color{color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-color{color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-color{color: var(--wp--preset--color--white) !important;}.has-pale-pink-color{color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-color{color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-color{color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-color{color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-color{color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-color{color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-color{color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-color{color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-color{color: var(--wp--preset--color--vivid-purple) !important;}.has-custom-primary-color{color: var(--wp--preset--color--custom-primary) !important;}.has-custom-accent-color{color: var(--wp--preset--color--custom-accent) !important;}.has-custom-secondary-color{color: var(--wp--preset--color--custom-secondary) !important;}.has-custom-white-color{color: var(--wp--preset--color--custom-white) !important;}.has-black-background-color{background-color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-background-color{background-color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-background-color{background-color: var(--wp--preset--color--white) !important;}.has-pale-pink-background-color{background-color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-background-color{background-color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-background-color{background-color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-background-color{background-color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-background-color{background-color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-background-color{background-color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-background-color{background-color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-background-color{background-color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-background-color{background-color: var(--wp--preset--color--vivid-purple) !important;}.has-custom-primary-background-color{background-color: var(--wp--preset--color--custom-primary) !important;}.has-custom-accent-background-color{background-color: var(--wp--preset--color--custom-accent) !important;}.has-custom-secondary-background-color{background-color: var(--wp--preset--color--custom-secondary) !important;}.has-custom-white-background-color{background-color: var(--wp--preset--color--custom-white) !important;}.has-black-border-color{border-color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-border-color{border-color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-border-color{border-color: var(--wp--preset--color--white) !important;}.has-pale-pink-border-color{border-color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-border-color{border-color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-border-color{border-color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-border-color{border-color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-border-color{border-color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-border-color{border-color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-border-color{border-color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-border-color{border-color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-border-color{border-color: var(--wp--preset--color--vivid-purple) !important;}.has-custom-primary-border-color{border-color: var(--wp--preset--color--custom-primary) !important;}.has-custom-accent-border-color{border-color: var(--wp--preset--color--custom-accent) !important;}.has-custom-secondary-border-color{border-color: var(--wp--preset--color--custom-secondary) !important;}.has-custom-white-border-color{border-color: var(--wp--preset--color--custom-white) !important;}.has-vivid-cyan-blue-to-vivid-purple-gradient-background{background: var(--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple) !important;}.has-light-green-cyan-to-vivid-green-cyan-gradient-background{background: var(--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan) !important;}.has-luminous-vivid-amber-to-luminous-vivid-orange-gradient-background{background: var(--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange) !important;}.has-luminous-vivid-orange-to-vivid-red-gradient-background{background: var(--wp--preset--gradient--luminous-vivid-orange-to-vivid-red) !important;}.has-very-light-gray-to-cyan-bluish-gray-gradient-background{background: var(--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray) !important;}.has-cool-to-warm-spectrum-gradient-background{background: var(--wp--preset--gradient--cool-to-warm-spectrum) !important;}.has-blush-light-purple-gradient-background{background: var(--wp--preset--gradient--blush-light-purple) !important;}.has-blush-bordeaux-gradient-background{background: var(--wp--preset--gradient--blush-bordeaux) !important;}.has-luminous-dusk-gradient-background{background: var(--wp--preset--gradient--luminous-dusk) !important;}.has-pale-ocean-gradient-background{background: var(--wp--preset--gradient--pale-ocean) !important;}.has-electric-grass-gradient-background{background: var(--wp--preset--gradient--electric-grass) !important;}.has-midnight-gradient-background{background: var(--wp--preset--gradient--midnight) !important;}.has-small-font-size{font-size: var(--wp--preset--font-size--small) !important;}.has-medium-font-size{font-size: var(--wp--preset--font-size--medium) !important;}.has-large-font-size{font-size: var(--wp--preset--font-size--large) !important;}.has-x-large-font-size{font-size: var(--wp--preset--font-size--x-large) !important;}.has-custom-1-font-size{font-size: var(--wp--preset--font-size--custom-1) !important;}.has-system-font-font-family{font-family: var(--wp--preset--font-family--system-font) !important;}.has-plus-jakarta-sans-font-family{font-family: var(--wp--preset--font-family--plus-jakarta-sans) !important;}.has-outfit-font-family{font-family: var(--wp--preset--font-family--outfit) !important;}:where(.wp-site-blocks) > * {
+    margin-block-start: 0rem;
+    margin-block-end: 0;
+}
+
+
+@media screen and (max-width:480px){
+.mobile-spacer-hero{
+ padding:0px 10px !important;
+}
+.mobile-spacer-20-10{
+ padding:20px 10px !important;
+}
+.mobile-spacer-40-10{
+ padding:40px 10px !important;
+}
+.mobile-hidden{
+display:none !important;
+}
+}
+
+.h-520 img{
+height:520px !important;
+object-fit:cover;
+}
+.h-670 img{
+height:670px !important;
+object-fit:cover;
+}
+.no-pad-left .wp-block-media-text__content{
+padding-left:0 !important;
+}
+.clamped-title a{
+  display: -webkit-box; 
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden; 
+}
+
+span.wp-block-cover__background.has-background-dim, .wp-block-cover__inner-container.is-layout-flow.wp-block-cover-is-layout-flow{
+display:none;
+}
+.wp-block-cover.project-card:hover span.wp-block-cover__background.has-background-dim, .wp-block-cover.project-card:hover .wp-block-cover__inner-container.is-layout-flow.wp-block-cover-is-layout-flow{
+display:block;
+}
+.project-card{
+cursor:pointer;
+}
+.pos-rel{
+position:relative;
+}
+.pos-abs{
+position:absolute;
+}
+.button-pos-abs {
+    bottom: -30px;
+    width: 100%;
+    left: 0;
+    right: 0;
+}
+.cta-contact-form input{
+    height:70px !important;
+}
+.cta-contact-form label{
+color:#fff;
+}
+:root :where(.wp-block-button .wp-block-button__link){background-color: var(--wp--preset--color--black);border-radius: 3px;border-top-color: var(--wp--preset--color--black);border-top-width: 2px;border-top-style: solid;border-right-color: var(--wp--preset--color--black);border-right-width: 2px;border-right-style: solid;border-bottom-color: var(--wp--preset--color--black);border-bottom-width: 2px;border-bottom-style: solid;border-left-color: var(--wp--preset--color--black);border-left-width: 2px;border-left-style: solid;color: var(--wp--preset--color--pale-pink);font-family: var(--wp--preset--font-family--outfit);font-style: normal;font-weight: 700;padding-top: 18px;padding-right: 18px;padding-bottom: 18px;padding-left: 18px;}
+:root :where(.wp-block-button .wp-block-button__link a:where(:not(.wp-element-button))){color: var(--wp--preset--color--pale-pink);}
+
+
+
+:root :where(.wp-block-button.is-style-outline--2 .wp-block-button__link){background: transparent none;background-color: var(--wp--preset--color--pale-pink);border-radius: 3px;border-color: currentColor;border-width: 2px;border-style: solid;border-top-color: currentColor;border-top-width: 1px;border-top-style: solid;border-right-color: currentColor;border-right-width: 1px;border-right-style: solid;border-bottom-color: currentColor;border-bottom-width: 1px;border-bottom-style: solid;border-left-color: currentColor;border-left-width: 1px;border-left-style: solid;color: var(--wp--preset--color--white);font-style: normal;font-weight: 700;padding-top: 18px;padding-right: 18px;padding-bottom: 18px;padding-left: 18px;}
+
+
+
+
+	img.wp-smiley, img.emoji {
+		display: inline !important;
+		border: none !important;
+		box-shadow: none !important;
+		height: 1em !important;
+		width: 1em !important;
+		margin: 0 0.07em !important;
+		vertical-align: -0.1em !important;
+		background: none !important;
+		padding: 0 !important;
+	}
+
+
+
+.wp-container-core-navigation-is-layout-1{gap:var(--wp--preset--spacing--60);justify-content:space-between;}.wp-container-core-group-is-layout-2{justify-content:space-between;}.wp-container-core-group-is-layout-5 > .alignfull{margin-right:calc(0px * -1);margin-left:calc(0px * -1);}.wp-container-core-group-is-layout-5 > *{margin-block-start:0;margin-block-end:0;}.wp-container-core-group-is-layout-5 > * + *{margin-block-start:var(--wp--preset--spacing--50);margin-block-end:0;}.wp-container-core-group-is-layout-6 > .alignfull{margin-right:calc(0px * -1);margin-left:calc(0px * -1);}.wp-elements-8d45cf7667d35aee17ddd01d0f866aa9 a:where(:not(.wp-element-button)){color:var(--wp--preset--color--pale-pink);}.wp-elements-4ab7733c089bcdf86542657745317a77 a:where(:not(.wp-element-button)){color:#c2c2c2;}.wp-container-core-group-is-layout-9 > :where(:not(.alignleft):not(.alignright):not(.alignfull)){max-width:600px;margin-left:auto !important;margin-right:auto !important;}.wp-container-core-group-is-layout-9 > .alignwide{max-width:600px;}.wp-container-core-group-is-layout-9 .alignfull{max-width:none;}.wp-container-core-buttons-is-layout-3{justify-content:center;}.wp-container-core-group-is-layout-10 > *{margin-block-start:0;margin-block-end:0;}.wp-container-core-group-is-layout-10 > * + *{margin-block-start:var(--wp--preset--spacing--60);margin-block-end:0;}.wp-container-core-group-is-layout-11 > *{margin-block-start:0;margin-block-end:0;}.wp-container-core-group-is-layout-11 > * + *{margin-block-start:0;margin-block-end:0;}.wp-elements-0395c7ef14c6e5b82bdc2ed5bc88da0c a:where(:not(.wp-element-button)){color:var(--wp--preset--color--cyan-bluish-gray);}.wp-elements-1450f9c00f4a61b917c8a23159ca91d8 a:where(:not(.wp-element-button)){color:var(--wp--preset--color--black);}.wp-container-core-group-is-layout-12 > .alignfull{margin-right:calc(var(--wp--preset--spacing--50) * -1);margin-left:calc(var(--wp--preset--spacing--50) * -1);}.wp-elements-a7a680c2afca9a9e24e80b356c36285e a:where(:not(.wp-element-button)){color:var(--wp--preset--color--black);}.wp-container-core-group-is-layout-13 > .alignfull{margin-right:calc(var(--wp--preset--spacing--50) * -1);margin-left:calc(var(--wp--preset--spacing--50) * -1);}.wp-elements-aa958979d5e4d9f08ca6a2df848d19fe a:where(:not(.wp-element-button)){color:var(--wp--preset--color--black);}.wp-container-core-group-is-layout-14 > .alignfull{margin-right:calc(var(--wp--preset--spacing--50) * -1);margin-left:calc(var(--wp--preset--spacing--50) * -1);}.wp-container-core-group-is-layout-15 > .alignfull{margin-right:calc(var(--wp--preset--spacing--50) * -1);margin-left:calc(var(--wp--preset--spacing--50) * -1);}.wp-container-core-group-is-layout-16 > .alignfull{margin-right:calc(var(--wp--preset--spacing--50) * -1);margin-left:calc(var(--wp--preset--spacing--50) * -1);}.wp-container-core-group-is-layout-17 > .alignfull{margin-right:calc(var(--wp--preset--spacing--50) * -1);margin-left:calc(var(--wp--preset--spacing--50) * -1);}.wp-container-core-group-is-layout-18{grid-template-columns:repeat(auto-fill, minmax(min(20rem, 100%), 1fr));container-type:inline-size;gap:var(--wp--preset--spacing--60);}.wp-container-core-buttons-is-layout-10{justify-content:center;}.wp-elements-9944189470e53f37207dc3b974ae8c8f a:where(:not(.wp-element-button)){color:var(--wp--preset--color--white);}.wp-container-core-columns-is-layout-1{flex-wrap:nowrap;gap:2em var(--wp--preset--spacing--70);}.wp-container-core-group-is-layout-21 > *{margin-block-start:0;margin-block-end:0;}.wp-container-core-group-is-layout-21 > * + *{margin-block-start:var(--wp--preset--spacing--40);margin-block-end:0;}.wp-container-core-group-is-layout-24{justify-content:space-between;align-items:flex-end;}.wp-container-core-group-is-layout-25 > *{margin-block-start:0;margin-block-end:0;}.wp-container-core-group-is-layout-25 > * + *{margin-block-start:var(--wp--preset--spacing--40);margin-block-end:0;}.wp-container-content-1{flex-basis:250px;}.wp-container-core-group-is-layout-26 > .alignfull{margin-right:calc(var(--wp--preset--spacing--40) * -1);margin-left:calc(var(--wp--preset--spacing--40) * -1);}.wp-container-core-group-is-layout-26 > :where(:not(.alignleft):not(.alignright):not(.alignfull)){margin-left:0 !important;}.wp-container-content-2{flex-basis:250px;}.wp-container-core-group-is-layout-27 > .alignfull{margin-right:calc(var(--wp--preset--spacing--40) * -1);margin-left:calc(var(--wp--preset--spacing--40) * -1);}.wp-container-core-group-is-layout-27 > :where(:not(.alignleft):not(.alignright):not(.alignfull)){margin-left:0 !important;}.wp-container-content-3{flex-basis:250px;}.wp-container-core-group-is-layout-28 > .alignfull{margin-right:calc(var(--wp--preset--spacing--40) * -1);margin-left:calc(var(--wp--preset--spacing--40) * -1);}.wp-container-core-group-is-layout-28 > :where(:not(.alignleft):not(.alignright):not(.alignfull)){margin-left:0 !important;}.wp-container-core-post-template-is-layout-1{grid-template-columns:repeat(3, minmax(0, 1fr));gap:var(--wp--preset--spacing--60);}.wp-elements-6f1c9990b5118d2923252674ca706160 a:where(:not(.wp-element-button)){color:var(--wp--preset--color--pale-pink);}.wp-container-core-buttons-is-layout-13{justify-content:center;}.wp-container-core-group-is-layout-30 > :where(:not(.alignleft):not(.alignright):not(.alignfull)){max-width:800px;margin-left:auto !important;margin-right:auto !important;}.wp-container-core-group-is-layout-30 > .alignwide{max-width:800px;}.wp-container-core-group-is-layout-30 .alignfull{max-width:none;}.wp-container-core-group-is-layout-30 > *{margin-block-start:0;margin-block-end:0;}.wp-container-core-group-is-layout-30 > * + *{margin-block-start:var(--wp--preset--spacing--40);margin-block-end:0;}.wp-container-core-group-is-layout-32 > :where(:not(.alignleft):not(.alignright):not(.alignfull)){max-width:1200px;margin-left:auto !important;margin-right:auto !important;}.wp-container-core-group-is-layout-32 > .alignwide{max-width:1200px;}.wp-container-core-group-is-layout-32 .alignfull{max-width:none;}.wp-container-core-group-is-layout-32 > *{margin-block-start:0;margin-block-end:0;}.wp-container-core-group-is-layout-32 > * + *{margin-block-start:0;margin-block-end:0;}.wp-elements-5606e13f93bfbbcde1bb932d3efbca4f a:where(:not(.wp-element-button)){color:#ffffff;}.wp-container-core-column-is-layout-4 > *{margin-block-start:0;margin-block-end:0;}.wp-container-core-column-is-layout-4 > * + *{margin-block-start:2rem;margin-block-end:0;}.wp-container-core-social-links-is-layout-1{flex-wrap:nowrap;}.wp-container-core-columns-is-layout-2{flex-wrap:nowrap;}.wp-container-core-group-is-layout-34 > :where(:not(.alignleft):not(.alignright):not(.alignfull)){max-width:1200px;margin-left:auto !important;margin-right:auto !important;}.wp-container-core-group-is-layout-34 > .alignwide{max-width:1200px;}.wp-container-core-group-is-layout-34 .alignfull{max-width:none;}
+
+
+
+
+		.skip-link.screen-reader-text {
+			border: 0;
+			clip: rect(1px,1px,1px,1px);
+			clip-path: inset(50%);
+			height: 1px;
+			margin: -1px;
+			overflow: hidden;
+			padding: 0;
+			position: absolute !important;
+			width: 1px;
+			word-wrap: normal !important;
+		}
+
+		.skip-link.screen-reader-text:focus {
+			background-color: #eee;
+			clip: auto !important;
+			clip-path: none;
+			color: #444;
+			display: block;
+			font-size: 1em;
+			height: auto;
+			left: 5px;
+			line-height: normal;
+			padding: 15px 23px 14px;
+			text-decoration: none;
+			top: 5px;
+			width: auto;
+			z-index: 100000;
+		}
+
+
+
+
+			.a-stats {
+				--akismet-color-mid-green: #357b49;
+				--akismet-color-white: #fff;
+				--akismet-color-light-grey: #f6f7f7;
+
+				max-width: 350px;
+				width: auto;
+			}
+
+			.a-stats * {
+				all: unset;
+				box-sizing: border-box;
+			}
+
+			.a-stats strong {
+				font-weight: 600;
+			}
+
+			.a-stats a.a-stats__link,
+			.a-stats a.a-stats__link:visited,
+			.a-stats a.a-stats__link:active {
+				background: var(--akismet-color-mid-green);
+				border: none;
+				box-shadow: none;
+				border-radius: 8px;
+				color: var(--akismet-color-white);
+				cursor: pointer;
+				display: block;
+				font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen-Sans', 'Ubuntu', 'Cantarell', 'Helvetica Neue', sans-serif;
+				font-weight: 500;
+				padding: 12px;
+				text-align: center;
+				text-decoration: none;
+				transition: all 0.2s ease;
+			}
+
+			/* Extra specificity to deal with TwentyTwentyOne focus style */
+			.widget .a-stats a.a-stats__link:focus {
+				background: var(--akismet-color-mid-green);
+				color: var(--akismet-color-white);
+				text-decoration: none;
+			}
+
+			.a-stats a.a-stats__link:hover {
+				filter: brightness(110%);
+				box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06), 0 0 2px rgba(0, 0, 0, 0.16);
+			}
+
+			.a-stats .count {
+				color: var(--akismet-color-white);
+				display: block;
+				font-size: 1.5em;
+				line-height: 1.4;
+				padding: 0 13px;
+				white-space: nowrap;
+			}
+		
+
+
+
+@font-face{font-family:"Plus Jakarta Sans";font-style:normal;font-weight:400;font-display:fallback;src:url('https://gutenbergui.com/wp-content/uploads/fonts/LDIbaomQNQcsA88c7O9yZ4KMCoOg4IA6-91aHEjcWuA_qU7NTxXUEKi4Rw.woff2') format('woff2');}
+@font-face{font-family:"Plus Jakarta Sans";font-style:normal;font-weight:600;font-display:fallback;src:url('https://gutenbergui.com/wp-content/uploads/fonts/LDIbaomQNQcsA88c7O9yZ4KMCoOg4IA6-91aHEjcWuA_d0nNTxXUEKi4Rw.woff2') format('woff2');}
+@font-face{font-family:"Plus Jakarta Sans";font-style:normal;font-weight:500;font-display:fallback;src:url('https://gutenbergui.com/wp-content/uploads/fonts/LDIbaomQNQcsA88c7O9yZ4KMCoOg4IA6-91aHEjcWuA_m07NTxXUEKi4Rw.woff2') format('woff2');}
+@font-face{font-family:"Plus Jakarta Sans";font-style:normal;font-weight:700;font-display:fallback;src:url('https://gutenbergui.com/wp-content/uploads/fonts/LDIbaomQNQcsA88c7O9yZ4KMCoOg4IA6-91aHEjcWuA_TknNTxXUEKi4Rw.woff2') format('woff2');}
+@font-face{font-family:"Plus Jakarta Sans";font-style:normal;font-weight:800;font-display:fallback;src:url('https://gutenbergui.com/wp-content/uploads/fonts/LDIbaomQNQcsA88c7O9yZ4KMCoOg4IA6-91aHEjcWuA_KUnNTxXUEKi4Rw.woff2') format('woff2');}
+@font-face{font-family:"Plus Jakarta Sans";font-style:italic;font-weight:400;font-display:fallback;src:url('https://gutenbergui.com/wp-content/uploads/fonts/LDIZaomQNQcsA88c7O9yZ4KMCoOg4KozySKCdSNG9OcqYQ0lCR_VMq2oR82k.woff2') format('woff2');}
+@font-face{font-family:"Plus Jakarta Sans";font-style:italic;font-weight:500;font-display:fallback;src:url('https://gutenbergui.com/wp-content/uploads/fonts/LDIZaomQNQcsA88c7O9yZ4KMCoOg4KozySKCdSNG9OcqYQ0XCR_VMq2oR82k.woff2') format('woff2');}
+@font-face{font-family:"Plus Jakarta Sans";font-style:italic;font-weight:600;font-display:fallback;src:url('https://gutenbergui.com/wp-content/uploads/fonts/LDIZaomQNQcsA88c7O9yZ4KMCoOg4KozySKCdSNG9OcqYQ37Dh_VMq2oR82k.woff2') format('woff2');}
+@font-face{font-family:"Plus Jakarta Sans";font-style:italic;font-weight:700;font-display:fallback;src:url('https://gutenbergui.com/wp-content/uploads/fonts/LDIZaomQNQcsA88c7O9yZ4KMCoOg4KozySKCdSNG9OcqYQ3CDh_VMq2oR82k.woff2') format('woff2');}
+@font-face{font-family:"Plus Jakarta Sans";font-style:italic;font-weight:800;font-display:fallback;src:url('https://gutenbergui.com/wp-content/uploads/fonts/LDIZaomQNQcsA88c7O9yZ4KMCoOg4KozySKCdSNG9OcqYQ2lDh_VMq2oR82k.woff2') format('woff2');}
+@font-face{font-family:Outfit;font-style:normal;font-weight:300;font-display:fallback;src:url('https://gutenbergui.com/wp-content/uploads/fonts/QGYyz_MVcBeNP4NjuGObqx1XmO1I4W61C4S-EiAou6Y.woff2') format('woff2');}
+@font-face{font-family:Outfit;font-style:normal;font-weight:400;font-display:fallback;src:url('https://gutenbergui.com/wp-content/uploads/fonts/QGYyz_MVcBeNP4NjuGObqx1XmO1I4TC1C4S-EiAou6Y.woff2') format('woff2');}
+@font-face{font-family:Outfit;font-style:normal;font-weight:500;font-display:fallback;src:url('https://gutenbergui.com/wp-content/uploads/fonts/QGYyz_MVcBeNP4NjuGObqx1XmO1I4QK1C4S-EiAou6Y.woff2') format('woff2');}
+@font-face{font-family:Outfit;font-style:normal;font-weight:600;font-display:fallback;src:url('https://gutenbergui.com/wp-content/uploads/fonts/QGYyz_MVcBeNP4NjuGObqx1XmO1I4e6yC4S-EiAou6Y.woff2') format('woff2');}
+@font-face{font-family:Outfit;font-style:normal;font-weight:700;font-display:fallback;src:url('https://gutenbergui.com/wp-content/uploads/fonts/QGYyz_MVcBeNP4NjuGObqx1XmO1I4deyC4S-EiAou6Y.woff2') format('woff2');}
+@font-face{font-family:Outfit;font-style:normal;font-weight:800;font-display:fallback;src:url('https://gutenbergui.com/wp-content/uploads/fonts/QGYyz_MVcBeNP4NjuGObqx1XmO1I4bCyC4S-EiAou6Y.woff2') format('woff2');}
+@font-face{font-family:Outfit;font-style:normal;font-weight:900;font-display:fallback;src:url('https://gutenbergui.com/wp-content/uploads/fonts/QGYyz_MVcBeNP4NjuGObqx1XmO1I4ZmyC4S-EiAou6Y.woff2') format('woff2');}
+
+</style>
+</head>
+<body>
+
+<div class="wp-block-group alignfull has-global-padding is-layout-constrained wp-container-core-group-is-layout-22 wp-block-group-is-layout-constrained">
+<section class="wp-block-group alignfull mobile-spacer-40-10 has-global-padding is-layout-constrained wp-block-group-is-layout-constrained" style="padding-top:120px">
+<div class="wp-block-group has-global-padding is-layout-constrained wp-container-core-group-is-layout-2 wp-block-group-is-layout-constrained" style="margin-bottom:60px">
+<div class="wp-block-group has-global-padding is-layout-constrained wp-container-core-group-is-layout-1 wp-block-group-is-layout-constrained">
+<p class="has-text-align-center has-white-color has-text-color has-link-color wp-elements-c91e72bd959cb66c21e75f1eb003d033"><strong>About Oriad Digital</strong></p>
+
+
+
+<h2 class="wp-block-heading has-text-align-center">Strategic Digital Consulting</h2>
+
+
+
+<p class="has-text-align-center">Oriad specializes in bridging the gap between information technology and business management, offering tailored solutions that align IT operations with business goals. With a focus on innovation and growth, Oriad empowers businesses to stay modern, competitive, and poised for long-term success.</p>
+</div>
+</div>
+
+
+
+<figure class="wp-block-image alignfull size-full h-520"><img loading="lazy" decoding="async" width="1000" height="667" src="https://gutenbergui.com/wp-content/uploads/2024/12/2149033806.jpg" alt="" class="wp-image-127" srcset="https://gutenbergui.com/wp-content/uploads/2024/12/2149033806.jpg 1000w, https://gutenbergui.com/wp-content/uploads/2024/12/2149033806-300x200.jpg 300w, https://gutenbergui.com/wp-content/uploads/2024/12/2149033806-768x512.jpg 768w" sizes="auto, (max-width: 1000px) 100vw, 1000px" /></figure>
+</section>
+
+
+
+<section class="wp-block-group alignfull mobile-spacer-40-10 has-black-background-color has-background has-global-padding is-layout-constrained wp-block-group-is-layout-constrained" style="padding-top:80px;padding-bottom:80px">
+<div class="wp-block-group has-global-padding is-layout-constrained wp-container-core-group-is-layout-4 wp-block-group-is-layout-constrained">
+<h2 class="wp-block-heading has-text-align-center has-pale-pink-color has-text-color has-link-color wp-elements-2be90aa9c0f640b15e25907b672ae4e6">Collaborating with trusted IT teams to drive meaningful and lasting transformation.</h2>
+
+
+
+<p class="has-text-align-center has-pale-pink-color has-text-color has-link-color wp-elements-1a4950aa8d8c357e4676fb4eb94bdb02">Oriad begins every engagement with a deep dive into understanding clients’ businesses through thoughtful observation and inquiry. This foundation enables seamless integration of management strategies with technology solutions. The real impact comes from Oriad’s ability to unite diverse stakeholders, break down barriers, and foster collaboration across departments. The result isn’t just improvement—it’s transformation, as businesses become more competitive, efficient, and sustainable.</p>
+</div>
+</section>
+
+
+
+<section class="wp-block-group alignfull mobile-spacer-40-10 has-global-padding is-layout-constrained wp-block-group-is-layout-constrained" style="padding-top:80px;padding-bottom:80px">
+<div class="wp-block-group has-global-padding is-layout-constrained wp-container-core-group-is-layout-6 wp-block-group-is-layout-constrained">
+<div class="wp-block-media-text alignwide has-media-on-the-right is-stacked-on-mobile no-pad-left" style="margin-top:0;margin-right:0;margin-bottom:0;margin-left:0;padding-top:0;padding-right:0;padding-bottom:0;padding-left:0"><div class="wp-block-media-text__content">
+<h2 class="wp-block-heading">Aligning those who drive the business with those who keep it running smoothly.</h2>
+
+
+
+<p>Are you a professional in a non-technical field seeking a partner with deep technical expertise? Or a technology specialist looking to collaborate with experts who truly embrace a technology-driven approach?</p>
+
+
+
+<p>At times, it can feel like IT departments and business teams are worlds apart. From these divides, Oriad works hand-in-hand with both business and technical stakeholders, mapping pathways to a digital future and building the bridges needed to bring them together.</p>
+</div><figure class="wp-block-media-text__media"><img loading="lazy" decoding="async" width="1024" height="683" src="https://gutenbergui.com/wp-content/uploads/2024/12/freelance-coder-typing-javascript-code-computer-develop-online-cloud-computing-information-software-developer-writing-html-script-data-algorithm-working-it-programming-office-1024x683.jpg" alt="" class="wp-image-128 size-full" srcset="https://gutenbergui.com/wp-content/uploads/2024/12/freelance-coder-typing-javascript-code-computer-develop-online-cloud-computing-information-software-developer-writing-html-script-data-algorithm-working-it-programming-office-1024x683.jpg 1024w, https://gutenbergui.com/wp-content/uploads/2024/12/freelance-coder-typing-javascript-code-computer-develop-online-cloud-computing-information-software-developer-writing-html-script-data-algorithm-working-it-programming-office-300x200.jpg 300w, https://gutenbergui.com/wp-content/uploads/2024/12/freelance-coder-typing-javascript-code-computer-develop-online-cloud-computing-information-software-developer-writing-html-script-data-algorithm-working-it-programming-office-768x512.jpg 768w, https://gutenbergui.com/wp-content/uploads/2024/12/freelance-coder-typing-javascript-code-computer-develop-online-cloud-computing-information-software-developer-writing-html-script-data-algorithm-working-it-programming-office-1536x1024.jpg 1536w, https://gutenbergui.com/wp-content/uploads/2024/12/freelance-coder-typing-javascript-code-computer-develop-online-cloud-computing-information-software-developer-writing-html-script-data-algorithm-working-it-programming-office-2048x1365.jpg 2048w" sizes="auto, (max-width: 1024px) 100vw, 1024px" /></figure></div>
+
+
+
+<div class="wp-block-columns is-layout-flex wp-container-core-columns-is-layout-1 wp-block-columns-is-layout-flex" style="margin-top:80px;padding-bottom:60px">
+<div class="wp-block-column is-layout-flow wp-block-column-is-layout-flow" style="border-top-color:#d3d3d3;border-top-width:2px;border-right-style:none;border-right-width:0px;border-bottom-style:none;border-bottom-width:0px;border-left-style:none;border-left-width:0px;padding-top:30px">
+<h4 class="wp-block-heading has-text-align-left has-plus-jakarta-sans-font-family"><strong>CLIENTS</strong></h4>
+
+
+
+<p>Your trusted IT department understands and supports your business. That’s why Oriad collaborates with IT teams rather than replacing them. Oriad provides guidance, empowering them to drive the change that improves their services and delivers tangible results for the business.</p>
+</div>
+
+
+
+<div class="wp-block-column is-layout-flow wp-block-column-is-layout-flow" style="border-top-color:#d3d3d3;border-top-width:2px;border-right-style:none;border-right-width:0px;border-bottom-style:none;border-bottom-width:0px;border-left-style:none;border-left-width:0px;padding-top:30px">
+<h4 class="wp-block-heading has-text-align-left has-plus-jakarta-sans-font-family"><strong>INDUSTRIES</strong></h4>
+
+
+
+<p class="has-text-align-left">Oriad&#8217;s expertise is rooted in the real estate and eCommerce sectors, with specialized experience in real estate digital solutions and online retail.</p>
+</div>
+
+
+
+<div class="wp-block-column is-layout-flow wp-block-column-is-layout-flow" style="border-top-color:#d3d3d3;border-top-width:2px;border-right-style:none;border-right-width:0px;border-bottom-style:none;border-bottom-width:0px;border-left-style:none;border-left-width:0px;padding-top:30px">
+<h4 class="wp-block-heading has-plus-jakarta-sans-font-family"><strong>AFFILIATIONS</strong></h4>
+
+
+
+<p>With an emphasis on our digital solutions-oriented approach, Oriad do not resell SaaS or represent any specific vendor. Instead, we offer unbiased recommendations, always prioritizing solutions that are in the best interest of our clients and fully support their business needs.</p>
+</div>
+</div>
+</div>
+</section>
+
+
+
+<section class="wp-block-group alignfull mobile-spacer-40-10 has-pale-pink-color has-black-background-color has-text-color has-background has-link-color wp-elements-767b9dfbe3cfd76f7d97805b479ce704 has-global-padding is-layout-constrained wp-block-group-is-layout-constrained" style="padding-top:80px;padding-bottom:80px">
+<div class="wp-block-group has-global-padding is-layout-constrained wp-container-core-group-is-layout-8 wp-block-group-is-layout-constrained">
+<div class="wp-block-media-text is-stacked-on-mobile"><figure class="wp-block-media-text__media"><img loading="lazy" decoding="async" width="1024" height="683" src="https://gutenbergui.com/wp-content/uploads/2024/12/freelance-coder-typing-javascript-code-computer-develop-online-cloud-computing-information-software-developer-writing-html-script-data-algorithm-working-it-programming-office-1024x683.jpg" alt="" class="wp-image-128 size-full" srcset="https://gutenbergui.com/wp-content/uploads/2024/12/freelance-coder-typing-javascript-code-computer-develop-online-cloud-computing-information-software-developer-writing-html-script-data-algorithm-working-it-programming-office-1024x683.jpg 1024w, https://gutenbergui.com/wp-content/uploads/2024/12/freelance-coder-typing-javascript-code-computer-develop-online-cloud-computing-information-software-developer-writing-html-script-data-algorithm-working-it-programming-office-300x200.jpg 300w, https://gutenbergui.com/wp-content/uploads/2024/12/freelance-coder-typing-javascript-code-computer-develop-online-cloud-computing-information-software-developer-writing-html-script-data-algorithm-working-it-programming-office-768x512.jpg 768w, https://gutenbergui.com/wp-content/uploads/2024/12/freelance-coder-typing-javascript-code-computer-develop-online-cloud-computing-information-software-developer-writing-html-script-data-algorithm-working-it-programming-office-1536x1024.jpg 1536w, https://gutenbergui.com/wp-content/uploads/2024/12/freelance-coder-typing-javascript-code-computer-develop-online-cloud-computing-information-software-developer-writing-html-script-data-algorithm-working-it-programming-office-2048x1365.jpg 2048w" sizes="auto, (max-width: 1024px) 100vw, 1024px" /></figure><div class="wp-block-media-text__content">
+<h2 class="wp-block-heading has-pale-pink-color has-text-color has-link-color wp-elements-3034c3f599a8fb28a422c7d25d2b3f5b">Providing sustainable solutions designed to evolve alongside your company.</h2>
+
+
+
+<p>As companies grow and evolve, their IT departments must do the same. By choosing or designing sustainable technology solutions that scale with the business, Operations and IT stay aligned. A dynamic business/IT relationship enables your company to capitalize on new opportunities without being held back by outdated systems. Similarly, a well-tuned IT department works in harmony with the business, supporting its growth and forward momentum.</p>
+</div></div>
+</div>
+</section>
+
+
+
+<section class="wp-block-group alignfull mobile-spacer-40-10 has-white-background-color has-background has-global-padding is-layout-constrained wp-block-group-is-layout-constrained" style="padding-top:80px;padding-bottom:80px">
+<div class="wp-block-group has-global-padding is-layout-constrained wp-container-core-group-is-layout-10 wp-block-group-is-layout-constrained">
+<h2 class="wp-block-heading has-text-align-center has-pale-pink-color has-text-color has-link-color wp-elements-547a075c8a1c8ec63931691bc1605d26">Taking on New Challenges</h2>
+
+
+
+<p class="has-text-align-center has-pale-pink-color has-text-color has-link-color wp-elements-8a5e0dd0d1553cbfd2e225cef3dab2c1">True fulfillment comes from work that genuinely impacts people’s lives. Oriad draws energy and strength from helping clients find the ideal solutions that allow their businesses to operate seamlessly. Clients experience greater efficiency and empowerment through improved collaboration, with all teams united and focused on a common objective.</p>
+</div>
+</section>
+
+
+
+<section class="wp-block-group alignfull mobile-spacer-40-10 has-global-padding is-layout-constrained wp-block-group-is-layout-constrained" style="padding-top:80px;padding-bottom:80px">
+<div class="wp-block-group has-global-padding is-layout-constrained wp-container-core-group-is-layout-18 wp-block-group-is-layout-constrained">
+<h2 class="wp-block-heading has-text-align-center" style="margin-bottom:60px">Frequently Asked Questions (FAQ)</h2>
+
+
+
+<div class="wp-block-group has-global-padding is-layout-constrained wp-block-group-is-layout-constrained" style="box-shadow:var(--wp--preset--shadow--natural)">
+<details class="wp-block-details has-pale-pink-background-color has-background has-medium-font-size is-layout-flow wp-block-details-is-layout-flow" style="padding-top:var(--wp--preset--spacing--40);padding-right:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--40);padding-left:var(--wp--preset--spacing--40);font-style:normal;font-weight:700"><summary>I have an IT team already, why should I work with Oriad instead?</summary>
+<p style="font-size:16px;font-style:normal;font-weight:300">Oriad is not a substitute for your IT vendor or department. Rather, we collaborates with them – and with you – to enhance the value they bring to your business. Oriad partners with your IT team to implement solutions that operate both effectively and efficiently.</p>
+</details>
+</div>
+
+
+
+<div class="wp-block-group has-global-padding is-layout-constrained wp-block-group-is-layout-constrained" style="box-shadow:var(--wp--preset--shadow--natural)">
+<details class="wp-block-details has-pale-pink-background-color has-background has-medium-font-size is-layout-flow wp-block-details-is-layout-flow" style="padding-top:var(--wp--preset--spacing--40);padding-right:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--40);padding-left:var(--wp--preset--spacing--40);font-style:normal;font-weight:700"><summary>What is Oriad&#8217;s Ideal Project profile?</summary>
+<p style="font-size:16px;font-style:normal;font-weight:300">Our ideal project involves situations where there is a disconnect between business and IT. Early in our careers, we were part of a small, high-performing team that handled every aspect of business support and technology. This hands-on experience taught us what works and what doesn’t, a mindset that shapes our approach today. We thrive in tackling complex projects, uncovering underlying issues, recommending tailored solutions, and guiding their implementation to ensure positive outcomes for all involved.</p>
+</details>
+</div>
+
+
+
+<div class="wp-block-group has-global-padding is-layout-constrained wp-block-group-is-layout-constrained" style="box-shadow:var(--wp--preset--shadow--natural)">
+<details class="wp-block-details has-pale-pink-background-color has-background has-medium-font-size is-layout-flow wp-block-details-is-layout-flow" style="padding-top:var(--wp--preset--spacing--40);padding-right:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--40);padding-left:var(--wp--preset--spacing--40);font-style:normal;font-weight:700"><summary>What is Oriad&#8217;s Ideal Client profile?</summary>
+<p style="font-size:16px;font-style:normal;font-weight:300">Our ideal client has an IT department—whether in-house or outsourced—though we work with companies of all sizes facing challenges in their IT operations. These challenges often arise when communication gaps lead to the implementation of services and software that don&#8217;t fully support the evolving needs of the business. We excel at bridging the divide between business and IT, ensuring both sides work in harmony to drive success.</p>
+</details>
+</div>
+
+
+
+<div class="wp-block-group has-global-padding is-layout-constrained wp-block-group-is-layout-constrained" style="box-shadow:var(--wp--preset--shadow--natural)">
+<details class="wp-block-details has-pale-pink-background-color has-background has-medium-font-size is-layout-flow wp-block-details-is-layout-flow" style="padding-top:var(--wp--preset--spacing--40);padding-right:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--40);padding-left:var(--wp--preset--spacing--40);font-style:normal;font-weight:700"><summary>Is Oriad a Managed Service Provider (MSP)?</summary>
+<p style="font-size:16px;font-style:normal;font-weight:300">Oriad isn’t a traditional Managed Service Provider. While not every company needs or can afford an in-house IT department, our role is to step in and work alongside your existing IT team, providing leadership and strategic direction. We focus on developing and guiding the implementation of strategies, rather than taking over day-to-day IT operations. For many businesses with capable IT departments, a third-party MSP may not be necessary. If an MSP is involved, we can assess the relationship and offer recommendations to enhance its value and effectiveness.</p>
+</details>
+</div>
+
+
+
+<div class="wp-block-group has-global-padding is-layout-constrained wp-block-group-is-layout-constrained" style="box-shadow:var(--wp--preset--shadow--natural)">
+<details class="wp-block-details has-pale-pink-background-color has-background has-medium-font-size is-layout-flow wp-block-details-is-layout-flow" style="padding-top:var(--wp--preset--spacing--40);padding-right:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--40);padding-left:var(--wp--preset--spacing--40);font-style:normal;font-weight:700"><summary>What industries does R.M serve?</summary>
+<p style="font-size:16px;font-style:normal;font-weight:300">Oriad’s expertise is rooted in food manufacturing and industrial sectors, where we have seen significant success. While these industries are where we have made the greatest impact, we believe many other sectors can benefit from our approach. If your business doesn’t align with these areas, let’s talk and explore how Oriad can still be the right partner for your needs.</p>
+</details>
+</div>
+
+
+
+<div class="wp-block-group has-global-padding is-layout-constrained wp-block-group-is-layout-constrained" style="box-shadow:var(--wp--preset--shadow--natural)">
+<details class="wp-block-details has-pale-pink-background-color has-background has-medium-font-size is-layout-flow wp-block-details-is-layout-flow" style="padding-top:var(--wp--preset--spacing--40);padding-right:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--40);padding-left:var(--wp--preset--spacing--40);font-style:normal;font-weight:700"><summary>Does Oriad work on hourly billing or retainer?</summary>
+<p style="font-size:16px;font-style:normal;font-weight:300">The true value of working with a consultant like Oriad is realized over time, at a pace that suits the client. While hourly billing can be appropriate in certain cases, it often proves inefficient and costly, especially when clients are facing performance challenges. For many of our clients, a retainer offers the best value. It ensures ongoing support when needed, without the risk of unexpected costs, providing stability and consistent service for your business.</p>
+</details>
+</div>
+</div>
+</section>
+
+
+
+<section class="wp-block-group alignfull mobile-spacer-40-10 has-black-background-color has-background has-global-padding is-layout-constrained wp-block-group-is-layout-constrained" style="padding-top:180px;padding-bottom:180px">
+<div class="wp-block-group has-global-padding is-layout-constrained wp-container-core-group-is-layout-20 wp-block-group-is-layout-constrained">
+<h2 class="wp-block-heading has-text-align-center has-pale-pink-color has-text-color has-link-color wp-elements-6f1c9990b5118d2923252674ca706160">Let&#8217;s discuss ways to make your business more efficient and sustainable</h2>
+
+
+
+<div class="wp-block-buttons is-content-justification-center is-layout-flex wp-container-core-buttons-is-layout-1 wp-block-buttons-is-layout-flex">
+<div class="wp-block-button"><a class="wp-block-button__link has-white-background-color has-background wp-element-button" style="border-radius:5px;padding-right:24px;padding-left:24px">Book a Consultation</a></div>
+</div>
+</div>
+</section>
+</div>
+
+</body>
+</html>

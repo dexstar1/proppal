@@ -7,6 +7,7 @@ from components.create_product_form import create_product_form
 
 from pages.homepage import render_homepage
 from pages.docs import design_system
+from pages.about import About
 
 
 
@@ -99,6 +100,10 @@ def get_homepage():
 @rt('/docs')
 def get_docs():
     return design_system(),
+
+@rt('/about')
+def get_about():
+    return About(),
 
 
 @rt('/add-product')

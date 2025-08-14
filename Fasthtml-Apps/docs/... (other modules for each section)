@@ -1,0 +1,13 @@
+from fasthtml.common import *
+
+def Alerts():
+    return Div(
+        H2("Alerts", cls="px-md-10 py-10"),
+        P("Use alerts to provide feedback messages to users.", cls="px-md-10 py-10"),
+        Div(
+            H3("Example Alert", cls="px-md-10 py-10"),
+            Div("This is a primary alert—check it out!", cls="alert alert-primary", role="alert"),
+            cls="px-md-10 py-10"
+        ),
+        cls="px-md-10 py-10"
+    )

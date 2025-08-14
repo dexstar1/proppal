@@ -14,9 +14,10 @@ from docs.breadcrumbs import Breadcrumbs
 # from docs.modals import Modals
 # from docs.navbars import Navbars
 # from docs.navs import Navs
-from docs.paginations import Paginations
+# from docs.paginations import Paginations
 # from docs.popovers import Popovers 
-from docs.progress import Progress 
+# from docs.progress import Progress 
+from docs.rates import Rates
 
 def design_system():
     return Div(
@@ -40,6 +41,7 @@ def design_system():
                     # Div(Navs(), cls="col-12 col-md-8 col-lg-9 col-xl-10"),
                     # Div(Paginations(), cls="col-12 col-md-8 col-lg-9 col-xl-10"),
                     # Div(Popovers(), cls="col-12 col-md-8 col-lg-9 col-xl-10"),
-                    Div(Progress(), cls="col-12 col-md-8 col-lg-9 col-xl-10"),
+                    # Div(Progress(), cls="col-12 col-md-8 col-lg-9 col-xl-10"),
+                    Div(Rates(), cls="col-12 col-md-8 col-lg-9 col-xl-10"),
                     cls="row" ), cls="container-fluid"
     ) 
