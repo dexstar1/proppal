@@ -2,6 +2,88 @@ from fasthtml.common import *
 
 def Lists():
     return Section(
-        H3('List.js'), P('Create searchable, sortable, and filterable lists and tables with the simple but powerful List.js plugin.', A('Plugin documentation', href='http://listjs.com/'), cls='text-gray-500'), Code('data-list'), '- initializes the plugin.', Hr(), H5(), Div(Div(Div('Input group', Div('Button', Div(I(, cls='fe fe-search'), cls='input-group-append'), cls='input-group input-group-merge mb-6'), 'Form group', Div(Div(Div('Dsquared2', cls='form-check mb-3'), Div('Alexander McQueen', cls='form-check mb-3'), Div('Balenciaga', cls='form-check mb-3'), Div('Adidas', cls='form-check mb-3'), Div('Balmain', cls='form-check mb-3'), Div('Burberry', cls='form-check mb-3'), Div('Chloé', cls='form-check mb-3'), Div('Kenzo', cls='form-check mb-3'), Div('Givenchy', cls='form-check'), cls='list'), cls='form-group form-group-overflow mb-0')), cls='card-body border'), Div(Code('<div\xa0data-list=\'{"valueNames":\xa0["name"]}\'>', '<!--\xa0Input\xa0group\xa0-->', '<div\xa0class="input-group\xa0input-group-merge\xa0mb-6">', '<input\xa0class="form-control\xa0form-control-xs\xa0search"\xa0type="search"\xa0placeholder="Search\xa0Brand">', '<!--\xa0Button\xa0-->', '<div\xa0class="input-group-append">', '<button\xa0class="btn\xa0btn-outline-border\xa0btn-xs">', '<i\xa0class="fe\xa0fe-search"></i>', '</button>', '</div>', '</div>', '<!--\xa0Form\xa0group\xa0-->', '<div\xa0class="form-group\xa0form-group-overflow\xa0mb-0"\xa0id="brandGroup">', '<div\xa0class="list">', '<div\xa0class="form-check\xa0custom-checkbox\xa0mb-3">', '<input\xa0class="form-check-input"\xa0id="brandOne"\xa0type="checkbox">', '<label\xa0class="form-check-label\xa0name"\xa0for="brandOne">', 'Dsquared2', '</label>', '</div>', '<div\xa0class="form-check\xa0custom-checkbox\xa0mb-3">', '<input\xa0class="form-check-input"\xa0id="brandTwo"\xa0type="checkbox"\xa0disabled>', '<label\xa0class="form-check-label\xa0name"\xa0for="brandTwo">', 'Alexander\xa0McQueen', '</label>', '</div>', '<div\xa0class="form-check\xa0custom-checkbox\xa0mb-3">', '<input\xa0class="form-check-input"\xa0id="brandThree"\xa0type="checkbox">', '<label\xa0class="form-check-label\xa0name"\xa0for="brandThree">', 'Balenciaga', '</label>', '</div>', '</div>', '</div>', '</div>', cls='highlight html'), cls='card-footer fs-sm bg-dark'), cls='card'),
-        cls="px-md-10 py-10"
+        H3('List.js'),
+        P(
+            'Create searchable, sortable, and filterable lists and tables with the simple but powerful List.js plugin.',
+            A('Plugin documentation', href='http://listjs.com/'),
+            cls='text-gray-500'
+        ),
+        Code('data-list'),
+        '- initializes the plugin.',
+        Hr(),
+        H5(),
+        Div(
+            Div(
+                'Input group',
+                Div(
+                    'Button',
+                    Div(
+                        I('', cls='fe fe-search'),
+                        cls='input-group-append'
+                    ),
+                    cls='input-group input-group-merge mb-6'
+                ),
+                'Form group',
+                Div(
+                    Div(
+                        Div('Dsquared2', cls='form-check mb-3'),
+                        Div('Alexander McQueen', cls='form-check mb-3'),
+                        Div('Balenciaga', cls='form-check mb-3'),
+                        Div('Adidas', cls='form-check mb-3'),
+                        Div('Balmain', cls='form-check mb-3'),
+                        Div('Burberry', cls='form-check mb-3'),
+                        Div('Chloé', cls='form-check mb-3'),
+                        Div('Kenzo', cls='form-check mb-3'),
+                        Div('Givenchy', cls='form-check'),
+                        cls='list'
+                    ),
+                    cls='form-group form-group-overflow mb-0'
+                )
+            ),
+            cls='card-body border'
+        ),
+        Div(
+            Code(
+                '<div data-list=\'{"valueNames": ["name"]}\'>',
+                '<!-- Input group -->',
+                '<div class="input-group input-group-merge mb-6">',
+                '<input class="form-control form-control-xs search" type="search" placeholder="Search Brand">',
+                '<!-- Button -->',
+                '<div class="input-group-append">',
+                '<button class="btn btn-outline-border btn-xs">',
+                '<i class="fe fe-search"></i>',
+                '</button>',
+                '</div>',
+                '</div>',
+                '<!-- Form group -->',
+                '<div class="form-group form-group-overflow mb-0" id="brandGroup">',
+                '<div class="list">',
+                '<div class="form-check custom-checkbox mb-3">',
+                '<input class="form-check-input" id="brandOne" type="checkbox">',
+                '<label class="form-check-label name" for="brandOne">',
+                'Dsquared2',
+                '</label>',
+                '</div>',
+                '<div class="form-check custom-checkbox mb-3">',
+                '<input class="form-check-input" id="brandTwo" type="checkbox" disabled>',
+                '<label class="form-check-label name" for="brandTwo">',
+                'Alexander McQueen',
+                '</label>',
+                '</div>',
+                '<div class="form-check custom-checkbox mb-3">',
+                '<input class="form-check-input" id="brandThree" type="checkbox">',
+                '<label class="form-check-label name" for="brandThree">',
+                'Balenciaga',
+                '</label>',
+                '</div>',
+                '</div>',
+                '</div>',
+                '</div>',
+                cls='highlight html'
+            ),
+            cls='card-footer fs-sm bg-dark'
+        ),
+        cls='card'
+    ),
+    cls="px-md-10 py-10"
     )
