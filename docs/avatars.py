@@ -1,4 +1,7 @@
 from fasthtml.common import *
+from components.avatar import avatar
+from components.avatar import avatar_title
+from components.avatar import avatar_group
 
 def Avatars():
     return Section(
@@ -15,13 +18,13 @@ def Avatars():
         ),
         Div(
             Div(
-                Div(Img(src="../assets/images/avatars/avatar-1.jpg", alt="...", cls="avatar-img rounded-circle"), cls="avatar avatar-xxl"),
-                Div(Img(src="../assets/images/avatars/avatar-1.jpg", alt="...", cls="avatar-img rounded-circle"), cls="avatar avatar-xl"),
-                Div(Img(src="../assets/images/avatars/avatar-1.jpg", alt="...", cls="avatar-img rounded-circle"), cls="avatar avatar-lg"),
-                Div(Img(src="../assets/images/avatars/avatar-1.jpg", alt="...", cls="avatar-img rounded-circle"), cls="avatar"),
-                Div(Img(src="../assets/images/avatars/avatar-1.jpg", alt="...", cls="avatar-img rounded-circle"), cls="avatar avatar-sm"),
-                Div(Img(src="../assets/images/avatars/avatar-1.jpg", alt="...", cls="avatar-img rounded-circle"), cls="avatar avatar-xs"),
-                cls="card-body border"
+                avatar(avatar_size="xxl", shape="circle", src="../assets/images/avatars/avatar-1.jpg", alt="..."),
+                avatar(avatar_size="xl", shape="circle", src="../assets/images/avatars/avatar-1.jpg", alt="..."),
+                avatar(avatar_size="lg", shape="circle", src="../assets/images/avatars/avatar-1.jpg", alt="..."),
+                avatar(avatar_size="", shape="circle", src="../assets/images/avatars/avatar-1.jpg", alt="..."),
+                avatar(avatar_size="sm", shape="circle", src="../assets/images/avatars/avatar-1.jpg", alt="..."),
+                avatar(avatar_size="xs", shape="circle", src="../assets/images/avatars/avatar-1.jpg", alt="..."),
+                cls="card-body border" 
             ),
             Div(
                 Code(
@@ -40,12 +43,13 @@ def Avatars():
         ),
         Div(
             Div(
-                Div(Img(src="../assets/images/avatars/avatar-1.jpg", alt="...", cls="avatar-img rounded-circle"), cls="avatar avatar-xxl avatar-offline"),
-                Div(Img(src="../assets/images/avatars/avatar-1.jpg", alt="...", cls="avatar-img rounded-circle"), cls="avatar avatar-xl avatar-online"),
-                Div(Img(src="../assets/images/avatars/avatar-1.jpg", alt="...", cls="avatar-img rounded-circle"), cls="avatar avatar-lg avatar-offline"),
-                Div(Img(src="../assets/images/avatars/avatar-1.jpg", alt="...", cls="avatar-img rounded-circle"), cls="avatar avatar-online"),
-                Div(Img(src="../assets/images/avatars/avatar-1.jpg", alt="...", cls="avatar-img rounded-circle"), cls="avatar avatar-sm avatar-offline"),
-                Div(Img(src="../assets/images/avatars/avatar-1.jpg", alt="...", cls="avatar-img rounded-circle"), cls="avatar avatar-xs avatar-online"),
+                avatar(avatar_size="xxl", shape="circle", src="../assets/images/avatars/avatar-1.jpg", alt="..."),
+                avatar(avatar_size="xl", status="online", shape="circle", src="../assets/images/avatars/avatar-1.jpg", alt="..."),
+                avatar(avatar_size="lg", shape="circle", src="../assets/images/avatars/avatar-1.jpg", alt="..."),
+                avatar(avatar_size="", status="online", shape="circle", src="../assets/images/avatars/avatar-1.jpg", alt="..."),
+                avatar(avatar_size="sm", shape="circle", src="../assets/images/avatars/avatar-1.jpg", alt="..."),
+                avatar(avatar_size="xs", shape="circle", src="../assets/images/avatars/avatar-1.jpg", alt="..."),
+                
                 cls="card-body border"
             ),
             Div(
@@ -65,12 +69,13 @@ def Avatars():
         ),
         Div(
             Div(
-                Div(Img(src="../assets/images/avatars/avatar-1.jpg", alt="...", cls="avatar-img rounded"), cls="avatar avatar-xxl"),
-                Div(Img(src="../assets/images/avatars/avatar-1.jpg", alt="...", cls="avatar-img rounded-circle"), cls="avatar avatar-xxl"),
-                Div(Img(src="../assets/images/avatars/avatar-1.jpg", alt="...", cls="avatar-img rounded"), cls="avatar avatar-lg"),
-                Div(Img(src="../assets/images/avatars/avatar-1.jpg", alt="...", cls="avatar-img rounded-circle"), cls="avatar avatar-lg"),
-                Div(Img(src="../assets/images/avatars/avatar-1.jpg", alt="...", cls="avatar-img rounded"), cls="avatar"),
-                Div(Img(src="../assets/images/avatars/avatar-1.jpg", alt="...", cls="avatar-img rounded-circle"), cls="avatar"),
+                avatar(avatar_size="xxl", src="../assets/images/avatars/avatar-1.jpg", alt="..."),
+                avatar(avatar_size="xxl", shape="circle", src="../assets/images/avatars/avatar-1.jpg", alt="..."),
+                avatar(avatar_size="lg", src="../assets/images/avatars/avatar-1.jpg", alt="..."),
+                avatar(avatar_size="lg", shape="circle", src="../assets/images/avatars/avatar-1.jpg", alt="..."),
+                avatar(avatar_size="", src="../assets/images/avatars/avatar-1.jpg", alt="..."),
+                avatar(avatar_size="", shape="circle", src="../assets/images/avatars/avatar-1.jpg", alt="..."),
+                
                 cls="card-body border"
             ),
             Div(
@@ -92,10 +97,10 @@ def Avatars():
         ),
         Div(
             Div(
-                Div(Img(src="../assets/images/covers/cover-28.jpg", alt="...", cls="avatar-img rounded"), cls="avatar avatar-xxl avatar-4by3"),
-                Div(Img(src="../assets/images/covers/cover-28.jpg", alt="...", cls="avatar-img rounded"), cls="avatar avatar-xl avatar-4by3"),
-                Div(Img(src="../assets/images/covers/cover-28.jpg", alt="...", cls="avatar-img rounded"), cls="avatar avatar-lg avatar-4by3"),
-                Div(Img(src="../assets/images/covers/cover-28.jpg", alt="...", cls="avatar-img rounded"), cls="avatar avatar-4by3"),
+                avatar(avatar_size="xxl", src="../assets/images/avatars/avatar-1.jpg", alt="...", ratio="4by3"),
+                avatar(avatar_size="xl", src="../assets/images/avatars/avatar-1.jpg", alt="...", ratio="4by3"),
+                avatar(avatar_size="lg", src="../assets/images/avatars/avatar-1.jpg", alt="...", ratio="4by3"),
+                avatar(src="../assets/images/avatars/avatar-1.jpg", alt="...", ratio="4by3"),
                 cls="card-body border"
             ),
             Div(
@@ -115,12 +120,12 @@ def Avatars():
         ),
         Div(
             Div(
-                Div(Span("CF", cls="avatar-title rounded-circle"), cls="avatar avatar-xxl"),
-                Div(Span("CF", cls="avatar-title rounded-circle"), cls="avatar avatar-xl"),
-                Div(Span("CF", cls="avatar-title rounded-circle"), cls="avatar avatar-lg"),
-                Div(Span("CF", cls="avatar-title rounded-circle"), cls="avatar"),
-                Div(Span("CF", cls="avatar-title rounded-circle"), cls="avatar avatar-sm"),
-                Div(Span("CF", cls="avatar-title rounded-circle"), cls="avatar avatar-xs"),
+                avatar_title(type="avatar-title", title_text="CF", shape="circle", avatar_size="xxl"),
+                avatar_title(type="avatar-title", title_text="CF", shape="circle", avatar_size="xl"),
+                avatar_title(type="avatar-title", title_text="CF", shape="circle", avatar_size="lg"),
+                avatar_title(type="avatar-title", title_text="CF", shape="circle", avatar_size=""),
+                avatar_title(type="avatar-title", title_text="CF", shape="circle", avatar_size="sm"),
+                avatar_title(type="avatar-title", title_text="CF", shape="circle", avatar_size="xs"),
                 cls="card-body border"
             ),
             Div(
@@ -142,24 +147,24 @@ def Avatars():
             Div(
                 Div(
                     Div(
-                        Div(Img(src="../assets/images/avatars/avatar-1.jpg", alt="...", cls="avatar-img rounded-circle"), cls="avatar avatar-lg"),
-                        Div(Img(src="../assets/images/avatars/avatar-1.jpg", alt="...", cls="avatar-img rounded-circle"), cls="avatar avatar-lg"),
-                        Div(Img(src="../assets/images/avatars/avatar-1.jpg", alt="...", cls="avatar-img rounded-circle"), cls="avatar avatar-lg"),
-                        Div(Span("CF", cls="avatar-title rounded-circle"), cls="avatar avatar-lg"),
+                        avatar_group(src="../assets/images/avatars/avatar-1.jpg", alt="...", shape="circle", avatar_size="lg"),
+                        avatar_group(src="../assets/images/avatars/avatar-1.jpg", alt="...", shape="circle", avatar_size="lg"),
+                        avatar_group(src="../assets/images/avatars/avatar-1.jpg", alt="...", shape="circle", avatar_size="lg"),
+                        avatar_title(type="title", title_text="CF", shape="circle", avatar_size="lg"),
                         cls="avatar-group"
                     ),
                     Div(
-                        Div(Img(src="../assets/images/avatars/avatar-1.jpg", alt="...", cls="avatar-img rounded-circle"), cls="avatar"),
-                        Div(Img(src="../assets/images/avatars/avatar-1.jpg", alt="...", cls="avatar-img rounded-circle"), cls="avatar"),
-                        Div(Img(src="../assets/images/avatars/avatar-1.jpg", alt="...", cls="avatar-img rounded-circle"), cls="avatar"),
-                        Div(Span("CF", cls="avatar-title rounded-circle"), cls="avatar"),
+                        avatar_group(src="../assets/images/avatars/avatar-1.jpg", alt="...", shape="circle"),
+                        avatar_group(src="../assets/images/avatars/avatar-1.jpg", alt="...", shape="circle"),
+                        avatar_group(src="../assets/images/avatars/avatar-1.jpg", alt="...", shape="circle"),
+                        avatar_title(type="title", title_text="CF", shape="circle"),
                         cls="avatar-group"
                     ),
                     Div(
-                        Div(Img(src="../assets/images/avatars/avatar-1.jpg", alt="...", cls="avatar-img rounded-circle"), cls="avatar avatar-xs"),
-                        Div(Img(src="../assets/images/avatars/avatar-1.jpg", alt="...", cls="avatar-img rounded-circle"), cls="avatar avatar-xs"),
-                        Div(Img(src="../assets/images/avatars/avatar-1.jpg", alt="...", cls="avatar-img rounded-circle"), cls="avatar avatar-xs"),
-                        Div(Span("CF", cls="avatar-title rounded-circle"), cls="avatar avatar-xs"),
+                        avatar_group(src="../assets/images/avatars/avatar-1.jpg", alt="...", shape="circle", avatar_size="xs"),
+                        avatar_group(src="../assets/images/avatars/avatar-1.jpg", alt="...", shape="circle", avatar_size="xs"),
+                        avatar_group(src="../assets/images/avatars/avatar-1.jpg", alt="...", shape="circle", avatar_size="xs"),
+                        avatar_title(type="title", title_text="CF", shape="circle", avatar_size="xs"),
                         cls="avatar-group"
                     ),
                     cls="card-body"

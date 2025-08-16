@@ -123,3 +123,5 @@ def get_add_product():
                     ),
                     id="addProduct"
                 )
+
+serve() 

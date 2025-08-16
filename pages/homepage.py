@@ -11,11 +11,13 @@ from components.footer import footer
 from components.product_table_list import product_table_list
 from components.create_product_form import create_product_form
 from components.button import admin_button
+from components.button import docs_button
 from components.button import view_site_button
 
 def render_homepage():
     return Div(
         admin_button(),
+        docs_button(),
         hero_section(),
         products_carousel(),
         category_grid(),
@@ -26,4 +28,4 @@ def render_homepage():
         insta_cover(),
         footer(),
         id="theBody",
-    )
+    ) 

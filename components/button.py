@@ -9,6 +9,15 @@ def admin_button():
                cls="btn btn-primary btn-lg")
     )
 
+def docs_button():
+    return Div(
+        Button("Docs",
+                hx_get=f"/docs",
+                hx_swap="outerHTML",
+                hx_target="#theBody",
+               cls="btn btn-primary btn-lg")
+    )
+
 
 def view_site_button():
     return Div(
