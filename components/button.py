@@ -25,6 +25,6 @@ def view_site_button():
                 type='button',
                 hx_get=f"/",
                 hx_swap="innerHTML",
-                hx_target="#addProduct",
+                hx_target="#theBody",
                cls="btn btn-outline-primary btn-underline mb-1")
     )
