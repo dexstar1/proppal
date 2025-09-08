@@ -13,7 +13,7 @@ def docs_button():
     return Div(
         Button("Docs",
                 hx_get=f"/docs",
-                hx_swap="outerHTML",
+                hx_swap="innerHTML",
                 hx_target="#theBody",
                cls="btn btn-primary btn-lg")
     )
