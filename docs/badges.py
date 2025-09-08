@@ -1,4 +1,5 @@
 from fasthtml.common import *
+from components.badge import badge_span, badge_link
 
 def Badges():
     return Section(
@@ -11,15 +12,15 @@ def Badges():
         ),
         Div(
             Div(
-                Span("Primary", cls="badge bg-primary"),
-                Span("Secondary", cls="badge bg-secondary"),
-                Span("Success", cls="badge bg-success"),
-                Span("Danger", cls="badge bg-danger"),
-                Span("Warning", cls="badge bg-warning"),
-                Span("Info", cls="badge bg-info"),
-                Span("Light", cls="badge bg-light text-body"),
-                Span("Dark", cls="badge bg-dark"),
-                Span("White", cls="badge bg-white text-body"),
+                badge_span(text="Primary", type="primary"),
+                badge_span(text="Secondary", type="secondary"),
+                badge_span(text="Success", type="success"),
+                badge_span(text="Danger", type="danger"),
+                badge_span(text="Warning", type="warning"),
+                badge_span(text="Info", type="info"),
+                badge_span(text="Light", type="light"),
+                badge_span(text="Dark", type="dark"),
+                badge_span(text="White", type="white"),
                 cls="card-body border"
             ),
             cls="card"
@@ -35,16 +36,16 @@ def Badges():
             cls="text-gray-500"
         ),
         Div(
-            Div(
-                A("Primary", href="#!", cls="badge bg-primary"),
-                A("Secondary", href="#!", cls="badge bg-secondary"),
-                A("Success", href="#!", cls="badge bg-success"),
-                A("Danger", href="#!", cls="badge bg-danger"),
-                A("Warning", href="#!", cls="badge bg-warning"),
-                A("Info", href="#!", cls="badge bg-info"),
-                A("Light", href="#!", cls="badge bg-light text-body"),
-                A("Dark", href="#!", cls="badge bg-dark"),
-                A("White", href="#!", cls="badge bg-white text-body")      
+            Div(     
+                badge_link(text="Primary", type="primary", href="!"),
+                badge_link(text="Secondary", type="secondary", href="!"),
+                badge_link(text="Success", type="success", href="!"),
+                badge_link(text="Danger", type="danger", href="!"),
+                badge_link(text="Warning", type="warning", href="!"),
+                badge_link(text="Info", type="info", href="!"),
+                badge_link(text="Light", type="light", href="!"),
+                badge_link(text="Dark", type="dark", href="!"),
+                badge_link(text="White", type="white", href="!")
                 ),
         cls="card"
     ),

@@ -15,14 +15,13 @@ from pages.about import About
 hdrs = (
     Link(rel='stylesheet', href='/assets/css/main.css', type='text/css'),    
     Link(rel='stylesheet', href='/assets/css/theme.min.css', type='text/css'),
-    Link(rel='stylesheet', href='/assets/fonts/feather.css', type='text/css'),
+    Link(rel='stylesheet', href='/assets/fonts/feather/feather.css', type='text/css'),
     Link(rel='stylesheet', href='/assets/libs/highlightjs/styles/vs2015.css', type='text/css'),
     Link(rel='stylesheet', href='/assets/libs/fortawesome/fontawesome-free/css/all.min.css', type='text/css'),
 ) 
 
 app, rt = fast_app(
     static_path='public', 
-    live=True, 
     hdrs=hdrs, 
     pico=False
 )
@@ -120,8 +119,9 @@ def get_add_product():
                         cls="w-[70%]"
                         ), 
                         cls="flex justify-between align-center",
+                        id="addProduct"
                     ),
-                    id="addProduct"
+                    id="theBody"
                 )
 
-serve() 
+serve()

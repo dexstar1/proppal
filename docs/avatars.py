@@ -43,12 +43,12 @@ def Avatars():
         ),
         Div(
             Div(
-                avatar(avatar_size="xxl", shape="circle", src="../assets/images/avatars/avatar-1.jpg", alt="..."),
+                avatar(avatar_size="xxl", status="offline", shape="circle", src="../assets/images/avatars/avatar-1.jpg", alt="..."),
                 avatar(avatar_size="xl", status="online", shape="circle", src="../assets/images/avatars/avatar-1.jpg", alt="..."),
-                avatar(avatar_size="lg", shape="circle", src="../assets/images/avatars/avatar-1.jpg", alt="..."),
+                avatar(avatar_size="lg", status="offline", shape="circle", src="../assets/images/avatars/avatar-1.jpg", alt="..."),
                 avatar(avatar_size="", status="online", shape="circle", src="../assets/images/avatars/avatar-1.jpg", alt="..."),
-                avatar(avatar_size="sm", shape="circle", src="../assets/images/avatars/avatar-1.jpg", alt="..."),
-                avatar(avatar_size="xs", shape="circle", src="../assets/images/avatars/avatar-1.jpg", alt="..."),
+                avatar(avatar_size="sm", status="offline", shape="circle", src="../assets/images/avatars/avatar-1.jpg", alt="..."),
+                avatar(avatar_size="xs", status="offline", shape="circle", src="../assets/images/avatars/avatar-1.jpg", alt="..."),
                 
                 cls="card-body border"
             ),

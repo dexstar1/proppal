@@ -2,7 +2,7 @@ from fasthtml.common import *
 
 def avatar(src, alt, shape=None, avatar_size=None, status=None, ratio=None):
     shape_class = "rounded-circle" if shape == "circle" else "rounded"
-    online_status = f"avatar-{status}" if status and status == "online" else "avatar-offline"
+    online_status = f"avatar-{status}" if status else ""
     avatar_ratio = "avatar-4by3" if ratio == "4by3" else ""
     the_size = f"avatar-{avatar_size}"
 

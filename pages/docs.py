@@ -1,12 +1,12 @@
 from fasthtml.common import *
 from components.nav import nav
 # from docs.alerts import Alerts
-from docs.avatars import Avatars
-# from docs.badges import Badges
+# from docs.avatars import Avatars
+from docs.badges import Badges
 # from docs.brands import Brands
 # from docs.breadcrumbs import Breadcrumbs
 # from docs.buttons import Buttons
-# from docs.cards import Cards
+from docs.cards import Cards
 # from docs.dropdowns import Dropdowns
 # from docs.forms import Forms
 # from docs.icons import Icons 
@@ -29,12 +29,12 @@ def design_system():
                         nav(), cls="col-12 col-md-4 col-lg-3 col-xl-2"
                     ),
                     # Div(Alerts(), cls="col-12 col-md-8 col-lg-9 col-xl-10"),
-                    Div(Avatars(), cls="col-12 col-md-8 col-lg-9 col-xl-10"), 
-                    # Div(Badges(), cls="col-12 col-md-8 col-lg-9 col-xl-10"),
+                    # Div(Avatars(), cls="col-12 col-md-8 col-lg-9 col-xl-10"), 
+                    # Div(Badges(), cls="col-12 col-md-8 col-lg-9 col-xl-10"), 
                     # Div(Brands(), cls="col-12 col-md-8 col-lg-9 col-xl-10"),
                     # Div(Breadcrumbs(), cls="col-12 col-md-8 col-lg-9 col-xl-10"),
                     # Div(Buttons(), cls="col-12 col-md-8 col-lg-9 col-xl-10"),
-                    # Div(Cards(), cls="col-12 col-md-8 col-lg-9 col-xl-10"),
+                    Div(Cards(), cls="col-12 col-md-8 col-lg-9 col-xl-10"),
                     # Div(Dropdowns(), cls="col-12 col-md-8 col-lg-9 col-xl-10"),
                     # Div(Forms(), cls="col-12 col-md-8 col-lg-9 col-xl-10"),
                     # Div(Icons(), cls="col-12 col-md-8 col-lg-9 col-xl-10"),
@@ -47,5 +47,5 @@ def design_system():
                     # Div(Progress(), cls="col-12 col-md-8 col-lg-9 col-xl-10"),
                     # Div(Rates(), cls="col-12 col-md-8 col-lg-9 col-xl-10"),
                     # Div(Typography(), cls="col-12 col-md-8 col-lg-9 col-xl-10"),
-                    cls="row" ), cls="container-fluid"
+                    cls="row" ), cls="container-fluid", id="theBody"
     ) 
