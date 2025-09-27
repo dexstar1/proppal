@@ -1,105 +1,76 @@
 from fasthtml.common import *
-# from components.breadcrumb import Breadcrumb
 
-def nav():
+def Navbar():
+    """A navigation bar with toggles for desktop/mobile sidebars, a search form, and user action icons."""
     return Nav(
-                # Breadcrumb(),
-                Button(
-                    Span(cls="navbar-toggler-icon"),
-                    cls="navbar-toggler",
-                    type="button",
-                    data_bs_toggle="collapse",
-                    data_bs_target="#docsCollapse",
-                    aria_controls="docsCollapse",
-                    aria_expanded="false",
-                    aria_label="Toggle navigation"
-                ),
+        Div(
+            # Mobile sidebar toggle
+            Button(
+                I(cls="fe fe-menu"),
+                cls="btn btn-ghost d-lg-none",
+                type="button",
+                data_bs_toggle="offcanvas",
+                data_bs_target="#sidebar"
+            ),
+            # Desktop sidebar toggle
+            Button(
+                I(cls="fe fe-menu"),
+                cls="btn btn-ghost d-none d-lg-block",
+                type="button",
+                id="desktop-sidebar-toggle"
+            ),
+            Form(
                 Div(
-                    Nav(
-                        P(
-                            'Getting Started',
-                            cls="mb-5 fs-xxs fw-bold text-uppercase"
+                    Input(
+                        cls="form-control form-control-underline form-control-sm border-dark",
+                        type="search",
+                        placeholder="Search for items and brands"
+                    ),
+                    Div(
+                        Button(
+                            I(cls="fe fe-search"),
+                            cls="btn btn-underline btn-sm border-dark",
+                            type="button"
                         ),
-                        Ul(
-                            Li(
-                                A(
-                                  'Introduction',  href="#",cls="list-styled-link"
-                                )
-                                ,cls="list-styled-item"
-
-                            ),
-                            Li(
-                                A(
-                                  'Changelog',  href="#",cls="list-styled-link"
-                                )
-                                ,cls="list-styled-item"
-
-                            ),
-                            cls="list-styled"
+                        cls="input-group-append"
+                    ),
+                    cls="input-group"
+                ),
+                cls="navbar-form w-100 mx-3",
+                style="max-width: 550px;"
+            ),
+            Ul(
+                Li(
+                    A(
+                        I(cls="fe fe-user"),
+                        cls="nav-link",
+                        href="./account-orders.html"
+                    ),
+                    cls="nav-item"
+                ),
+                Li(
+                    A(
+                        I(cls="fe fe-heart"),
+                        cls="nav-link",
+                        href="./account-wishlist.html"
+                    ),
+                    cls="nav-item ms-lg-n4"
+                ),
+                Li(
+                    A(
+                        Span(
+                            I(cls="fe fe-shopping-cart"),
+                            data_cart_items="2"
                         ),
-                        P('Component', cls="mt-7 mb-5 fs-xxs fw-bold text-uppercase"),
-                        Ul(
-                            Li(A('Alerts', href="../docs/alerts.html", cls="list-styled-link"), cls="list-styled-item"),
-                            Li(A('Avatars', href="../docs/avatars.html", cls="list-styled-link"), cls="list-styled-item"),
-                            Li(A('Badges', href="../docs/badges.html", cls="list-styled-link"), cls="list-styled-item"),
-                            Li(A('Brands', href="../docs/brands.html", cls="list-styled-link"), cls="list-styled-item"),
-                            Li(A('Breadcrumb', href="../docs/breadcrumb.html", cls="list-styled-link"), cls="list-styled-item"),
-                            Li(A('Buttons', href="../docs/buttons.html", cls="list-styled-link"), cls="list-styled-item"),
-                            Li(A('Cards', href="../docs/cards.html", cls="list-styled-link"), cls="list-styled-item"),
-                            Li(A('Dropdowns', href="../docs/dropdowns.html", cls="list-styled-link"), cls="list-styled-item"),
-                            Li(A('Form', href="../docs/form.html", cls="list-styled-link"), cls="list-styled-item"),
-                            Li(A('Icons', href="../docs/icons.html", cls="list-styled-link"), cls="list-styled-item"),
-                            Li(A('Lists', href="../docs/lists.html", cls="list-styled-link"), cls="list-styled-item"),
-                            Li(A('Modals', href="../docs/modals.html", cls="list-styled-link"), cls="list-styled-item"),
-                            Li(A('Navbar', href="../docs/navbar.html", cls="list-styled-link"), cls="list-styled-item"),
-                            Li(A('Navs', href="../docs/navs.html", cls="list-styled-link"), cls="list-styled-item"),
-                            Li(A('Pagination', href="../docs/pagination.html", cls="list-styled-link"), cls="list-styled-item"),
-                            Li(A('Popovers', href="../docs/popovers.html", cls="list-styled-link"), cls="list-styled-item"),
-                            Li(A('Progress', href="../docs/progress.html", cls="list-styled-link"), cls="list-styled-item"),
-                            Li(A('Rate', href="../docs/rate.html", cls="list-styled-link"), cls="list-styled-item"),
-                            Li(A('Rating', href="../docs/rating.html", cls="list-styled-link"), cls="list-styled-item"),
-                            Li(A('Review', href="../docs/review.html", cls="list-styled-link"), cls="list-styled-item"),
-                            Li(A('Spinners', href="../docs/spinners.html", cls="list-styled-link"), cls="list-styled-item"),
-                            Li(A('Tables', href="../docs/tables.html", cls="list-styled-link"), cls="list-styled-item"),
-                            Li(A('Toasts', href="../docs/toasts.html", cls="list-styled-link"), cls="list-styled-item"),
-                            Li(A('Tooltips', href="../docs/tooltips.html", cls="list-styled-link"), cls="list-styled-item"),
-                            Li(A('Typography', href="../docs/typography.html", cls="list-styled-link"), cls="list-styled-item"),
-                            cls="list-styled"
-                        ),
-                        P('Plugins', cls="mt-7 mb-5 fs-xxs fw-bold text-uppercase"),
-                        Ul(
-                            Li(A('BigPicture', href="../docs/bigpicture.html", cls="list-styled-link"), cls="list-styled-item"),
-                            Li(A('Flickity', href="../docs/flickity.html", cls="list-styled-link"), cls="list-styled-item"),
-                            Li(A('Jarallax', href="../docs/jarallax.html", cls="list-styled-link"), cls="list-styled-item"),
-                            Li(A('List.js', href="../docs/listjs.html", cls="list-styled-link"), cls="list-styled-item"),
-                            Li(A('Map', href="../docs/map.html", cls="list-styled-link"), cls="list-styled-item"),
-                            Li(A('Simplebar', href="../docs/simplebar.html", cls="list-styled-link"), cls="list-styled-item"),
-                            Li(A('Smooth Scroll', href="../docs/smooth-scroll.html", cls="list-styled-link"), cls="list-styled-item"),
-                            cls="list-styled"
-                        ),
-                        P('Utilities', cls="mt-7 mb-5 fs-xxs fw-bold text-uppercase"),
-                        Ul(
-                            Li(A('Background', href="../docs/background.html", cls="list-styled-link"), cls="list-styled-item"),
-                            Li(A('Border', href="../docs/border.html", cls="list-styled-link"), cls="list-styled-item"),
-                            Li(A('Lift', href="../docs/lift.html", cls="list-styled-link"), cls="list-styled-item"),
-                            Li(A('Opacity', href="../docs/opacity.html", cls="list-styled-link"), cls="list-styled-item"),
-                            Li(A('Position', href="../docs/position.html", cls="list-styled-link"), cls="list-styled-item"),
-                            Li(A('Ratio', href="../docs/ratio.html", cls="list-styled-link"), cls="list-styled-item"),
-                            Li(A('Shadow', href="../docs/shadow.html", cls="list-styled-link"), cls="list-styled-item"),
-                            Li(A('Sizing', href="../docs/sizing.html", cls="list-styled-link"), cls="list-styled-item"),
-                            Li(A('Text', href="../docs/text.html", cls="list-styled-link"), cls="list-styled-item"),
-                            Li(A('Video', href="../docs/video.html", cls="list-styled-link"), cls="list-styled-item"),
-                            Li(A('Z-index', href="../docs/zindex.html", cls="list-styled-link"), cls="list-styled-item"),
-                            cls="list-styled"
-                        ),
-                        P('Design', cls="mt-7 mb-5 fs-xxs fw-bold text-uppercase"),
-                        Ul(
-                            Li(A('Figma', href="../docs/figma.html", cls="list-styled-link"), cls="list-styled-item"),
-                            cls="list-styled mb-0"
-                        ),
-                        cls="py-3 py-md-10 px-md-8"
-                    )
-                    ,cls="collapse navbar-collapse", id="docsCollapse"
-                )
-          ,cls="navbar navbar-expand-md navbar-light sticky-start mx-n4 mx-md-0 py-3 py-md-0 px-4 px-md-0 "
-        )
+                        cls="nav-link",
+                        data_bs_toggle="offcanvas",
+                        href="#modalShoppingCart"
+                    ),
+                    cls="nav-item ms-lg-n4"
+                ),
+                cls="navbar-nav flex-row"
+            ),
+            cls="container-fluid"
+        ),
+        cls="navbar navbar-expand navbar-light pt-0 pt-lg-6"
+    )

@@ -20,9 +20,9 @@ def avatar_title(type, title_text, shape=None, avatar_size=None):
     the_size = f"avatar-{avatar_size}"
     
     return Div(
-                Span(title_text, cls=f"{type} {shape_class}"), 
-                cls=f"avatar {the_size}"
-        ),       
+        Span(title_text, cls=f"{type} {shape_class}"), 
+        cls=f"avatar {the_size}"
+    )       
 
 def avatar_group(src, alt, shape=None, avatar_size=None):
     shape_class = "rounded-circle" if shape == "circle" else "rounded"

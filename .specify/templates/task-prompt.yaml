@@ -1,0 +1,56 @@
+name: RealEstate Investment Platform
+description: >
+  fasthtml + sqlite app with role-based dashboards (Admin, Realtor, Affiliate, Client).
+  Features include property listings, CRM for enquiries, and affiliate commission tracking.
+framework: fasthtml
+db: sqlite
+design_system: bootstrap
+components_folder: ./components
+
+tasks:
+  - id: setup-project
+    title: 'Setup Project Skeleton'
+    description: >
+      Initialize fasthtml project with sqlite db and Bootstrap integration.
+      Scaffold folder structure: components/, templates/, static/, db/.
+    subtasks:
+      - Create base fasthtml app
+      - Setup sqlite connection
+      - Include Bootstrap assets
+      - Setup reusable layout template (navbar + sidebar)
+
+  - id: shared-components
+    title: 'Implement Shared Components'
+    description: >
+      Implement reusable UI elements in components/ folder.
+    subtasks:
+      - Navbar (logo, profile dropdown, notifications)
+      - Sidebar (role-based menu items, collapsible on mobile)
+      - Cards (stats, property summary, commission summary)
+      - Tables (sortable/searchable)
+      - Forms (generic with validation)
+      - Charts (bar, line, pie)
+      - Kanban board (for CRM pipeline)
+      - Modals (create/edit, detail view, confirmation)
+      - Toasts/alerts
+
+  - id: admin-dashboard
+    title: 'Admin Dashboard UI + Features'
+    description: >
+      Admin manages properties, enquiries, affiliates, commissions, reports.
+    subtasks:
+      - Stats cards (properties, enquiries, affiliates, commissions)
+      - Properties management table
+      - CRM enquiries Kanban board
+      - Affiliate management table
+      - Commission payout requests modal
+      - Reports: line chart (growth trends), pie chart (property categories)
+      - Sidebar navigation: Dashboard, Properties, Enquiries, Affiliates, Reports, Settings
+
+  - id: realtor-dashboard
+    title: 'Realtor Dashboard UI + Features'
+    description: >
+      Realtor manages properties and CRM pipeline for enquiries.
+    subtasks:
+      - My Properties table
+      - Add Property form modal

@@ -1,0 +1,125 @@
+openapi: 3.0.0
+info:
+  title: Real Estate Investment Platform API
+  version: 1.0.0
+paths:
+  /users:
+    get:
+      summary: Get all users (Admin)
+      responses:
+        '200':
+          description: A list of users.
+    post:
+      summary: Create a new user (Admin)
+      responses:
+        '201':
+          description: User created.
+  /users/{userId}:
+    get:
+      summary: Get a user by ID (Admin)
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: User details.
+    put:
+      summary: Update a user (Admin)
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: User updated.
+    delete:
+      summary: Delete a user (Admin)
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: User deleted.
+  /properties:
+    get:
+      summary: Get all properties (Client, Realtor, Admin)
+      responses:
+        '200':
+          description: A list of properties.
+    post:
+      summary: Create a new property (Realtor)
+      responses:
+        '201':
+          description: Property created.
+  /properties/{propertyId}:
+    get:
+      summary: Get a property by ID (Client, Realtor, Admin)
+      parameters:
+        - name: propertyId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Property details.
+    put:
+      summary: Update a property (Realtor)
+      parameters:
+        - name: propertyId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Property updated.
+    delete:
+      summary: Delete a property (Realtor)
+      parameters:
+        - name: propertyId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Property deleted.
+  /enquiries:
+    post:
+      summary: Create a new enquiry (Client)
+      responses:
+        '201':
+          description: Enquiry created.
+  /leads:
+    get:
+      summary: Get all leads for a realtor (Realtor)
+      responses:
+        '200':
+          description: A list of leads.
+  /affiliates/stats:
+    get:
+      summary: Get affiliate statistics (Affiliate)
+      responses:
+        '200':
+          description: Affiliate statistics.
+  /payouts:
+    post:
+      summary: Request a payout (Affiliate, Realtor)
+      responses:
+        '201':
+          description: Payout requested.
+  /admin/analytics:
+    get:
+      summary: Get platform analytics (Admin)
+      responses:
+        '200':
+          description: Platform analytics.
