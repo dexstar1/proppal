@@ -1,9 +1,10 @@
 import asyncio
 import sqlite3
 from typing import Optional
-from datetime import datetime, timedelta
+
+from backend.src.auth.security import create_secure_token, get_password_hash
 from backend.src.models.user import UserInDB
-from backend.src.auth.security import get_password_hash, create_secure_token
+
 
 def _get_user_by_id_sync(user_id: int) -> Optional[UserInDB]:
     conn = sqlite3.connect('proppal.db')
@@ -32,7 +33,7 @@ def _get_verification_status(email: str) -> Optional[UserInDB]:
     return None
 
 async def get_verification_status(email: str):
-    return _get_verification_status(email) 
+    return _get_verification_status(email)
 
 def _get_user_by_email_sync(email: str) -> Optional[UserInDB]:
     conn = sqlite3.connect('proppal.db')
@@ -47,10 +48,9 @@ def _get_user_by_email_sync(email: str) -> Optional[UserInDB]:
 
 async def get_user_by_email(email: str) -> Optional[UserInDB]:
     """Fetches a user by their email asynchronously."""
-    # return await asyncio.to_thread(_get_user_by_email_sync, email)
-    return _get_user_by_email_sync(email)
+    return await asyncio.to_thread(_get_user_by_email_sync, email)
 
-def create_realtor_user(email: str, password: str) -> tuple[UserInDB, str]:
+def _create_realtor_user_sync(email: str, password: str) -> tuple[UserInDB, str]:
     """Creates a new user with the 'realtor' role and a verification token."""
     hashed_password = get_password_hash(password)
     role = "realtor"
@@ -61,26 +61,39 @@ def create_realtor_user(email: str, password: str) -> tuple[UserInDB, str]:
     cursor = conn.cursor()
     try:
         cursor.execute(
-            "INSERT INTO users (email, hashed_password, role, is_verified, verification_token) VALUES (?, ?, ?, ?, ?)",
-            (email, hashed_password, role, is_verified, verification_token)
+            "INSERT INTO users (email, hashed_password, role, is_verified, "
+            "verification_token) VALUES (?, ?, ?, ?, ?)",
+            (email, hashed_password, role, is_verified, verification_token),
         )
         conn.commit()
         user_id = cursor.lastrowid
     finally:
         conn.close()
-    
-    user = UserInDB(id=user_id, email=email, hashed_password=hashed_password, role=role, is_verified=is_verified, verification_token=verification_token)
+
+    user = UserInDB(
+        id=user_id,
+        email=email,
+        hashed_password=hashed_password,
+        role=role,
+        is_verified=is_verified,
+        verification_token=verification_token
+    )
     return user, verification_token
 
-# ... (set_password_reset_token, get_user_by_reset_token, update_user_password are fine) ...
+async def create_realtor_user(email: str, password: str) -> tuple[UserInDB, str]:
+    return await asyncio.to_thread(_create_realtor_user_sync, email, password)
+
+# ... (set_password_reset_token, get_user_by_reset_token,
+# update_user_password are fine) ...
 
 def verify_user_by_token(token: str) -> bool:
     """Verifies a user by their token and clears the token."""
     conn = sqlite3.connect('proppal.db')
     cursor = conn.cursor()
     cursor.execute(
-        "UPDATE users SET is_verified = 1, verification_token = NULL WHERE verification_token = ?",
-        (token,)
+        "UPDATE users SET is_verified = 1, verification_token = NULL "
+        "WHERE verification_token = ?",
+        (token,),
     )
     conn.commit()
     updated_rows = cursor.rowcount

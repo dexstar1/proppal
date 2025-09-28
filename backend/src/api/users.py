@@ -1,7 +1,7 @@
-from fasthtml.common import *
+from app import app  # Import the main app instance
+
 from ..models.user import User
 from ..services.user_service import UserService
-from app import app # Import the main app instance
 
 user_service = UserService() # Initialize the service
 

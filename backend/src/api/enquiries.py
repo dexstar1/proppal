@@ -1,6 +1,7 @@
-from fasthtml.common import *
+from app import app  # Import the main app instance
+
 from ..models.enquiry import Enquiry
-from app import app # Import the main app instance
+
 
 @app.post("/enquiries")
 def create_enquiry(enquiry: Enquiry):

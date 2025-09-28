@@ -14,11 +14,23 @@ def Sidebar(user_role: str = "Client"):
         sidebar_links = {
             'Dashboard': '/admin/dashboard',
             'Properties': '/admin/properties',
+            'Leads': '/admin/leads',
+            'Enquiries': '/admin/enquiries',
             'Users': '/admin/users',
             'Analytics': '/admin/analytics',
             'Payouts': '/admin/payouts',
         }
-    # ... other roles can be added here ...
+    elif user_role == "Realtor":
+        sidebar_links = {
+            'Dashboard': '/realtor/dashboard',
+            'Properties': '/realtor/properties',
+            'Property Sales': '/realtor/property-sales',
+            'Properties': '/realtor/properties',
+            'Referrals': '/realtor/referrals',
+            'Commissions': '/realtor/commissions',
+            'Withdraw Funds': '/realtor/withdraw-funds',
+            'Transactions': '/realtor/transactions',
+        }
 
     sidebar_items = [
         Li(
@@ -28,8 +40,7 @@ def Sidebar(user_role: str = "Client"):
     ]
 
     profile_items = [
-        Li(A("Settings", href="#", cls="nav-link text-light"), cls="nav-item"),
-        Li(A("Profile", href="#", cls="nav-link text-light"), cls="nav-item"),
+        Li(A("My Account", href="#", cls="nav-link text-light"), cls="nav-item"),
         Li(A("Notifications", href="#", cls="nav-link text-light"), cls="nav-item"),
         Li(A("Sign out", href="/logout", cls="nav-link text-light"), cls="nav-item"),
     ]

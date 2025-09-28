@@ -1,4 +1,3 @@
-import pytest
 
 def test_email_validation():
     # Placeholder for testing email format validation

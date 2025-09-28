@@ -1,11 +1,23 @@
 from typing import List, Optional
+
 from ..models.user import User
+
 
 class UserService:
     def __init__(self):
         self.users = [
-            User(id=1, name="Admin User", email="admin@example.com", password_hash="hashed_password", role="Admin"),
-            User(id=2, name="Realtor User", email="realtor@example.com", password_hash="hashed_password", role="Realtor"),
+            User(
+                id=1, name="Admin User",
+                email="admin@example.com",
+                password_hash="hashed_password",
+                role="Admin"
+            ),
+            User(
+                id=2, name="Realtor User",
+                email="realtor@example.com",
+                password_hash="hashed_password",
+                role="Realtor"
+            ),
         ]
 
     def get_all_users(self) -> List[User]:

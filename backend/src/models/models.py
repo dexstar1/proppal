@@ -1,13 +1,14 @@
-from sqlalchemy import Column, Integer, String, Float, Boolean, ForeignKey, DateTime
+from datetime import datetime
+
+from sqlalchemy import Boolean, Column, DateTime, Float, ForeignKey, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
-from datetime import datetime
 
 Base = declarative_base()
 
 class User(Base):
     __tablename__ = "users"
-    
+
     id = Column(Integer, primary_key=True, index=True)
     username = Column(String, unique=True, index=True)
     email = Column(String, unique=True, index=True)
@@ -18,7 +19,7 @@ class User(Base):
 
 class Property(Base):
     __tablename__ = "properties"
-    
+
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String)
     description = Column(String)
@@ -32,7 +33,7 @@ class Property(Base):
 
 class Enquiry(Base):
     __tablename__ = "enquiries"
-    
+
     id = Column(Integer, primary_key=True, index=True)
     property_id = Column(Integer, ForeignKey("properties.id"))
     client_id = Column(Integer, ForeignKey("users.id"))

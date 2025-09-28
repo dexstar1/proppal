@@ -115,17 +115,19 @@ async def register(request: Request):
     password = form.get("password")
     confirm_password = form.get("confirm_password")
 
-    if password != confirm_password: return Div("Passwords do not match.", cls="alert alert-danger mt-3")
-    if await crud.get_user_by_email(email): return Div("Email already registered.", cls="alert alert-danger mt-3")
+    if password != confirm_password:
+        return Layout(Div(Div("Passwords do not match.", cls="alert alert-danger mt-3"), register_page()))
+    if await crud.get_user_by_email(email):
+        return Layout(Div(Div("Email already registered.", cls="alert alert-danger mt-3"), register_page()))
 
-    user, token = crud.create_realtor_user(email=email, password=password)
+    user, token = await crud.create_realtor_user(email=email, password=password)
     
     verify_link = f"{request.url.scheme}://{request.url.netloc}/verify-account?token={token}"
     print("-" * 50)
     print(f"ACCOUNT VERIFICATION LINK: {verify_link}")
     print("-" * 50)
     
-    return Div("Registration successful! Please check your email (and the console) to verify your account.", cls="alert alert-success mt-3")
+    return Layout(Div(Div("Registration successful! Please check your email (and the console) to verify your account.", cls="alert alert-success mt-3"), login_page()))
 
 async def login(request: Request):
     """Handles login, checking for verification status."""
@@ -133,21 +135,22 @@ async def login(request: Request):
     email = form.get("email")
     password = form.get("password")
     
-    user = crud.get_user_by_email(email)
-    hashed_password = security.get_password_hash(password)
-    if not user or not security.verify_password(password, hashed_password):
-        return Div("Invalid email or password.", cls="alert alert-danger mt-3")
+    user = await crud.get_user_by_email(email)
+    if not user or not security.verify_password(password, user.hashed_password):
+        return Layout(Div(Div("Invalid email or password.", cls="alert alert-danger mt-3"), login_page()))
     
-    # if not user.is_verified:
-    #     return Div("Your account is not verified. Please check your email for the verification link.", cls="alert alert-warning mt-3")
+    if not user.is_verified:
+        return Layout(Div(Div("Your account is not verified. Please check your email for the verification link.", cls="alert alert-warning mt-3"), login_page()))
 
-    # request.session['user_id'] = user.id
-    # request.session['user_role'] = user.role
+    request.session['user_id'] = user.id
+    request.session['user_role'] = user.role
     
-    # if user.role == 'admin': return Response(headers={'HX-Redirect': '/admin/dashboard'})
-    # elif user.role == 'realtor': return Response(headers={'HX-Redirect': '/realtor/dashboard'})
-    # else: 
-    return Response(headers={'HX-Redirect': '/realtor/dashboard'})
+    if user.role == 'admin': 
+        return Response(headers={'HX-Redirect': '/admin/dashboard'})
+    elif user.role == 'realtor': 
+        return Response(headers={'HX-Redirect': '/realtor/dashboard'})
+    
+    return Response(headers={'HX-Redirect': '/login'})
 
 async def verify_account(request: Request):
     """Handles the account verification by validating the token."""

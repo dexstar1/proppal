@@ -1,4 +1,3 @@
-import pytest
 
 def test_post_enquiries_contract():
     # This is a placeholder for the actual contract test.

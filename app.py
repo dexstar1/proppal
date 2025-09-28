@@ -1,14 +1,20 @@
 from fasthtml.common import *
-from starlette.staticfiles import StaticFiles
+from starlette.middleware import Middleware 
 from starlette.responses import Response, RedirectResponse
 from starlette.middleware.cors import CORSMiddleware
 from starlette.middleware.sessions import SessionMiddleware
 from backend.src.middleware.auth_middleware import AuthMiddleware
 from routes.admin import admin_dashboard, admin_properties_route, admin_users, admin_analytics, admin_payouts
-from routes.realtor import realtor_dashboard, realtor_properties, realtor_leads, realtor_enquiries
-from routes.affiliate import affiliate_dashboard, affiliate_referrals, affiliate_commissions, affiliate_payouts
+from routes.realtor import (realtor_dashboard, realtor_properties, realtor_property_view, realtor_referrals, realtor_commissions, realtor_payouts)
 from routes.client import client_dashboard, client_properties, client_enquiries
-from routes.auth import login_page, login, register_page, register, logout, forgot_password_page, forgot_password
+from routes.auth import (
+    login_page, login, 
+    register_page, register, 
+    logout, 
+    forgot_password_page, forgot_password,
+    reset_password_page, reset_password, 
+    verify_account
+)
 
 hdrs = (
     Link(rel='stylesheet', href='/assets/css/main.css', type='text/css'),    
@@ -18,24 +24,23 @@ hdrs = (
     Link(rel='stylesheet', href='/assets/libs/fortawesome/fontawesome-free/css/all.min.css', type='text/css'),
 )
 
-app = FastHTML(static_path='public', hdrs=hdrs, pico=False)
+import os
+import secrets
 
-# Add SessionMiddleware
-app.add_middleware(SessionMiddleware, secret_key="your-super-secret-key")
+if "SECRET_KEY" not in os.environ:
+    os.environ["SECRET_KEY"] = secrets.token_urlsafe(32)
 
-# Add CORS middleware
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+middleware = [
+    Middleware(SessionMiddleware, secret_key=os.environ["SECRET_KEY"]),
+    Middleware(AuthMiddleware)
+]
 
-# Mount static files
-app.mount("/assets", StaticFiles(directory="public/assets", html=True), name="assets")
-app.add_middleware(AuthMiddleware)
+app = FastHTML(static_path='public', hdrs=hdrs, pico=False, middleware=middleware)
 
+@app.route("/{fname:path}.{ext:static}")
+async def static_files(fname:str, ext:str):
+    """Serve static files."""
+    return FileResponse(f'public/{fname}.{ext}')
 
 @app.get("/") # type: ignore
 def index():
@@ -63,20 +68,17 @@ async def logout_route(request: Request):
     return await logout(request)
 
 @app.get("/forgot-password")
-async def forgot_password_get(request: Request):
-    return await forgot_password_page()
-
-from routes.auth import login_page, login, register_page, register, logout, forgot_password_page, forgot_password, reset_password, verify_account
-
-# ... (hdrs and app setup are fine) ...
+def forgot_password_get():
+    return forgot_password_page()
 
 @app.post("/forgot-password")
 async def forgot_password_post(request: Request):
     return await forgot_password(request)
 
 @app.get("/reset-password")
-async def reset_password_get(request: Request):
-    return await reset_password(request)
+def reset_password_get(request: Request):
+    token = request.query_params.get("token")
+    return reset_password_page(token)
 
 @app.post("/reset-password")
 async def reset_password_post(request: Request):
@@ -93,12 +95,7 @@ async def admin_dashboard_route(request: Request):
 @app.get("/admin/properties") # type: ignore
 async def admin_properties_get(request: Request):
     """Handle GET /admin/properties and list view"""
-    try:
-        return await admin_properties_route(request)
-    except Exception:
-        import traceback
-        traceback.print_exc()
-        return Div(H1("Error"), P("Failed to load properties", cls="alert alert-danger"), cls="container-fluid")
+    return await admin_properties_route(request)
 
 
 @app.post("/admin/properties") # type: ignore
@@ -168,28 +165,18 @@ async def realtor_dashboard_route(request: Request):
 async def realtor_properties_route(request: Request):
     return realtor_properties(request)
 
-@app.get("/realtor/leads") # type: ignore
-async def realtor_leads_route(request: Request):
-    return realtor_leads(request)
+@app.get("/realtor/properties/{property_id}") # type: ignore
+async def realtor_property_view_route(request: Request):
+    return realtor_property_view(request)
 
-@app.get("/realtor/enquiries") # type: ignore
-async def realtor_enquiries_route(request: Request):
-    return realtor_enquiries(request)
+@app.get("/realtor/referrals") # type: ignore
+async def realtor_referrals_route(request: Request):
+    return realtor_referrals(request)
 
-# Affiliate routes
-@app.get("/affiliate/dashboard") # type: ignore
-async def affiliate_dashboard_route(request: Request):
-    return affiliate_dashboard(request)
+@app.get("/realtor/commissions") # type: ignore
+async def realtor_commissions_route(request: Request):
+    return realtor_commissions(request)
 
-@app.get("/affiliate/referrals") # type: ignore
-async def affiliate_referrals_route(request: Request):
-    return affiliate_referrals(request)
-
-@app.get("/affiliate/commissions") # type: ignore
-async def affiliate_commissions_route(request: Request):
-    return affiliate_commissions(request)
-
-@app.get("/affiliate/payouts") # type: ignore
-async def affiliate_payouts_route(request: Request):
-    return affiliate_payouts(request)
-
+@app.get("/realtor/payouts") # type: ignore
+async def realtor_payouts_route(request: Request):
+    return realtor_payouts(request)

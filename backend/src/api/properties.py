@@ -1,7 +1,7 @@
-from fasthtml.common import *
+from app import app  # Import the main app instance
+
 from ..models.property import Property
 from ..services.property_service import PropertyService
-from app import app # Import the main app instance
 
 property_service = PropertyService() # Initialize the service
 

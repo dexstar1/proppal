@@ -1,20 +1,23 @@
+from typing import Callable
+
+from backend.src.auth.crud import get_user_by_id
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request
 from starlette.responses import RedirectResponse, Response
-from backend.src.auth.crud import get_user_by_id
-from typing import Callable
 
 # Define routes that are protected and the role required to access them.
 # The keys are path prefixes.
 PROTECTED_ROUTES = {
     "/admin": "admin",
     "/realtor": "realtor",
-    "/client": "client",
-    "/affiliate": "affiliate"
+    "/client": "client"
 }
 
 # Define paths that are publicly accessible and do not require authentication.
-PUBLIC_PATHS = ["/login", "/register", "/assets", "/favicon.ico", "/forgot-password", "/reset-password", "/verify-account"]
+PUBLIC_PATHS = [
+    "/login", "/register", "/assets", "/favicon.ico",
+    "/forgot-password", "/reset-password", "/verify-account"
+]
 
 class AuthMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next: Callable) -> Response:
@@ -22,8 +25,8 @@ class AuthMiddleware(BaseHTTPMiddleware):
         if any(request.url.path.startswith(path) for path in PUBLIC_PATHS):
             return await call_next(request)
 
-        user_id = request.get("user_id")
-        user_role = request.get("user_role")
+        user_id = request.session.get("user_id")
+        user_role = request.session.get("user_role")
 
         # If no user is logged in, redirect to the login page.
         if not user_id:
@@ -45,7 +48,9 @@ class AuthMiddleware(BaseHTTPMiddleware):
                     return RedirectResponse(url=f"/{user_role}/dashboard")
                 # If the role is correct, break the loop and proceed.
                 break
-        
-        # User is authenticated and has the correct role, proceed with the request.
-        response = await call_next(request)
-        return response
+
+        # If user is trying to access their own dashboard, let them through.
+        if request.url.path == f"/{user_role}/dashboard":
+            return await call_next(request)
+
+        return await call_next(request)

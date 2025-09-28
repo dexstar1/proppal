@@ -1,4 +1,3 @@
-import pytest
 
 def test_realtor_workflow():
     # This is a placeholder for the actual integration test.
