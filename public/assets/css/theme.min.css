@@ -18903,3 +18903,14 @@ a.text-decoration-underline:hover {
 .p-0 {
     padding: 0px !important;
 }
+
+#main-content .card-title{
+    font-size:14px !important;
+}
+#main-content .card-text.text-gray-500{
+    font-size:26px !important;
+}
+
+#desktop-sidebar li.nav-item {
+    margin: 5px 0px;
+}

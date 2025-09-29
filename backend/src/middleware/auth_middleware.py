@@ -19,6 +19,8 @@ PUBLIC_PATHS = [
     "/forgot-password", "/reset-password", "/verify-account"
 ]
 
+SETUP_ALLOWED_PATHS = ["/realtor/setup"]
+
 class AuthMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next: Callable) -> Response:
         # Allow public paths
@@ -35,21 +37,26 @@ class AuthMiddleware(BaseHTTPMiddleware):
         # Attach the user object to the request scope for easy access in routes.
         user = await get_user_by_id(user_id)
         if not user:
-             # Handle case where user in session doesn't exist in DB
-            # request.session.clear()
             return RedirectResponse(url="/login")
         request.scope["user"] = user
+
+        # Realtor profile completion gate
+        try:
+            from backend.src.api.realtor_profile import is_realtor_profile_complete
+            if user_role == 'realtor' and request.url.path.startswith('/realtor'):
+                complete = is_realtor_profile_complete(int(user_id))
+                if not complete and all(not request.url.path.startswith(p) for p in SETUP_ALLOWED_PATHS):
+                    return RedirectResponse(url="/realtor/setup")
+        except Exception:
+            pass
 
         # Check for role-based access to protected routes.
         for path_prefix, required_role in PROTECTED_ROUTES.items():
             if request.url.path.startswith(path_prefix):
                 if user_role != required_role:
-                    # If the user has the wrong role, deny access by redirecting.
                     return RedirectResponse(url=f"/{user_role}/dashboard")
-                # If the role is correct, break the loop and proceed.
                 break
 
-        # If user is trying to access their own dashboard, let them through.
         if request.url.path == f"/{user_role}/dashboard":
             return await call_next(request)
 

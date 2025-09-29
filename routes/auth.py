@@ -21,7 +21,7 @@ def forgot_password_page():
         hx_target="#main-content",
         cls="card p-4 shadow-sm"
     )
-    return Layout(Div(form_content, cls="container mt-5", style="max-width: 500px;"))
+    return Layout(Div(form_content, cls="container mt-5", style="max-width: 500px;"), show_nav=False)
 
 async def forgot_password(request: Request):
     """Handles the forgot password form submission."""
@@ -61,8 +61,8 @@ async def reset_password(request: Request):
         token = request.query_params.get("token")
         user = crud.get_user_by_reset_token(token)
         if not user:
-            return Layout(Div(H1("Invalid Link"), P("This password reset link is invalid or has expired."), cls="container mt-5 text-center"))
-        return Layout(Div(reset_password_page(token), cls="container mt-5", style="max-width: 500px;"))
+            return Layout(Div(H1("Invalid Link"), P("This password reset link is invalid or has expired."), cls="container mt-5 text-center"), show_nav=False)
+        return Layout(Div(reset_password_page(token), cls="container mt-5", style="max-width: 500px;"), show_nav=False)
 
     if request.method == "POST":
         form = await request.form()
@@ -91,7 +91,7 @@ def login_page():
         hx_target="#main-content",
         cls="card p-4 shadow-sm"
     )
-    return Layout(Div(form_content, cls="container mt-5", style="max-width: 500px;"))
+    return Layout(Div(form_content, cls="container mt-5", style="max-width: 500px;"), show_nav=False)
 
 def register_page():
     """Renders the registration page form."""
@@ -106,7 +106,7 @@ def register_page():
         hx_target="#main-content",
         cls="card p-4 shadow-sm"
     )
-    return Layout(Div(form_content, cls="container mt-5", style="max-width: 500px;"))
+    return Layout(Div(form_content, cls="container mt-5", style="max-width: 500px;"), show_nav=False)
 
 async def register(request: Request):
     """Handles registration, creates a verification token, and prints the link."""
@@ -116,18 +116,34 @@ async def register(request: Request):
     confirm_password = form.get("confirm_password")
 
     if password != confirm_password:
-        return Layout(Div(Div("Passwords do not match.", cls="alert alert-danger mt-3"), register_page()))
+        return Layout(Div(Div("Passwords do not match.", cls="alert alert-danger mt-3"), register_page()), show_nav=False)
     if await crud.get_user_by_email(email):
-        return Layout(Div(Div("Email already registered.", cls="alert alert-danger mt-3"), register_page()))
+        return Layout(Div(Div("Email already registered.", cls="alert alert-danger mt-3"), register_page()), show_nav=False)
 
     user, token = await crud.create_realtor_user(email=email, password=password)
     
     verify_link = f"{request.url.scheme}://{request.url.netloc}/verify-account?token={token}"
-    print("-" * 50)
-    print(f"ACCOUNT VERIFICATION LINK: {verify_link}")
-    print("-" * 50)
+    # Send verification email via SMTP
+    try:
+        from backend.src.utils.mailer import send_mail
+        send_mail(
+            to_email=email,
+            subject="Verify your Proppal account",
+            text=f"Please verify your account by visiting: {verify_link}",
+            html=f"""
+                <p>Welcome to <strong>Proppal</strong>!</p>
+                <p>Please verify your account by clicking the link below:</p>
+                <p><a href='{verify_link}'>Verify my account</a></p>
+                <p>If you did not request this, you can ignore this email.</p>
+            """
+        )
+    except Exception:
+        # Fallback to console log if email fails
+        print("-" * 50)
+        print(f"ACCOUNT VERIFICATION LINK: {verify_link}")
+        print("-" * 50)
     
-    return Layout(Div(Div("Registration successful! Please check your email (and the console) to verify your account.", cls="alert alert-success mt-3"), login_page()))
+    return Layout(Div(Div("Registration successful! Please check your email for the verification link.", cls="alert alert-success mt-3"), login_page()))
 
 async def login(request: Request):
     """Handles login, checking for verification status."""
@@ -137,10 +153,10 @@ async def login(request: Request):
     
     user = await crud.get_user_by_email(email)
     if not user or not security.verify_password(password, user.hashed_password):
-        return Layout(Div(Div("Invalid email or password.", cls="alert alert-danger mt-3"), login_page()))
+        return Layout(Div(Div("Invalid email or password.", cls="alert alert-danger mt-3"), login_page()), show_nav=False)
     
     if not user.is_verified:
-        return Layout(Div(Div("Your account is not verified. Please check your email for the verification link.", cls="alert alert-warning mt-3"), login_page()))
+        return Layout(Div(Div("Your account is not verified. Please check your email for the verification link.", cls="alert alert-warning mt-3"), login_page()), show_nav=False)
 
     request.session['user_id'] = user.id
     request.session['user_role'] = user.role
@@ -148,6 +164,12 @@ async def login(request: Request):
     if user.role == 'admin': 
         return Response(headers={'HX-Redirect': '/admin/dashboard'})
     elif user.role == 'realtor': 
+        try:
+            from backend.src.api.realtor_profile import is_realtor_profile_complete
+            if not is_realtor_profile_complete(int(user.id)):
+                return Response(headers={'HX-Redirect': '/realtor/setup'})
+        except Exception:
+            pass
         return Response(headers={'HX-Redirect': '/realtor/dashboard'})
     
     return Response(headers={'HX-Redirect': '/login'})
@@ -157,5 +179,5 @@ async def verify_account(request: Request):
     token = request.query_params.get("token")
     success = crud.verify_user_by_token(token)
     if not success:
-        return Layout(Div(H1("Verification Failed"), P("This verification link is invalid or has expired."), cls="container mt-5 text-center"))
-    return Layout(Div(H1("Account Verified!"), P("Your account has been successfully verified. You can now ", A("login", href="/login"), "."), cls="container mt-5 text-center"))
+        return Layout(Div(H1("Verification Failed"), P("This verification link is invalid or has expired."), cls="container mt-5 text-center"), show_nav=False)
+    return Layout(Div(H1("Account Verified!"), P("Your account has been successfully verified. You can now ", A("login", href="/login"), "."), cls="container mt-5 text-center"), show_nav=False)

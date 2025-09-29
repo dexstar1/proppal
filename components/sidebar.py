@@ -14,34 +14,61 @@ def Sidebar(user_role: str = "Client"):
         sidebar_links = {
             'Dashboard': '/admin/dashboard',
             'Properties': '/admin/properties',
+            'Sales': '/admin/sales',
+            'Commissions': '/admin/commissions',
+            'Payouts': '/admin/payouts',
+            'Withdraw Requests': '/admin/withdraw-requests',
             'Leads': '/admin/leads',
             'Enquiries': '/admin/enquiries',
             'Users': '/admin/users',
             'Analytics': '/admin/analytics',
-            'Payouts': '/admin/payouts',
+            'Notifications': '/notifications',
         }
     elif user_role == "Realtor":
         sidebar_links = {
             'Dashboard': '/realtor/dashboard',
             'Properties': '/realtor/properties',
-            'Property Sales': '/realtor/property-sales',
-            'Properties': '/realtor/properties',
+            'Sales': '/realtor/sales',
             'Referrals': '/realtor/referrals',
             'Commissions': '/realtor/commissions',
-            'Withdraw Funds': '/realtor/withdraw-funds',
-            'Transactions': '/realtor/transactions',
+            'Withdraw Funds': '/realtor/withdraw',
+            'Notifications': '/notifications',
+            'My Account': '/realtor/account',
         }
 
-    sidebar_items = [
-        Li(
-            A(text, href=link, hx_get=link, hx_target="#main-content", hx_push_url="true", cls="nav-link text-light"),
-            cls="nav-item"
-        ) for text, link in sidebar_links.items()
-    ]
+    sidebar_items = []
+    for text, link in sidebar_links.items():
+        if link == '/admin/sales':
+            sidebar_items.append(
+                Li(
+                    Div(
+                        A(text, href=link, hx_get=link, hx_target="#main-content", hx_push_url="true", cls="nav-link text-light d-inline-flex align-items-center"),
+                        Span("0", id="admin-sales-pending-badge", cls="badge bg-secondary ms-2", hx_get="/admin/sales/pending-count", hx_trigger="revealed, every 20s", hx_swap="outerHTML"),
+                        cls="d-flex align-items-center"
+                    ),
+                    cls="nav-item"
+                )
+            )
+        elif link == '/admin/commissions':
+            sidebar_items.append(
+                Li(
+                    Div(
+                        A(text, href=link, hx_get=link, hx_target="#main-content", hx_push_url="true", cls="nav-link text-light d-inline-flex align-items-center"),
+                        Span("0", id="admin-payouts-pending-badge", cls="badge bg-secondary ms-2", hx_get="/admin/payouts/pending-count", hx_trigger="revealed, every 20s", hx_swap="outerHTML"),
+                        cls="d-flex align-items-center"
+                    ),
+                    cls="nav-item"
+                )
+            )
+        else:
+            sidebar_items.append(
+                Li(
+                    A(text, href=link, hx_get=link, hx_target="#main-content", hx_push_url="true", cls="nav-link text-light"),
+                    cls="nav-item"
+                )
+            )
 
     profile_items = [
-        Li(A("My Account", href="#", cls="nav-link text-light"), cls="nav-item"),
-        Li(A("Notifications", href="#", cls="nav-link text-light"), cls="nav-item"),
         Li(A("Sign out", href="/logout", cls="nav-link text-light"), cls="nav-item"),
     ]
 
@@ -63,8 +90,8 @@ def Sidebar(user_role: str = "Client"):
     desktop_sidebar = Nav(
         *sidebar_content,
         id="desktop-sidebar",
-        cls="d-none d-lg-flex flex-column flex-shrink-0 p-3 bg-dark vh-100",
-        style="position: fixed; top: 0; left: 0; width: 240px; z-index: 1020;"
+        cls="d-none d-lg-flex flex-column flex-shrink-0 p-4 bg-dark vh-100",
+        style="position: fixed; top: 0; left: 0; width: 240px; z-index: 1020;overflow-y:scroll;"
     )
 
     # Mobile sidebar (off-canvas)

@@ -1,6 +1,6 @@
 from fasthtml.common import *
 
-def Navbar():
+def Navbar(user_role: str = "Client"):
     """A navigation bar with toggles for desktop/mobile sidebars, a search form, and user action icons."""
     return Nav(
         Div(
@@ -15,7 +15,7 @@ def Navbar():
             # Desktop sidebar toggle
             Button(
                 I(cls="fe fe-menu"),
-                cls="btn btn-ghost d-none d-lg-block",
+                cls="btn btn-ghost d-none d-lg-block text-left",
                 type="button",
                 id="desktop-sidebar-toggle"
             ),
@@ -42,31 +42,23 @@ def Navbar():
             Ul(
                 Li(
                     A(
+                        I(cls="fe fe-bell"),
+Span("0", id="notifications-badge", cls="badge bg-secondary ms-2", hx_get="/notifications/unread-count", hx_trigger="notification-update from:body", hx_swap="outerHTML"),
+                        cls="nav-link d-inline-flex align-items-center",
+                        hx_get="/notifications", hx_target="#main-content"
+                    ),
+                    cls="nav-item me-3"
+                ),
+                Li(
+                    (A(
+                        Img(src="/assets/img/properties/placeholder.png", cls="rounded-circle", style="width:32px;height:32px;object-fit:cover;", id="nav-profile-avatar", hx_get="/realtor/profile/avatar", hx_trigger="load", hx_swap="outerHTML"),
+                        cls="nav-link p-0 d-flex align-items-center"
+                    ) if user_role == "Realtor" else A(
                         I(cls="fe fe-user"),
                         cls="nav-link",
-                        href="./account-orders.html"
-                    ),
+                        href="#"
+                    )),
                     cls="nav-item"
-                ),
-                Li(
-                    A(
-                        I(cls="fe fe-heart"),
-                        cls="nav-link",
-                        href="./account-wishlist.html"
-                    ),
-                    cls="nav-item ms-lg-n4"
-                ),
-                Li(
-                    A(
-                        Span(
-                            I(cls="fe fe-shopping-cart"),
-                            data_cart_items="2"
-                        ),
-                        cls="nav-link",
-                        data_bs_toggle="offcanvas",
-                        href="#modalShoppingCart"
-                    ),
-                    cls="nav-item ms-lg-n4"
                 ),
                 cls="navbar-nav flex-row"
             ),

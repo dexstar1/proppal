@@ -28,6 +28,40 @@ def init_db():
     )
     ''')
 
+    # Property Sales Table
+    cursor.execute('DROP TABLE IF EXISTS property_sales')
+    cursor.execute('''
+    CREATE TABLE property_sales (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        property_id INTEGER NOT NULL,
+        location_size TEXT NOT NULL,
+        property_type TEXT NOT NULL,
+        property_available INTEGER NOT NULL,
+        payment_plan TEXT NOT NULL,
+        property_corner TEXT NOT NULL,
+        property_corner_total INTEGER DEFAULT 0,
+        estate_first_sale TEXT NOT NULL,
+        client_first_name TEXT NOT NULL,
+        client_last_name TEXT NOT NULL,
+        client_photo TEXT,
+        client_identification TEXT NOT NULL,
+        client_identification_upload_1 TEXT,
+        client_identification_upload_2 TEXT,
+        client_subscription_uploads TEXT,
+        payment_reference TEXT NOT NULL,
+        amount REAL NOT NULL,
+        payment_uploads TEXT,
+        payment_information TEXT,
+        additional_information TEXT,
+        realtor_id INTEGER NOT NULL,
+        status TEXT DEFAULT 'pending',
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (property_id) REFERENCES properties (id),
+        FOREIGN KEY (realtor_id) REFERENCES users (id)
+    )
+    ''')
+
     # Create default admin user
     pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
     admin_email = "admin@proppal.com"

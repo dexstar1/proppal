@@ -104,12 +104,16 @@ async def admin_properties_route(request: Request):
         property_id = request.path_params.get('property_id')
         if request.method == "POST": return await handle_new_property(request)
         if request.method == "PUT" and property_id: return await handle_update_property(request, int(property_id))
-        if request.method == "DELETE" and property_id: return await handle_delete_property(int(property_id))
+        if request.method == "DELETE" and property_id: return await handle_delete_property(request, int(property_id))
         path = request.url.path
         if path.endswith("/new"): content = new_property_form()
         elif path.endswith("/edit") and property_id: content = edit_property_form(int(property_id))
         elif property_id: content = admin_property_detail_content(int(property_id))
         else: content = admin_properties_content()
+        # Flash toast
+        flash = request.session.pop('flash', None) if hasattr(request, 'session') else None
+        if flash and isinstance(flash, dict):
+            content = Div(content, Script(f"showToast({(flash.get('message') or '')!r}, {(flash.get('level') or 'info')!r})"))
         return content if request.headers.get("HX-Request") else Layout(content, user_role="Admin")
     except Exception as e:
         return Div(f"An error occurred: {e}", cls="alert alert-danger")
@@ -155,9 +159,13 @@ async def handle_new_property(request: Request):
         ))
         conn.commit()
         conn.close()
-        return admin_properties_content()
+        if hasattr(request, 'session'):
+            request.session['flash'] = {'message': 'Property created successfully', 'level': 'success'}
+        return Response(headers={'HX-Redirect': '/admin/properties'})
     except Exception as e:
-        return Div(f"Error creating property: {e}", cls="alert alert-danger")
+        if hasattr(request, 'session'):
+            request.session['flash'] = {'message': f'Error creating property: {e}', 'level': 'danger'}
+        return Response(headers={'HX-Redirect': '/admin/properties'})
 
 async def handle_update_property(request: Request, property_id: int):
     form = await request.form()
@@ -193,13 +201,19 @@ async def handle_update_property(request: Request, property_id: int):
         ))
         conn.commit()
         conn.close()
-        return admin_properties_content()
+        if hasattr(request, 'session'):
+            request.session['flash'] = {'message': 'Property updated successfully', 'level': 'success'}
+        return Response(headers={'HX-Redirect': '/admin/properties'})
     except Exception as e:
-        return Div(f"Error updating property: {e}", cls="alert alert-danger")
+        if hasattr(request, 'session'):
+            request.session['flash'] = {'message': f'Error updating property: {e}', 'level': 'danger'}
+        return Response(headers={'HX-Redirect': '/admin/properties'})
 
-async def handle_delete_property(property_id: int):
+async def handle_delete_property(request: Request, property_id: int):
     delete_property(property_id)
-    return admin_properties_content()
+    if hasattr(request, 'session'):
+        request.session['flash'] = {'message': 'Property deleted', 'level': 'success'}
+    return Response(headers={'HX-Redirect': '/admin/properties'})
 
 # --- DB & Helpers (Complete) ---
 
