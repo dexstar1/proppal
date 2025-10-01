@@ -251,9 +251,12 @@ async def admin_sale_reject(request: Request):
 async def admin_payouts_list(request: Request):
     user, redirect = _require_admin(request)
     if redirect: return redirect
-    # Show approved withdrawal requests as historical payouts
+    # Show paid withdrawal requests as historical payouts
     from backend.src.api.wallets import get_withdraw_requests
-    rows = [r for r in get_withdraw_requests() if r['status'] == 'approved']
+    _rows = get_withdraw_requests()
+    # Normalize to dicts to allow .get usage consistently
+    rows = [dict(r) if not isinstance(r, dict) else r for r in _rows]
+    rows = [r for r in rows if (r.get('status') in ('paid','approved'))]
 
     # Flash (session-based)
     toast_script = None
@@ -263,12 +266,22 @@ async def admin_payouts_list(request: Request):
         level = flash.get('level') or 'info'
         toast_script = Script(f"showToast({msg!r}, {level!r})")
 
+    def badge_cls(status: str) -> str:
+        s = (status or '').lower()
+        if s in ('paid', 'approved', 'success'):
+            return 'badge bg-success'
+        if s in ('pending', 'in_progress', 'processing'):
+            return 'badge bg-warning'
+        if s in ('rejected', 'failed', 'cancelled', 'error'):
+            return 'badge bg-danger'
+        return 'badge bg-secondary'
+
     def row_to_tr(idx, r):
         return Tr(
             Td(str(idx+1)),
             Td(r['realtor_email'] or r['realtor_id']),
             Td(f"₦{float(r['amount']):,.2f}"),
-            Td(Span(p['status'].title(), cls=badge_cls(p['status']))),
+            Td(Span((r['status'] or '').title(), cls=badge_cls(r.get('status')))),
             Td(r['decided_at'] or ''),
         )
     # Pagination
@@ -295,11 +308,11 @@ async def admin_payouts_list(request: Request):
         return Nav(Ul(*nav_items, cls='pagination'))
 
     content = Div(
-        H1("Payouts (Approved Withdrawals)"),
+        H1("Payouts (Paid Withdrawals)"),
         Div(
             Div(
                 Table(
-                    Thead(Tr(Th("S/N"), Th("Realtor"), Th("Amount"), Th("Status"), Th("Approved On"))),
+                    Thead(Tr(Th("S/N"), Th("Realtor"), Th("Amount"), Th("Status"), Th("Paid On"))),
                     Tbody(*(row_to_tr(i, r) for i, r in enumerate(page_rows)) if page_rows else Tr(Td("No approved withdrawals", colspan="5", cls="text-center text-muted py-4"))),
                     cls="table table-striped table-hover"
                 ),
@@ -320,7 +333,34 @@ from backend.src.api.admin_sales import approve_commission, reject_commission, g
 async def admin_commissions_list(request: Request):
     user, redirect = _require_admin(request)
     if redirect: return redirect
+
+    # Read all payouts and apply optional type and status filters
     rows = get_payouts()
+    # Normalize to dicts for safe .get usage
+    try:
+        rows = [dict(p) if not isinstance(p, dict) else p for p in rows]
+    except Exception:
+        pass
+    type_filter = (request.query_params.get('type', 'all') or 'all').lower()
+    status_filter = (request.query_params.get('status', 'all') or 'all').lower()
+
+    def normalize_type(val: str) -> str:
+        v = (val or '').lower().strip()
+        if v in ('upline', 'primary'):
+            return v
+        # Backward compatibility: older rows may not have payout_type; treat as primary
+        return 'primary'
+
+    def normalize_status(val: str) -> str:
+        v = (val or '').lower().strip()
+        if v in ('pending', 'approved', 'rejected', 'paid'):
+            return v
+        return v or 'pending'
+
+    if type_filter in ('primary', 'upline'):
+        rows = [p for p in rows if normalize_type(p.get('payout_type')) == type_filter]
+    if status_filter in ('pending', 'approved', 'rejected', 'paid'):
+        rows = [p for p in rows if normalize_status(p.get('status')) == status_filter]
 
     # Pagination
     per_page = 10
@@ -352,11 +392,17 @@ async def admin_commissions_list(request: Request):
             return 'badge bg-danger'
         return 'badge bg-secondary'
 
+    def type_badge(p):
+        t = normalize_type(p.get('payout_type'))
+        label = 'Primary' if t == 'primary' else 'Upline'
+        cls = 'badge bg-primary' if t == 'primary' else 'badge bg-info'
+        return Span(label, cls=cls)
+
     def action_dropdown(p):
         items = []
         if p['status'] == 'pending':
-            items.append(Li(A('Approve', hx_post=f"/admin/commissions/{p['id']}/approve", hx_target="#main-content", cls='dropdown-item')))
-            items.append(Li(A('Reject', hx_post=f"/admin/commissions/{p['id']}/reject", hx_target="#main-content", hx_confirm='Reject this commission?', cls='dropdown-item')))
+            items.append(Li(A('Approve', hx_post=f"/admin/commissions/{p['id']}/approve?type={type_filter}&status={status_filter}", hx_target="#main-content", cls='dropdown-item')))
+            items.append(Li(A('Reject', hx_post=f"/admin/commissions/{p['id']}/reject?type={type_filter}&status={status_filter}", hx_target="#main-content", hx_confirm='Reject this commission?', cls='dropdown-item')))
         return Div(
             Button(cls='btn btn-sm btn-outline-secondary dropdown-toggle', data_bs_toggle='dropdown'),
             Ul(*items, cls='dropdown-menu'),
@@ -371,6 +417,7 @@ async def admin_commissions_list(request: Request):
         return Tr(
             Td(str(start + idx + 1)),
             Td(p['realtor_email'] or p['realtor_id']),
+            Td(type_badge(p)),
             Td(f"₦{sale_amount:,.2f}"),
             Td(f"₦{commission:,.2f}"),
             Td(Span(p['status'].title(), cls=badge_cls(p['status']))),
@@ -384,24 +431,57 @@ async def admin_commissions_list(request: Request):
         nav_items = []
         prev_disabled = ' disabled' if page <= 1 else ''
         next_disabled = ' disabled' if page >= total_pages else ''
-        nav_items.append(Li(A('Previous', hx_get=f"/admin/commissions?page={page-1}", hx_target='#main-content', cls=f'page-link{prev_disabled}'), cls='page-item'))
+        base = f"/admin/commissions?type={type_filter}&status={status_filter}"
+        nav_items.append(Li(A('Previous', hx_get=f"{base}&page={page-1}", hx_target='#main-content', cls=f'page-link{prev_disabled}'), cls='page-item'))
         nav_items.append(Li(Span(f"Page {page} of {total_pages}", cls='page-link disabled'), cls='page-item'))
-        nav_items.append(Li(A('Next', hx_get=f"/admin/commissions?page={page+1}", hx_target='#main-content', cls=f'page-link{next_disabled}'), cls='page-item'))
+        nav_items.append(Li(A('Next', hx_get=f"{base}&page={page+1}", hx_target='#main-content', cls=f'page-link{next_disabled}'), cls='page-item'))
         return Nav(Ul(*nav_items, cls='pagination'))
+
+    def filters_bar():
+        # Determine current labels
+        tlabel = 'All' if type_filter == 'all' else ('Primary' if type_filter == 'primary' else 'Upline')
+        slabel_map = {'all': 'All', 'pending': 'Pending', 'approved': 'Approved', 'rejected': 'Rejected', 'paid': 'Paid'}
+        slabel = slabel_map.get(status_filter, (status_filter or 'all').title())
+
+        type_dropdown = Div(
+            Button(f"Type: {tlabel}", cls='btn btn-sm btn-outline-primary dropdown-toggle', data_bs_toggle='dropdown'),
+            Ul(
+                Li(A('All', hx_get=f"/admin/commissions?type=all&status={status_filter}", hx_target="#main-content", cls='dropdown-item')),
+                Li(A('Primary', hx_get=f"/admin/commissions?type=primary&status={status_filter}", hx_target="#main-content", cls='dropdown-item')),
+                Li(A('Upline', hx_get=f"/admin/commissions?type=upline&status={status_filter}", hx_target="#main-content", cls='dropdown-item')),
+                cls='dropdown-menu'
+            ),
+            cls='dropdown me-2'
+        )
+
+        status_dropdown = Div(
+            Button(f"Status: {slabel}", cls='btn btn-sm btn-outline-primary dropdown-toggle', data_bs_toggle='dropdown'),
+            Ul(
+                Li(A('All', hx_get=f"/admin/commissions?type={type_filter}&status=all", hx_target="#main-content", cls='dropdown-item')),
+                Li(A('Pending', hx_get=f"/admin/commissions?type={type_filter}&status=pending", hx_target="#main-content", cls='dropdown-item')),
+                Li(A('Approved', hx_get=f"/admin/commissions?type={type_filter}&status=approved", hx_target="#main-content", cls='dropdown-item')),
+                Li(A('Rejected', hx_get=f"/admin/commissions?type={type_filter}&status=rejected", hx_target="#main-content", cls='dropdown-item')),
+                Li(A('Paid', hx_get=f"/admin/commissions?type={type_filter}&status=paid", hx_target="#main-content", cls='dropdown-item')),
+                cls='dropdown-menu'
+            ),
+            cls='dropdown me-2'
+        )
+        return Div(type_dropdown, status_dropdown, cls='d-flex mb-3 align-items-center my-4')
 
     content = Div(
         H1("Commissions Management"),
+        filters_bar(),
         Div(
             Div(
                 Table(
-                    Thead(Tr(Th("S/N"), Th("Realtor"), Th("Sale Amount"), Th("Commission"), Th("Status"), Th("Created"), Th("Action"))),
-                    Tbody(*(row_to_tr(i, p) for i, p in enumerate(page_rows)) if page_rows else Tr(Td("No commissions", colspan="9", cls="text-center text-muted py-4"))),
+                    Thead(Tr(Th("S/N"), Th("Realtor"), Th("Type"), Th("Sale Amount"), Th("Commission"), Th("Status"), Th("Created"), Th("Action"))),
+                    Tbody(*(row_to_tr(i, p) for i, p in enumerate(page_rows)) if page_rows else Tr(Td("No commissions", colspan="8", cls="text-center text-muted py-4"))),
                     cls="table table-striped table-hover"
                 ),
                 cls="table-responsive"
             ),
             pagination_controls(),
-            cls="card"
+            cls="card my-4"
         ),
         (toast_script if toast_script else Fragment()),
         cls="container-fluid"
@@ -416,7 +496,10 @@ async def admin_commission_approve(request: Request):
     ok = approve_commission(cid, user.id)
     if hasattr(request, 'session'):
         request.session['flash'] = {'message': 'Commission approved' if ok else 'Approval failed', 'level': 'success' if ok else 'danger'}
-    return Response(headers={'HX-Redirect': '/admin/commissions'})
+    type_filter = (request.query_params.get('type', 'all') or 'all').lower()
+    status_filter = (request.query_params.get('status', 'all') or 'all').lower()
+    qs = f"?type={type_filter}&status={status_filter}"
+    return Response(headers={'HX-Redirect': f"/admin/commissions{qs}"})
 
 
 async def admin_commission_reject(request: Request):
@@ -426,7 +509,10 @@ async def admin_commission_reject(request: Request):
     ok = reject_commission(cid, user.id)
     if hasattr(request, 'session'):
         request.session['flash'] = {'message': 'Commission rejected' if ok else 'Rejection failed', 'level': 'success' if ok else 'danger'}
-    return Response(headers={'HX-Redirect': '/admin/commissions'})
+    type_filter = (request.query_params.get('type', 'all') or 'all').lower()
+    status_filter = (request.query_params.get('status', 'all') or 'all').lower()
+    qs = f"?type={type_filter}&status={status_filter}"
+    return Response(headers={'HX-Redirect': f"/admin/commissions{qs}"})
 
 
 # Withdraw requests admin
@@ -470,7 +556,7 @@ async def admin_withdraw_requests_list(request: Request):
     def action_dropdown(r):
         items = []
         if r['status'] == 'pending':
-            items.append(Li(A('Approve', hx_post=f"/admin/withdraw-requests/{r['id']}/approve", hx_target="#main-content", hx_confirm='Approve this withdrawal request?', cls='dropdown-item')))
+            items.append(Li(A('Mark Paid', hx_post=f"/admin/withdraw-requests/{r['id']}/approve", hx_target="#main-content", hx_confirm='Mark this withdrawal request as paid?', cls='dropdown-item')))
             items.append(Li(A('Reject', hx_post=f"/admin/withdraw-requests/{r['id']}/reject", hx_target="#main-content", hx_confirm='Reject this withdrawal request?', cls='dropdown-item')))
         return Div(
             Button(cls='btn btn-sm btn-outline-secondary dropdown-toggle', data_bs_toggle='dropdown'),
@@ -525,7 +611,7 @@ async def admin_withdraw_request_approve(request: Request):
     req_id = int(request.path_params.get('request_id'))
     ok = approve_withdraw_request(req_id, user.id)
     if hasattr(request, 'session'):
-        request.session['flash'] = {'message': 'Withdrawal approved' if ok else 'Approval failed', 'level': 'success' if ok else 'danger'}
+        request.session['flash'] = {'message': 'Withdrawal marked as paid' if ok else 'Mark paid failed', 'level': 'success' if ok else 'danger'}
     return Response(headers={'HX-Redirect': '/admin/withdraw-requests'})
 
 
@@ -558,7 +644,7 @@ from backend.src.api.wallets import get_withdraw_requests as _get_all_withdraws
 async def admin_withdraw_pending_count_fragment(request: Request):
     try:
         rows = _get_all_withdraws()
-        count = len([r for r in rows if (r.get('status') or '') == 'pending'])
+        count = len([r for r in rows if ((r['status'] or '') == 'pending')])
     except Exception:
         count = 0
     badge_cls = "badge bg-danger ms-2" if count > 0 else "badge bg-secondary ms-2"

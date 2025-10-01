@@ -18,6 +18,11 @@ import math
 def realtor_dashboard_content(user_role: str = "Realtor", wallet_balance: float = 0.0, commissions: list = None, stats: dict | None = None, withdraws: list | None = None, display_name: str | None = None, referral_code: str | None = None):
     """Content-only version for HTMX requests"""
     commissions = commissions or []
+    # Normalize to dicts to avoid sqlite3.Row attribute surprises
+    try:
+        commissions = [dict(c) if not isinstance(c, dict) else c for c in commissions]
+    except Exception:
+        pass
     stats = stats or {}
     referrals_count = stats.get('referrals_count', 0)
     transactions_count = stats.get('transactions_count', 0)
@@ -26,6 +31,23 @@ def realtor_dashboard_content(user_role: str = "Realtor", wallet_balance: float 
     approved_sales = stats.get('approved_sales', 0)
     total_withdrawn = stats.get('total_withdrawn', 0.0)
     total_commission_amount = stats.get('total_commission_amount', 0.0)
+    # Compute downline commission (approved upline payouts) from provided commissions
+    try:
+        downline_commission_amount = 0.0
+        for c in commissions:
+            try:
+                ptype = c['payout_type'] if (hasattr(c, 'keys') and 'payout_type' in c.keys()) else (c.get('payout_type') if isinstance(c, dict) else None)
+                status = c['status'] if (hasattr(c, 'keys') and 'status' in c.keys()) else (c.get('status') if isinstance(c, dict) else None)
+                amt = c['amount'] if (hasattr(c, 'keys') and 'amount' in c.keys()) else (c.get('amount') if isinstance(c, dict) else 0)
+            except Exception:
+                ptype = None; status = None; amt = 0
+            if (ptype == 'upline') and (status == 'approved'):
+                try:
+                    downline_commission_amount += float(amt or 0)
+                except Exception:
+                    pass
+    except Exception:
+        downline_commission_amount = 0.0
     withdraws = withdraws or []
 
     def commission_rows():
@@ -46,117 +68,150 @@ def realtor_dashboard_content(user_role: str = "Realtor", wallet_balance: float 
         P("At a glance, view you account summary and statistics"),
         Div(
             Div(
-                Div(
                     Div(
+                        Div(
                         Card(
                         title="Wallet Balance",
                         content=f"₦{wallet_balance:,.2f}",
-                        card_cls="card mb-4 col-12 shadow"
+                        card_cls="card"
                         ),
+                        cls="mb-4 col-12"
+                        ),
+                        Div(
                         Card(
                         title="My Referral Code",
                         content=Div(
-                            Div(Strong(referral_code or '—', id='my-ref-code-dashboard'), cls='me-3 d-inline'),
-                            A('Copy Code', cls='badge badge-secondary me-2', onclick="navigator.clipboard.writeText(document.getElementById('my-ref-code-dashboard').innerText).then(()=>{this.innerText='Copied'; setTimeout(()=>this.innerText='Copy Code',1200)})"),
-                            A('Copy Link', cls='badge badge-primary', onclick="(()=>{const c=document.getElementById('my-ref-code-dashboard').innerText||'';const link=`${location.origin}/register?ref=${c}`;navigator.clipboard.writeText(link).then(()=>{this.innerText='Link Copied'; setTimeout(()=>this.innerText='Copy Link',1200)})})()"),
-                            cls='d-flex align-items-center'
+                            Div(Strong(referral_code or '—', id='my-ref-code-dashboard'), cls='col-md-12'),
+                            A('Copy Code', cls='badge badge-secondary col-md-6', onclick="navigator.clipboard.writeText(document.getElementById('my-ref-code-dashboard').innerText).then(()=>{this.innerText='Copied'; setTimeout(()=>this.innerText='Copy Code',1200)})"),
+                            A('Copy Link', cls='badge badge-primary col-md-6', onclick="(()=>{const c=document.getElementById('my-ref-code-dashboard').innerText||'';const link=`${location.origin}/register?ref=${c}`;navigator.clipboard.writeText(link).then(()=>{this.innerText='Link Copied'; setTimeout(()=>this.innerText='Copy Link',1200)})})()"),
+                            cls='row p-4'
                         ),
-                        card_cls="card mb-4 col-12 shadow"
+                        card_cls="card"
                         ),
-                        cls="row"
-                    ),
-                    Div(
+                        cls="my-4 col-12"
+                        ),
+                        Div(
                         Card(
                         title="My Referrals",
                         content=str(referrals_count),
-                        card_cls="card mb-4 col-12 col-md-6 col-xl-6 shadow"
+                        card_cls="card"
                         ),
+                        cls="my-4 col-12 col-md-6 col-xl-6"
+                        ),
+                        Div(
                         Card(
                         title="Transactions",
                         content=str(transactions_count),
-                        card_cls="card mb-4 col-12 col-md-6 col-xl-6 shadow"
+                        card_cls="card"
                         ),
-                        cls="row"
+                        cls="my-4 col-12 col-md-6 col-xl-6"
+                        ),
+                        cls="row p-0"
                     ), 
-                    cls="col-12"
-                ), 
-                cls="col-12 col-xl-5 shadow"
+                cls="col-12 col-xl-5"
             ),  
             Div(
                 Div(
-                    Card(
+                    Div(
+                        Card(
                         title="Total property sales",
                         content=str(total_sales),
-                        card_cls="card mb-4 col-12 col-md-6 col-xl-5 shadow mx-2"
+                        card_cls="card"
+                    ), cls="col-12 col-md-6 mb-4"
                     ),
-                    Card(
+                    Div(Card(
                         title="Total pending sales",
                         content=str(pending_sales),
-                        card_cls="card mb-4 col-12 col-md-6 col-xl-5 shadow mx-2"
+                        card_cls="card"
+                    ), cls="col-12 col-md-6 mb-4"
                     ),
-                    Card(
+                    Div(
+                        Card(
                         title="Total approved sales",
                         content=str(approved_sales),
-                        card_cls="card mb-4 col-12 col-md-6 col-xl-5 shadow mx-2"
+                        card_cls="card"
+                    ),cls="col-12 col-md-6 my-4"
                     ),
-                    Card(
+                    Div(
+                        Card(
                         title="Total withdrawal",
                         content=f"₦{total_withdrawn:,.2f}",
-                        card_cls="card mb-4 col-12 col-md-6 col-xl-5 shadow mx-2"
+                        card_cls="card"
+                    ),cls="col-12 col-md-6 my-4"
                     ),
-                    Card(
+                    Div(
+                        Card(
                         title="Total commission earned",
                         content=f"₦{total_commission_amount:,.2f}",
-                        card_cls="card mb-4 col-12 col-md-6 col-xl-5 shadow mx-2"
+                        card_cls="card"
+                    ),cls="col-12 col-md-6 my-4"
                     ),
+                    Div(
                     Card(
                         title="Total downline commission",
-                        content="₦0.00",
-                        card_cls="card mb-4 col-12 col-md-6 col-xl-5 shadow mx-2"
+                        content=f"₦{downline_commission_amount:,.2f}",
+                        card_cls="card"
+                    ), cls=" col-12 col-md-6 my-4"
                     ),
-                    cls="dashboard-content row"
+                    cls="row"
                 ),
                 cls="col-12 col-xl-7"
             ),
+            Div(
                 Card(
-                    title="My Commissions",
-                    content=Table(
-                        Thead(Tr(Th("Sale"), Th("Amount"), Th("Status"), Th("Created"))),
-                        Tbody(commission_rows()),
-                        cls="table table-sm"
-                    ),
-                    card_cls="card mb-4 col-12 shadow"
+                title="My Commissions",
+                content=Table(
+                    Thead(Tr(Th("Sale"), Th("Amount"), Th("Status"), Th("Created"))),
+                    Tbody(commission_rows()),
+                    cls="table table-responsive table-sm"
                 ),
-                Card(
-                    title="My Transactions (Withdrawals)",
-                    content=Table(
-                        Thead(Tr(Th("Amount"), Th("Method"), Th("Status"), Th("Requested"), Th("Decided"))),
-                        Tbody(
-                            *(Tr(
-                                Td(f"₦{float(w['amount']):,.2f}"),
-                                Td(w['method'] or ''),
-                                Td(Span((w['status'] or '').title(), cls=f"badge bg-{'success' if w['status']=='approved' else 'warning' if w['status']=='pending' else 'danger'}")),
-                                Td(w['created_at'] or ''),
-                                Td(w['decided_at'] or '')
-                            ) for w in withdraws) if withdraws else Tr(Td("No withdrawals", colspan="5", cls="text-center text-muted py-3"))
-                        ),
-                        cls="table table-sm"
-                    ),
-                    card_cls="card mb-4 col-12 shadow"
-                ),
-            cls="row"
+                card_cls="card"
+            ), cls="col-12 my-4"
             ),
-            cls="container-fluid"
-        )
+            Div(
+                Card(
+                title="My Transactions (Withdrawals)",
+                content=Table(
+                    Thead(Tr(Th("Amount"), Th("Method"), Th("Status"), Th("Requested"), Th("Decided"))),
+                    Tbody(
+                        *(Tr(
+                            Td(f"₦{float(w['amount']):,.2f}"),
+                            Td(w['method'] or ''),
+                            Td(Span((w['status'] or '').title(), cls=f"badge bg-{'success' if (w['status'] in ('paid','approved')) else 'warning' if (w['status'] in ('pending','in_progress','processing')) else 'danger'}")),
+                            Td(w['created_at'] or ''),
+                            Td(w['decided_at'] or '')
+                        ) for w in withdraws) if withdraws else Tr(Td("No withdrawals", colspan="5", cls="text-center text-muted py-3"))
+                    ),
+                    cls="table table-responsive table-sm"
+                ),
+                card_cls="card mb-4 col-12 shadow"
+            ),cls="col-12"
+            ),
+        cls="row"
+        ),
+        cls="container-fluid"
+    )
 
 def realtor_dashboard(request: Request):
     """Full layout version for direct URL visits"""
     user = request.scope.get('user')
     bal = get_wallet_balance(user.id) if user else 0.0
     comms = get_commissions_by_realtor(user.id) if user else []
+    try:
+        comms = [dict(c) if not isinstance(c, dict) else c for c in comms]
+    except Exception:
+        pass
 
     # Compute stats
     total_commission_amount = sum(float(c['amount']) for c in comms if c['status'] == 'approved') if comms else 0.0
+    # Downline approved sums
+    downline_commission_amount = (
+        sum(
+            float((c.get('amount') or 0))
+            for c in comms
+            if ((c.get('payout_type') or '') == 'upline') and (c.get('status') == 'approved')
+        ) if comms else 0.0
+    )
     # Sales stats from all sales filtered by current realtor
     from backend.src.api.admin_sales import get_all_sales
     sales_rows = get_all_sales()
@@ -168,7 +223,7 @@ def realtor_dashboard(request: Request):
     # Withdrawals
     from backend.src.api.wallets import get_withdraw_requests_by_realtor
     my_withdraws = get_withdraw_requests_by_realtor(user.id) if user else []
-    total_withdrawn = sum(float(w['amount']) for w in my_withdraws if w['status'] == 'approved') if my_withdraws else 0.0
+    total_withdrawn = sum(float(w['amount']) for w in my_withdraws if (w['status'] in ('paid','approved'))) if my_withdraws else 0.0
 
     # Ensure referral stats
     try:
@@ -236,13 +291,14 @@ def realtor_properties_content(request: Request):
                     A(I(cls="fe fe-eye"), hx_get=f"/realtor/properties/{prop.id}", hx_target="#main-content", cls="text-info me-3", title="View"),
                 )
             ) for i, prop in enumerate(properties)]),
-            cls="table table-striped"
+            cls="table table-responsive table-striped"
         ),
         cls="container-fluid"
     )
 
 def _display_name_from_email(email: str) -> str:
     try:
+        import re
         local = (email or '').split('@', 1)[0]
         first = re.split(r'[._-]+', local)[0]
         return first.capitalize() if first else email
@@ -314,22 +370,30 @@ def realtor_referrals(request: Request):
         return Tr(Td(label), Td(str(val)), Td(Div(style=f"height:10px;background:#0d6efd;width:{width}%;")))
 
     table = Div(
-        H4("Referral Signups by Month"),
+        Div(
+            H6("Referral Signups by Month"),
         Table(
             Thead(Tr(Th("Month"), Th("Signups"), Th(""))),
             Tbody(*(bar_row(m, c) for m, c in hist) if hist else Tr(Td("No referrals yet", colspan="3", cls="text-center text-muted py-4"))),
-            cls="table table-sm"
-        )
+            cls="table table-responsive table-sm"
+        ), cls="card p-4"
+        ), cls="col-md-6 my-4"
     )
     summary = Div(
         Div(
             Strong("Your Referral Code: "),
             Span(code or '—', id='my-ref-code'),
-            Button('Copy Code', cls='badge badge-secondary ms-2', onclick="navigator.clipboard.writeText(document.getElementById('my-ref-code').innerText).then(()=>{this.innerText='Copied'; setTimeout(()=>this.innerText='Copy Code',1200)})"),
-            Button('Copy Link', cls='badge badge-primary ms-2', onclick="(()=>{const c=document.getElementById('my-ref-code').innerText||'';const link=`${location.origin}/register?ref=${c}`;navigator.clipboard.writeText(link).then(()=>{this.innerText='Link Copied'; setTimeout(()=>this.innerText='Copy Link',1200)})})()")
+            Div(
+                A('Copy Code', cls='badge badge-secondary ms-2', onclick="navigator.clipboard.writeText(document.getElementById('my-ref-code').innerText).then(()=>{this.innerText='Copied'; setTimeout(()=>this.innerText='Copy Code',1200)})"),
+                A('Copy Link', cls='badge badge-primary ms-2', onclick="(()=>{const c=document.getElementById('my-ref-code').innerText||'';const link=`${location.origin}/register?ref=${c}`;navigator.clipboard.writeText(link).then(()=>{this.innerText='Link Copied'; setTimeout(()=>this.innerText='Copy Link',1200)})})()"),
+                cls="d-flex gap-2 mb-4"
+            )
         ),
-        P(f"Total downlines: {len(downs)}"),
-        cls='mb-3'
+        Div(
+            Strong("Total downlines: "),
+            Span({len(downs)}),
+        ),
+          cls="card mb-4 p-4"
     )
     # Downlines table
     def down_row(r):
@@ -338,14 +402,15 @@ def realtor_referrals(request: Request):
         referred = (r.get('referred_at') if isinstance(r, dict) else r['referred_at']) or ''
         return Tr(Td(em), Td(created), Td(referred))
     downlines_table = Div(
-        H4("Downlines"),
+        Div(H6("Downlines"),
         Table(
             Thead(Tr(Th('Email'), Th('Joined'), Th('Referred At'))),
             Tbody(*(down_row(dict(d) if not isinstance(d, dict) else d) for d in downs) if downs else Tr(Td('No downlines yet', colspan='3', cls='text-center text-muted py-4'))),
-            cls='table table-sm'
-        )
+            cls='table table-responsive table-sm'
+        ),cls="card p-4"
+        ), cls="col-md-6 my-4"
     )
-    content = Div(H1("My Referrals"), summary, table, downlines_table, cls="container-fluid")
+    content = Div(H1("My Referrals"), summary, Div(table, downlines_table, cls="row"), cls="container-fluid")
     if request.headers.get("HX-Request"):
         return content
     return Layout(content, user_role="Realtor")
@@ -435,7 +500,7 @@ def realtor_transactions_content(user_id: int, type_filter: str = 'all', status_
         Table(
             Thead(Tr(Th('Type'), Th('Reference'), Th('Amount'), Th('Status'), Th('Date'), Th(''))),
             Tbody(*(row(e) for e in events) if events else Tr(Td('No transactions', colspan='6', cls='text-center text-muted py-4'))),
-            cls='table table-striped table-hover'
+            cls='table table-responsive table-striped table-hover'
         ),
         cls='table-responsive'
     )
@@ -484,8 +549,9 @@ def realtor_commissions_content(user_id: int):
         return 'badge bg-secondary'
 
     def row_to_tr(c):
+        label = Span('Upline', cls='badge bg-info ms-2') if ((c['payout_type'] or '') == 'upline') else Fragment()
         return Tr(
-            Td(f"Sale #{c['sale_id']}"),
+            Td(f"Sale #{c['sale_id']}", label),
             Td(f"₦{float(c['amount']):,.2f}"),
             Td(Span(c['status'].title(), cls=badge_cls(c['status']))),
             Td(c['created_at'] or ''),
@@ -494,7 +560,7 @@ def realtor_commissions_content(user_id: int):
         Table(
             Thead(Tr(Th("Sale"), Th("Amount"), Th("Status"), Th("Created"))),
             Tbody(*(row_to_tr(c) for c in page_rows) if page_rows else Tr(Td("No commissions", colspan="4", cls="text-center text-muted py-4"))),
-            cls="table table-striped table-hover"
+            cls="table table-responsive table-striped table-hover"
         ),
         cls="table-responsive"
     )
@@ -554,28 +620,30 @@ def realtor_withdraw_content(user_id: int):
                 cls="col-12 col-md-6 col-xl-6"
                 ),
                 Div(
-                    H6("Request Withdrawal", cls="mb-2"),
+                    Div(
+                        H6("Request Withdrawal", cls="mb-2"),
                     Form(
                         Div(Label("Amount", cls="form-label"), Input(type="number", name="amount", step="0.01", min="0", required=True, cls="form-control"), cls="mb-3"),
                         Button("Submit Request", type="submit", cls="btn btn-primary"),
                         hx_post="/realtor/withdraw",
                         hx_target="#main-content"
+                    ), cls="card"
                     ),
-                    cls="card p-3 mb-4 col-12 col-md-6 col-xl-6"
+                    cls="p-4 mb-4 col-12 col-md-6 col-xl-6"
                 ), 
                 cls="row"
             ),
         Div(
-            H4("Withdrawal Requests", cls="mb-2"),
+            H6("Withdrawal Requests", cls="mb-2"),
             Div(
                 Table(
                     Thead(Tr(Th("S/N"), Th("Amount"), Th("Status"), Th("Requested"))),
                     Tbody(*(row_to_tr(i, r) for i, r in enumerate(page_rows)) if page_rows else Tr(Td("No requests", colspan="5", cls="text-center text-muted py-4"))),
-                    cls="table table-striped table-hover"
+                    cls="table table-responsive table-striped table-hover"
                 ),
                 cls="table-responsive"
             ),
-            cls="card p-3"
+            cls="card p-4"
         ),
         cls="container-fluid"
     )

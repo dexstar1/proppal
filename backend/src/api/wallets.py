@@ -187,7 +187,7 @@ def approve_withdraw_request(request_id: int, admin_id: int) -> bool:
         (amount, datetime.now().isoformat(), realtor_id),
     )
     cur.execute(
-        "UPDATE withdrawal_requests SET status = 'approved', decided_at = ?, processed_by = ? WHERE id = ?",
+        "UPDATE withdrawal_requests SET status = 'paid', decided_at = ?, processed_by = ? WHERE id = ?",
         (datetime.now().isoformat(), admin_id, request_id),
     )
     conn.commit()

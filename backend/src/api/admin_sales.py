@@ -53,6 +53,7 @@ def _ensure_commission_payouts_table():
             metadata TEXT,       -- JSON string for extra data
             notes TEXT,          -- optional notes
             status TEXT NOT NULL DEFAULT 'pending', -- pending, paid, failed
+            payout_type TEXT DEFAULT 'primary', -- 'primary' or 'upline'
             created_at TEXT NOT NULL,
             paid_at TEXT,
             processed_by INTEGER,
@@ -74,6 +75,8 @@ def _ensure_commission_payouts_table():
         alters.append("ALTER TABLE commission_payouts ADD COLUMN metadata TEXT")
     if 'notes' not in cols:
         alters.append("ALTER TABLE commission_payouts ADD COLUMN notes TEXT")
+    if 'payout_type' not in cols:
+        alters.append("ALTER TABLE commission_payouts ADD COLUMN payout_type TEXT DEFAULT 'primary'")
     for stmt in alters:
         cur.execute(stmt)
     if alters:
@@ -147,11 +150,31 @@ def approve_sale_and_create_payout(sale_id: int, admin_id: int, commission_rate:
     if sale["status"] == "approved":
         # Idempotent: still ensure payout exists or create if missing
         cur.execute(
-            "SELECT id FROM commission_payouts WHERE sale_id = ?",
+            "SELECT id FROM commission_payouts WHERE sale_id = ? AND payout_type = 'primary'",
             (sale_id,),
         )
         existing = cur.fetchone()
         if existing:
+            # Ensure upline payout exists too
+            try:
+                cur.execute("SELECT referred_by FROM users WHERE id = ?", (sale["realtor_id"],))
+                urow = cur.fetchone()
+                referrer_id = int(urow["referred_by"]) if urow and urow["referred_by"] is not None else None
+                if referrer_id and referrer_id != int(sale["realtor_id"]):
+                    cur.execute("SELECT id FROM commission_payouts WHERE sale_id = ? AND payout_type = 'upline'", (sale_id,))
+                    up = cur.fetchone()
+                    if not up:
+                        upline_amount = round(float(sale["amount"] or 0) * 0.05, 2)
+                        cur.execute(
+                            """
+                            INSERT INTO commission_payouts (sale_id, realtor_id, amount, commission_rate, status, payout_type, created_at)
+                            VALUES (?, ?, ?, ?, 'pending', 'upline', ?)
+                            """,
+                            (sale_id, referrer_id, upline_amount, 0.05, now),
+                        )
+                        conn.commit()
+            except Exception:
+                pass
             conn.close()
             return {"updated": True, "payout_id": existing["id"]}
 
@@ -168,15 +191,35 @@ def approve_sale_and_create_payout(sale_id: int, admin_id: int, commission_rate:
         (admin_id, now, now, sale_id),
     )
 
-    # Create payout (pending)
+    # Create primary payout (pending)
     cur.execute(
         """
-        INSERT INTO commission_payouts (sale_id, realtor_id, amount, commission_rate, status, created_at)
-        VALUES (?, ?, ?, ?, 'pending', ?)
+        INSERT INTO commission_payouts (sale_id, realtor_id, amount, commission_rate, status, payout_type, created_at)
+        VALUES (?, ?, ?, ?, 'pending', 'primary', ?)
         """,
         (sale_id, sale["realtor_id"], commission_amount, commission_rate, now),
     )
     payout_id = cur.lastrowid
+
+    # Create upline payout (5%) if referred
+    try:
+        cur.execute("SELECT referred_by FROM users WHERE id = ?", (sale["realtor_id"],))
+        urow = cur.fetchone()
+        referrer_id = int(urow["referred_by"]) if urow and urow["referred_by"] is not None else None
+        if referrer_id and referrer_id != int(sale["realtor_id"]):
+            cur.execute("SELECT id FROM commission_payouts WHERE sale_id = ? AND payout_type = 'upline'", (sale_id,))
+            exist_upline = cur.fetchone()
+            if not exist_upline:
+                upline_amount = round(amount * 0.05, 2)
+                cur.execute(
+                    """
+                    INSERT INTO commission_payouts (sale_id, realtor_id, amount, commission_rate, status, payout_type, created_at)
+                    VALUES (?, ?, ?, ?, 'pending', 'upline', ?)
+                    """,
+                    (sale_id, referrer_id, upline_amount, 0.05, now),
+                )
+    except Exception:
+        pass
 
     conn.commit()
     conn.close()
