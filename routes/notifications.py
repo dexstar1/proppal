@@ -3,6 +3,7 @@ from components.layout import Layout
 from starlette.requests import Request
 from starlette.responses import RedirectResponse
 from backend.src.api.notifications import get_notifications_for_user, mark_notification_read, get_unread_count_for_user, mark_all_notifications_read
+import math
 
 
 def _require_user(request: Request):
@@ -20,34 +21,75 @@ async def notifications_list(request: Request):
     rows = get_notifications_for_user(user.id, unread_only=unread_only)
     unread_count = get_unread_count_for_user(user.id)
 
+    # Pagination
+    per_page = 10
+    try:
+        page = int(request.query_params.get('page', '1'))
+    except Exception:
+        page = 1
+    total = len(rows)
+    total_pages = max(1, math.ceil(total / per_page))
+    page = max(1, min(page, total_pages))
+    start = (page - 1) * per_page
+    page_rows = rows[start:start+per_page]
+
+    def action_dropdown(n):
+        d = n if isinstance(n, dict) else dict(n)
+        items = []
+        link = d.get('link')
+        if link:
+            items.append(Li(A('Open', hx_get=link, hx_target='#main-content', cls='dropdown-item')))
+        is_read = int(d.get('is_read', 0) or 0)
+        if is_read == 0:
+            items.append(Li(A('Mark Read', hx_post=f"/notifications/{d['id']}/read", hx_target='#main-content', cls='dropdown-item')))
+        else:
+            items.append(Li(Span('Read', cls='dropdown-item text-muted')))
+        return Div(
+            Button(cls='btn btn-sm btn-outline-secondary dropdown-toggle', data_bs_toggle='dropdown'),
+            Ul(*items, cls='dropdown-menu'),
+            cls='dropdown'
+        )
+
     def row_to_tr(n):
         return Tr(
-            Td(Span("•", cls="text-danger") if n['is_read'] == 0 else Td()),
             Td(n['title']),
             Td(n['message']),
             Td(n['created_at']),
-            Td(
-                (Button("Open", cls="btn btn-sm btn-primary me-2", hx_get=n['link'], hx_target="#main-content") if n['link'] else Fragment()),
-                (Button("Mark Read", cls="btn btn-sm btn-outline-secondary", hx_post=f"/notifications/{n['id']}/read", hx_target="#main-content") if n['is_read'] == 0 else Span("Read", cls="text-muted"))
-            )
+            Td(action_dropdown(n))
         )
+
+    def pagination_controls():
+        if total_pages <= 1:
+            return Fragment()
+        nav_items = []
+        prev_disabled = ' disabled' if page <= 1 else ''
+        next_disabled = ' disabled' if page >= total_pages else ''
+        base = f"/notifications?filter={filter_val}"
+        nav_items.append(Li(A('Previous', hx_get=f"{base}&page={page-1}", hx_target='#main-content', cls=f'page-link{prev_disabled}'), cls='page-item'))
+        nav_items.append(Li(Span(f"Page {page} of {total_pages}", cls='page-link disabled'), cls='page-item'))
+        nav_items.append(Li(A('Next', hx_get=f"{base}&page={page+1}", hx_target='#main-content', cls=f'page-link{next_disabled}'), cls='page-item'))
+        return Nav(Ul(*nav_items, cls='pagination'))
 
     content = Div(
         Div(
             H1("Notifications", cls="me-auto"),
             Div(
-                A("All", hx_get="/notifications?filter=all", hx_target="#main-content", cls=f"btn btn-sm me-2 {'btn-primary' if filter_val=='all' else 'btn-outline-primary'}"),
-                A("Unread", hx_get="/notifications?filter=unread", hx_target="#main-content", cls=f"btn btn-sm me-3 {'btn-primary' if filter_val=='unread' else 'btn-outline-primary'}"),
-                Button("Mark All Read", cls="btn btn-sm btn-outline-secondary", disabled=(unread_count==0), hx_post="/notifications/mark-all-read", hx_target="#main-content"),
+                A("All", hx_get="/notifications?filter=all", hx_target="#main-content", cls=f"badge me-2 {'badge-white' if filter_val=='all' else 'badge-secondary'}"),
+                A("Unread", hx_get="/notifications?filter=unread", hx_target="#main-content", cls=f"badge me-3 {'badge-dark' if filter_val=='unread' else 'badge-secondary'}"),
+                A("Read All", cls="badge badge-dark", disabled=(unread_count==0), hx_post="/notifications/mark-all-read", hx_target="#main-content"),
                 cls="d-flex align-items-center"
             ),
             cls="d-flex align-items-center justify-content-between mb-3"
         ),
-        Table(
-            Thead(Tr(Th(""), Th("Title"), Th("Message"), Th("Date"), Th("Actions"))),
-            Tbody(*(row_to_tr(n) for n in rows) if rows else Tr(Td("No notifications", colspan="5", cls="text-center text-muted py-4"))),
-            cls="table table-striped table-hover"
+        Div(
+            Table(
+                Thead(Tr(Th("Title"), Th("Message"), Th("Date"), Th("Action"))),
+                Tbody(*(row_to_tr(n) for n in page_rows) if page_rows else Tr(Td("No notifications", colspan="5", cls="text-center text-muted py-4"))),
+                cls="table table-striped table-hover"
+            ),
+            cls="table-responsive"
         ),
+        pagination_controls(),
         cls="container-fluid"
     )
     # Flash toast on page render
@@ -83,3 +125,45 @@ async def notifications_unread_count_fragment(request: Request):
     badge_cls = "badge bg-danger ms-2" if count > 0 else "badge bg-secondary ms-2"
     # Return a span that can replace the existing badge via HTMX
     return Span(str(count), id="notifications-badge", cls=badge_cls)
+
+
+async def notifications_dropdown_menu(request: Request):
+    """Return recent notifications as dropdown <li> items for the navbar menu."""
+    user, redirect = _require_user(request)
+    if redirect: return redirect
+
+    rows = get_notifications_for_user(user.id, unread_only=False) or []
+    items = []
+
+    # Header
+    items.append(Li(Span("Notifications", cls="dropdown-header")))
+
+    # Up to 5 recent
+    for r in rows[:5]:
+        n = dict(r) if not isinstance(r, dict) else r
+        text = (n.get('title') or n.get('message') or 'Notification')
+        is_unread = (n.get('is_read') == 0)
+        label = Span(text, cls=("fw-bold" if is_unread else ""))
+        if n.get('link'):
+            items.append(
+                Li(
+                    A(
+                        label,
+                        hx_get=n['link'],
+                        hx_target="#main-content",
+                        cls="dropdown-item"
+                    )
+                )
+            )
+        else:
+            items.append(Li(Span(text, cls="dropdown-item text-muted")))
+
+    if not rows:
+        items.append(Li(Span("No notifications", cls="dropdown-item text-muted")))
+
+    # Footer
+    items.append(Li(Hr(cls="dropdown-divider")))
+    items.append(Li(A("View all notifications", hx_get="/notifications", hx_target="#main-content", cls="dropdown-item")))
+
+    # Return only the li nodes to be swapped into the <ul> via hx-swap="innerHTML"
+    return Fragment(*items)

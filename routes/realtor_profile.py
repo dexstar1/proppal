@@ -3,6 +3,8 @@ from components.layout import Layout
 from starlette.requests import Request
 from starlette.responses import RedirectResponse, Response
 from backend.src.api.realtor_profile import ensure_realtor_profile_schema, upsert_realtor_profile, get_realtor_profile
+from backend.src.api.referrals import ensure_referrals_schema, set_referred_by, get_or_create_referral_code
+import sqlite3
 import os
 import uuid
 
@@ -19,32 +21,67 @@ async def realtor_setup(request: Request):
         prof = get_realtor_profile(user.id)
         def to_val(k):
             return (prof[k] if prof and k in prof.keys() else '') if prof else ''
+        # Determine referral linkage state and fetch user names
+        ensure_referrals_schema()
+        conn = sqlite3.connect('proppal.db'); conn.row_factory = sqlite3.Row
+        cur = conn.cursor()
+        cur.execute("SELECT referred_by, first_name, last_name FROM users WHERE id = ?", (user.id,))
+        row = cur.fetchone()
+        referred_by = row['referred_by'] if row else None
+        user_first = row['first_name'] if row and 'first_name' in row.keys() else ''
+        user_last = row['last_name'] if row and 'last_name' in row.keys() else ''
+        ref_display = None
+        if referred_by:
+            # Ensure referrer's code exists for display
+            try:
+                ref_display = get_or_create_referral_code(int(referred_by))
+            except Exception:
+                ref_display = None
+        conn.close()
+        referral_input = Div(
+            Label("Referral Code", cls="form-label"),
+            Input(type="text", name="referral_code", placeholder="e.g. RP000123", value=(ref_display or ""), cls="form-control", readonly=bool(referred_by), required=(not bool(referred_by))),
+            Small("Required if you weren't referred during registration.", cls="text-muted") if not referred_by else Small("Linked to referrer; code cannot be changed.", cls="text-muted"),
+            cls="col-md-2"
+        )
+        # Name inputs (always required in verification)
+        first_name_input = Div(Label("First Name", cls="form-label"), Input(type="text", name="first_name", value=user_first or "", cls="form-control", required=True), cls="col-md-3")
+        last_name_input = Div(Label("Last Name", cls="form-label"), Input(type="text", name="last_name", value=user_last or "", cls="form-control", required=True), cls="col-md-3")
         form = Form(
-            H3("Profile Information", cls="mb-8"),
+            H3("Profile Information", cls="mb-4"),
             Div(
-                Div(Label("Gender", cls="form-label"), 
-                Select(
-                    Option("Select", value=""),
-                    Option("Male", value="male", selected=(to_val('gender')=='male')),
-                    Option("Female", value="female", selected=(to_val('gender')=='female')),
-                    name="gender", cls="form-select form-control", required=True
-                    ), cls="col-md-4"),
-                Div(Label("Date of Birth", cls="form-label"), Input(type="date", name="date_of_birth", value=to_val('date_of_birth'), cls="form-control", required=True), cls="col-md-4"),
-                Div(Label("Address", cls="form-label"), Textarea(to_val('address'), name="address", rows="2", cls="form-control", required=True), cls="col-md-4"),
-                cls="row g-3 mb-8"
+                Div(
+                    first_name_input,
+                    last_name_input,
+                    Div(Label("Gender", cls="form-label"), 
+                    Select(
+                        Option("Select", value=""),
+                        Option("Male", value="male", selected=(to_val('gender')=='male')),
+                        Option("Female", value="female", selected=(to_val('gender')=='female')),
+                        name="gender", cls="form-select form-control", required=True
+                        ), cls="col-md-3"),
+                    Div(Label("Date of Birth", cls="form-label"), Input(type="date", name="date_of_birth", value=to_val('date_of_birth'), cls="form-control", required=True), cls="col-md-3"),
+                    Div(Label("Address", cls="form-label"), Textarea(to_val('address'), name="address", rows="2", cls="form-control", required=True), cls="col-md-4"),
+                    referral_input,
+                    cls="row g-3 mb-4"
+                ),
+                cls="card"
             ),
-
-            H3("Profile Picture", cls="mb-8"),
-            Div(Label("Upload Image", cls="form-label"), Input(type="file", name="profile_picture", accept=".jpg,.png,.jpeg,.webp", cls="form-control"), cls="mb-8"),
-
-            H3("Bank Information", cls="mb-8"),
             Div(
-                Div(Label("Bank Name", cls="form-label"), Input(type="text", name="bank_name", value=to_val('bank_name'), cls="form-control", required=True), cls="col-md-4"),
-                Div(Label("Account Number", cls="form-label"), Input(type="text", name="account_number", value=to_val('account_number'), cls="form-control", required=True, pattern="\\d{10}", maxlength="10"), cls="col-md-4"),
-                Div(Label("Account Name", cls="form-label"), Input(type="text", name="account_name", value=to_val('account_name'), cls="form-control", required=True), cls="col-md-4"),
-                cls="row g-3 mb-8"
+                H3("Profile Picture", cls="mb-4"),
+                Div(Label("Upload Image", cls="form-label"), Input(type="file", name="profile_picture", accept=".jpg,.png,.jpeg,.webp", cls="form-control"), cls="mb-4"),
+                cls="card"
             ),
-
+            Div(
+                H3("Bank Information", cls="mb-4"),
+                Div(
+                    Div(Label("Bank Name", cls="form-label"), Input(type="text", name="bank_name", value=to_val('bank_name'), cls="form-control", required=True), cls="col-md-4"),
+                    Div(Label("Account Number", cls="form-label"), Input(type="text", name="account_number", value=to_val('account_number'), cls="form-control", required=True, pattern="\\d{10}", maxlength="10"), cls="col-md-4"),
+                    Div(Label("Account Name", cls="form-label"), Input(type="text", name="account_name", value=to_val('account_name'), cls="form-control", required=True), cls="col-md-4"),
+                    cls="row g-3 mb-4"
+                ),
+                cls="card"
+            ),
             Button("Save & Continue", type="submit", cls="btn btn-primary"),
             enctype="multipart/form-data",
             hx_post="/realtor/setup",
@@ -55,12 +92,15 @@ async def realtor_setup(request: Request):
         flash = request.session.pop('flash', None) if hasattr(request, 'session') else None
         content = Div(H1("Complete Your Account"), form, cls="container mt-4")
         if flash and isinstance(flash, dict):
-            content = Div(content, Script(f"showToast({(flash.get('message') or '')!r}, {(flash.get('level') or 'info')!r})"))
+            # Guard against missing showToast when returning HTMX fragments
+            content = Div(content, Script(f"window.showToast && showToast({(flash.get('message') or '')!r}, {(flash.get('level') or 'info')!r})"))
         # Wrap in Layout for full page requests to ensure #main-content exists
         return content if request.headers.get("HX-Request") else Layout(content, user_role="Realtor", show_nav=False)
 
     # POST
     form = await request.form()
+    first_name = (form.get('first_name') or '').strip()
+    last_name = (form.get('last_name') or '').strip()
     gender = form.get('gender')
     date_of_birth = form.get('date_of_birth')
     address = form.get('address')
@@ -89,6 +129,8 @@ async def realtor_setup(request: Request):
             request.session['flash'] = {'message': msg, 'level': 'danger'}
         return Response(headers={'HX-Redirect': '/realtor/setup'})
 
+    if not first_name or not last_name:
+        return flash_and_redirect("Please provide your first and last name.")
     if not gender or gender not in ['male','female']:
         return flash_and_redirect("Please select a valid gender.")
     if not date_of_birth:
@@ -102,7 +144,39 @@ async def realtor_setup(request: Request):
     if not account_name or not account_name.strip():
         return flash_and_redirect("Please provide your account name.")
 
+    # Check referral linkage/state
+    ensure_referrals_schema()
+    conn = sqlite3.connect('proppal.db'); conn.row_factory = sqlite3.Row
+    cur = conn.cursor()
+    cur.execute("SELECT referred_by FROM users WHERE id = ?", (user.id,))
+    row = cur.fetchone(); conn.close()
+    already_linked = bool(row and row['referred_by'])
+    ref_code = form.get('referral_code')
+    if not already_linked and (not ref_code or not str(ref_code).strip()):
+        return flash_and_redirect("Please enter a valid referral code.")
+
     upsert_realtor_profile(user.id, gender, date_of_birth, address, profile_picture, bank_name, account_number, account_name)
+    # Save first/last name into users table (ensure columns)
+    try:
+        conn2 = sqlite3.connect('proppal.db'); cur2 = conn2.cursor()
+        # Ensure columns
+        cur2.execute("PRAGMA table_info(users)"); cols = {r[1] for r in cur2.fetchall()}
+        if 'first_name' not in cols:
+            try: cur2.execute("ALTER TABLE users ADD COLUMN first_name TEXT")
+            except Exception: pass
+        if 'last_name' not in cols:
+            try: cur2.execute("ALTER TABLE users ADD COLUMN last_name TEXT")
+            except Exception: pass
+        cur2.execute("UPDATE users SET first_name = ?, last_name = ? WHERE id = ?", (first_name, last_name, int(user.id)))
+        conn2.commit(); conn2.close()
+    except Exception:
+        pass
+    # Link referral if provided and not already linked
+    try:
+        if not already_linked and ref_code:
+            set_referred_by(int(user.id), str(ref_code))
+    except Exception:
+        pass
     if hasattr(request, 'session'):
         request.session['flash'] = {'message': 'Profile saved successfully', 'level': 'success'}
     return Response(headers={'HX-Redirect': '/realtor/dashboard'})
@@ -125,11 +199,30 @@ async def realtor_account(request: Request):
         prof = get_realtor_profile(user.id)
         def to_val(k):
             return (prof[k] if prof and k in prof.keys() else '') if prof else ''
+        # Referral info
+        ensure_referrals_schema()
+        conn = sqlite3.connect('proppal.db'); conn.row_factory = sqlite3.Row
+        cur = conn.cursor()
+        cur.execute("SELECT referred_by FROM users WHERE id = ?", (user.id,))
+        rrow = cur.fetchone()
+        ref_by = rrow['referred_by'] if rrow else None
+        ref_by_code = get_or_create_referral_code(int(ref_by)) if ref_by else None
+        my_code = None
+        try:
+            my_code = get_or_create_referral_code(int(user.id))
+        except Exception:
+            my_code = None
+        conn.close()
+        # Also fetch names for display
+        connn = sqlite3.connect('proppal.db'); connn.row_factory = sqlite3.Row
+        c2 = connn.cursor(); c2.execute("SELECT first_name, last_name FROM users WHERE id = ?", (user.id,)); nrow = c2.fetchone(); connn.close()
+        name_display = (f"{(nrow['first_name'] or '').strip()} {(nrow['last_name'] or '').strip()}" if nrow else '').strip()
         summary = Div(
-            H2("My Account", cls="mb-8"),
+            H2("My Account", cls="mb-4"),
             Div(
                 Img(src=(to_val('profile_picture') or '/assets/img/properties/placeholder.png'), cls="rounded-circle", style="width: 100px; height: 100px; object-fit: cover;"),
                 Div(
+                    P(Strong("Name: "), Span(name_display or '—')),
                     P(Strong("Email: "), Span(getattr(user, 'email', ''))),
                     P(Strong("Gender: "), Span(to_val('gender') or '-')),
                     P(Strong("DOB: "), Span(to_val('date_of_birth') or '-')),
@@ -137,9 +230,17 @@ async def realtor_account(request: Request):
                     P(Strong("Bank: "), Span(to_val('bank_name') or '-')),
                     P(Strong("Account No: "), Span(to_val('account_number') or '-')),
                     P(Strong("Account Name: "), Span(to_val('account_name') or '-')),
+                    P(
+                        Strong("My Referral Code: "),
+                        Span(my_code or '—', id='my-ref-code-account'),
+                        A('Copy Code', cls='badge badge-secondary ms-2', onclick="navigator.clipboard.writeText(document.getElementById('my-ref-code-account').innerText).then(()=>{this.innerText='Copied'; setTimeout(()=>this.innerText='Copy Code',1200)})"),
+                        A('Copy Link', cls='badge badge-primary ms-2', onclick="(()=>{const c=document.getElementById('my-ref-code-account').innerText||''; const link=`${location.origin}/register?ref=${c}`; navigator.clipboard.writeText(link).then(()=>{this.innerText='Link Copied'; setTimeout(()=>this.innerText='Copy Link',1200)})})()"),
+                        cls='mb-2'
+                    ),
+                    P(Strong("Referred By Code: "), Span(ref_by_code or '—')),
                     cls="ms-3"
                 ),
-                cls="d-flex align-items-top mb-8 justify-content-between w-50"
+                cls="d-flex align-items-top mb-4 justify-content-between w-50"
             )
         )
         form = Form(
@@ -150,24 +251,23 @@ async def realtor_account(request: Request):
                     Option("Male", value="male", selected=(to_val('gender')=='male')),
                     Option("Female", value="female", selected=(to_val('gender')=='female')),
                     name="gender", cls="form-select form-control"), cls="col-md-4"),
-                Div(Label("Date of Birth", cls="form-label"), Input(type="date", name="date_of_birth", value=to_val('date_of_birth'), cls="form-control"), cls="col-md-4"),
-                Div(Label("Address", cls="form-label"), Textarea(to_val('address'), name="address", rows="2", cls="form-control"), cls="col-md-4"),
-                cls="row g-3 mb-8"
+                Div(Label("Address", cls="form-label"), Textarea(to_val('address'), name="address", rows="2", cls="form-control"), cls="col-md-8"),
+                cls="row g-3 mb-4"
             ),
             H3("Profile Picture", cls="mb-3"),
-            Div(Label("Upload Image", cls="form-label"), Input(type="file", name="profile_picture", accept=".jpg,.png,.jpeg,.webp", cls="form-control"), cls="mb-8"),
+            Div(Label("Upload Image", cls="form-label"), Input(type="file", name="profile_picture", accept=".jpg,.png,.jpeg,.webp", cls="form-control"), cls="mb-4"),
             H3("Bank Information", cls="mb-3"),
             Div(
                 Div(Label("Bank Name", cls="form-label"), Input(type="text", name="bank_name", value=to_val('bank_name'), cls="form-control"), cls="col-md-4"),
                 Div(Label("Account Number", cls="form-label"), Input(type="text", name="account_number", value=to_val('account_number'), cls="form-control"), cls="col-md-4"),
                 Div(Label("Account Name", cls="form-label"), Input(type="text", name="account_name", value=to_val('account_name'), cls="form-control"), cls="col-md-4"),
-                cls="row g-3 mb-8"
+                cls="row g-3 mb-4"
             ),
             Button("Save Changes", type="submit", cls="btn btn-primary"),
             enctype="multipart/form-data",
             hx_post="/realtor/account",
             hx_target="#main-content",
-            cls="card p-4 mb-8"
+            cls="card p-4 mb-4"
         )
 
         change_password_form = Form(

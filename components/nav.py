@@ -2,6 +2,7 @@ from fasthtml.common import *
 
 def Navbar(user_role: str = "Client"):
     """A navigation bar with toggles for desktop/mobile sidebars, a search form, and user action icons."""
+    badge_id = "notifications-badge-admin" if user_role == "Admin" else ("notifications-badge-realtor" if user_role == "Realtor" else "notifications-badge")
     return Nav(
         Div(
             # Mobile sidebar toggle
@@ -24,7 +25,7 @@ def Navbar(user_role: str = "Client"):
                     Input(
                         cls="form-control form-control-underline form-control-sm border-dark",
                         type="search",
-                        placeholder="Search for items and brands"
+                        placeholder="Search properties"
                     ),
                     Div(
                         Button(
@@ -39,15 +40,24 @@ def Navbar(user_role: str = "Client"):
                 cls="navbar-form w-100 mx-3",
                 style="max-width: 550px;"
             ),
-            Ul(
+        Ul(
                 Li(
                     A(
+                    Span(
                         I(cls="fe fe-bell"),
-Span("0", id="notifications-badge", cls="badge bg-secondary ms-2", hx_get="/notifications/unread-count", hx_trigger="notification-update from:body", hx_swap="outerHTML"),
-                        cls="nav-link d-inline-flex align-items-center",
-                        hx_get="/notifications", hx_target="#main-content"
+                        "0",
+                        id=badge_id,
+                        cls='badge bg-white ms-2',
+                        hx_get='/notifications/unread-count',
+                        hx_trigger='load',
+                        hx_target=f"#{badge_id}",
+                        hx_swap='outerHTML'
                     ),
-                    cls="nav-item me-3"
+                    cls="nav-link",
+                    hx_get="/notifications",
+                    hx_target="#main-content"
+                    ),
+                    cls="nav-item me-3 d-flex align-items-center"
                 ),
                 Li(
                     (A(
@@ -60,7 +70,7 @@ Span("0", id="notifications-badge", cls="badge bg-secondary ms-2", hx_get="/noti
                     )),
                     cls="nav-item"
                 ),
-                cls="navbar-nav flex-row"
+                cls="navbar-nav flex-row align-items-center"
             ),
             cls="container-fluid"
         ),

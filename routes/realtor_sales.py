@@ -19,6 +19,27 @@ from backend.src.api.property_sales import (
 def realtor_sales_dashboard_content(sales_data: list = None):
     """Dashboard content for realtor sales management"""
     sales_data = sales_data or []
+
+    def action_dropdown(sale):
+        # Support Pydantic models and dict-like rows
+        status = getattr(sale, 'status', None)
+        if status is None and isinstance(sale, dict):
+            status = sale.get('status')
+        sid = getattr(sale, 'id', None)
+        if sid is None and isinstance(sale, dict):
+            sid = sale.get('id')
+
+        items = []
+        # Show Action for pending sales; always allow View
+        items.append(Li(A('View', hx_get=f"/realtor/sales/{sid}", hx_target="#main-content", cls='dropdown-item')))
+        if status == 'pending':
+            items.append(Li(A('Edit', hx_get=f"/realtor/sales/{sid}/edit", hx_target="#main-content", cls='dropdown-item')))
+            items.append(Li(A('Delete', hx_delete=f"/realtor/sales/{sid}", hx_confirm="Are you sure you want to delete this sale?", hx_target="#main-content", cls='dropdown-item text-danger')))
+        return Div(
+            Button(cls='btn btn-sm btn-outline-secondary dropdown-toggle', data_bs_toggle='dropdown'),
+            Ul(*items, cls='dropdown-menu'),
+            cls='dropdown'
+        )
     
     return Div(
         H1("Sales Management", cls="mb-4"),
@@ -72,7 +93,7 @@ def realtor_sales_dashboard_content(sales_data: list = None):
                         Th("Amount"),
                         Th("Status"),
                         Th("Date"),
-                        Th("Actions")
+                        Th("Action")
                     )
                 ),
                 Tbody(
@@ -88,30 +109,7 @@ def realtor_sales_dashboard_content(sales_data: list = None):
                             )
                         ),
                         Td(sale.created_at.strftime("%b %d, %Y")),
-                        Td(
-                            A(
-                                I(cls="fe fe-eye"),
-                                hx_get=f"/realtor/sales/{sale.id}",
-                                hx_target="#main-content",
-                                cls="text-info me-2",
-                                title="View"
-                            ),
-                            A(
-                                I(cls="fe fe-edit"),
-                                hx_get=f"/realtor/sales/{sale.id}/edit",
-                                hx_target="#main-content",
-                                cls="text-primary me-2",
-                                title="Edit"
-                            ),
-                            A(
-                                I(cls="fe fe-trash-2"),
-                                hx_delete=f"/realtor/sales/{sale.id}",
-                                hx_confirm="Are you sure you want to delete this sale?",
-                                hx_target="#main-content",
-                                cls="text-danger",
-                                title="Delete"
-                            )
-                        )
+                        Td(action_dropdown(sale))
                     ) for i, sale in enumerate(sales_data)] if sales_data else [
                         Tr(
                             Td("No sales found", colspan="7", cls="text-center text-muted py-4")
@@ -120,7 +118,7 @@ def realtor_sales_dashboard_content(sales_data: list = None):
                 ),
                 cls="table table-striped table-hover"
             ),
-            cls="card"
+            cls="card p-4"
         ),
         
         cls="container-fluid"

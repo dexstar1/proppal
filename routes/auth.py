@@ -93,13 +93,16 @@ def login_page():
     )
     return Layout(Div(form_content, cls="container mt-5", style="max-width: 500px;"), show_nav=False)
 
-def register_page():
+def register_page(ref: str | None = None):
     """Renders the registration page form."""
+    hidden_ref = (Input(type="hidden", name="ref", value=ref) if ref else Fragment())
     form_content = Form(
         H1("Create an Account", cls="mb-4"),
+        (Div(Span(f"Referred by code: {ref}", cls="text-muted small mb-2")) if ref else Fragment()),
         Div(Label("Email", cls="form-label"), Input(name="email", type="email", cls="form-control", required=True), cls="mb-3"),
         Div(Label("Password", cls="form-label"), Input(name="password", type="password", cls="form-control", required=True), cls="mb-3"),
         Div(Label("Confirm Password", cls="form-label"), Input(name="confirm_password", type="password", cls="form-control", required=True), cls="mb-3"),
+        hidden_ref,
         Button("Register", cls="btn btn-primary", type="submit"),
         P(A("Already have an account? Login here.", href="/login"), cls="mt-3"),
         hx_post="/register",
@@ -114,13 +117,23 @@ async def register(request: Request):
     email = form.get("email")
     password = form.get("password")
     confirm_password = form.get("confirm_password")
+    ref = form.get("ref")
 
     if password != confirm_password:
-        return Layout(Div(Div("Passwords do not match.", cls="alert alert-danger mt-3"), register_page()), show_nav=False)
+        return Layout(Div(Div("Passwords do not match.", cls="alert alert-danger mt-3"), register_page(ref)), show_nav=False)
     if await crud.get_user_by_email(email):
-        return Layout(Div(Div("Email already registered.", cls="alert alert-danger mt-3"), register_page()), show_nav=False)
+        return Layout(Div(Div("Email already registered.", cls="alert alert-danger mt-3"), register_page(ref)), show_nav=False)
 
     user, token = await crud.create_realtor_user(email=email, password=password)
+
+    # If a referral code was provided, link referrer immediately
+    try:
+        from backend.src.api.referrals import ensure_referrals_schema, set_referred_by
+        ensure_referrals_schema()
+        if ref:
+            set_referred_by(int(user.id), str(ref))
+    except Exception:
+        pass
     
     verify_link = f"{request.url.scheme}://{request.url.netloc}/verify-account?token={token}"
     # Send verification email via SMTP

@@ -3,7 +3,7 @@ from components.sidebar import Sidebar
 from components.nav import Navbar
 
 
-def Layout(content, user_role: str = "Client", show_nav: bool = True):
+def Layout(content, user_role: str = "Client", show_nav: bool = True, user_display: str | None = None):
     """
     Base layout that wraps all pages with a responsive fixed/off-canvas sidebar, a top navbar, and the main content area.
     Set show_nav=False for public pages (e.g., login/register) to avoid rendering authenticated UI elements.
@@ -80,7 +80,7 @@ def Layout(content, user_role: str = "Client", show_nav: bool = True):
 
     return Div(
         style,
-        Sidebar(user_role=user_role),
+        Sidebar(user_role=user_role, user_display=user_display),
         Div(
             Navbar(user_role=user_role),
             Div(

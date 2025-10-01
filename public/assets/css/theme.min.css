@@ -7986,7 +7986,7 @@ button.bg-dark:hover {
     z-index: 1030;
 }
 
-.po-fixed{
+.po-fixed {
     position: fixed;
     top: 0;
     z-index: 1030;
@@ -18904,13 +18904,53 @@ a.text-decoration-underline:hover {
     padding: 0px !important;
 }
 
-#main-content .card-title{
-    font-size:14px !important;
+#main-content .card-title {
+    font-size: 14px !important;
 }
-#main-content .card-text.text-gray-500{
-    font-size:26px !important;
+
+#main-content .card-text.text-gray-500 {
+    font-size: 26px !important;
 }
 
 #desktop-sidebar li.nav-item {
     margin: 5px 0px;
+}
+
+#main-content {
+    min-height: 100vh !important;
+}
+
+.card.p-4 {
+    padding: 2rem !important;
+}
+
+button.btn.btn-sm.btn-outline-secondary.dropdown-toggle {
+    width: 50px !important;
+    min-width: 50px !important;
+    text-align: center;
+    padding: 13px 16px;
+}
+
+#desktop-sidebar .nav-link i {
+    margin-right: 10px;
+}
+
+.border-bottom-logo {
+    border-bottom: 1px solid #a6a6a6 !important;
+}
+
+
+.border-bottom-logo img,
+.border-bottom-logo .avatar.avatar-xl {
+    width: 6rem !important;
+}
+
+span#notifications-badge,
+#admin-withdraw-pending-badge,
+#admin-payouts-pending-badge,
+#admin-sales-pending-badge {
+    border-radius: 25px;
+    height: 25px;
+    width: 25px;
+    padding: 8px;
 }

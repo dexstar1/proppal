@@ -7,11 +7,11 @@ from routes.admin import admin_dashboard, admin_properties_route, admin_users, a
 from routes.admin_sales import (
     admin_sales_list, admin_sale_detail, admin_sale_approve, admin_sale_reject,
     admin_payouts_list, admin_payout_pay,
-    admin_sales_pending_count_fragment, admin_payouts_pending_count_fragment,
+    admin_sales_pending_count_fragment, admin_payouts_pending_count_fragment, admin_withdraw_pending_count_fragment,
     admin_withdraw_requests_list, admin_withdraw_request_approve, admin_withdraw_request_reject,
     admin_commissions_list, admin_commission_approve, admin_commission_reject
 )
-from routes.notifications import notifications_list, notifications_mark_read, notifications_unread_count_fragment, notifications_mark_all_read
+from routes.notifications import notifications_list, notifications_mark_read, notifications_unread_count_fragment, notifications_mark_all_read, notifications_dropdown_menu
 from routes.realtor import (realtor_dashboard, realtor_properties, realtor_property_view, realtor_referrals, realtor_commissions, realtor_withdraw, realtor_sales)
 from routes.realtor_profile import realtor_setup
 from routes.client import client_dashboard, client_properties, client_enquiries
@@ -29,7 +29,7 @@ hdrs = (
     Link(rel='stylesheet', href='/assets/css/theme.min.css', type='text/css'),
     Link(rel='stylesheet', href='/assets/fonts/feather/feather.css', type='text/css'),
     Link(rel='stylesheet', href='/assets/libs/highlightjs/styles/vs2015.css', type='text/css'),
-    Link(rel='stylesheet', href='/assets/libs/fortawesome/fontawesome-free/css/all.min.css', type='text/css'),
+    Link(rel='stylesheet', href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css', type='text/css'),
 )
 
 import os
@@ -71,8 +71,9 @@ async def login_post(request: Request):
     return await login(request)
 
 @app.get("/register")
-def register_get():
-    return register_page()
+def register_get(request: Request):
+    ref = request.query_params.get("ref")
+    return register_page(ref)
 
 @app.post("/register")
 async def register_post(request: Request):
@@ -169,6 +170,26 @@ async def admin_properties_delete(request: Request):
 async def admin_users_route(request: Request):
     return await admin_users(request)
 
+@app.get("/admin/users/{user_id:int}") # type: ignore
+async def admin_user_view_route(request: Request):
+    from routes.admin import admin_user_view
+    return await admin_user_view(request)
+
+@app.get("/admin/users/{user_id:int}/edit") # type: ignore
+async def admin_user_edit_route(request: Request):
+    from routes.admin import admin_user_edit
+    return await admin_user_edit(request)
+
+@app.put("/admin/users/{user_id:int}") # type: ignore
+async def admin_user_update_route(request: Request):
+    from routes.admin import admin_user_update
+    return await admin_user_update(request)
+
+@app.post("/admin/users/{user_id:int}/suspend") # type: ignore
+async def admin_user_suspend_route(request: Request):
+    from routes.admin import admin_user_suspend
+    return await admin_user_suspend(request)
+
 @app.get("/admin/analytics") # type: ignore
 async def admin_analytics_route(request: Request):
     return await admin_analytics(request)
@@ -212,6 +233,11 @@ async def admin_sales_pending_count_route(request: Request):
 async def admin_payouts_pending_count_route(request: Request):
     return await admin_payouts_pending_count_fragment(request)
 
+# Withdraw requests pending count fragment
+@app.get("/admin/withdraws/pending-count") # type: ignore
+async def admin_withdraws_pending_count_route(request: Request):
+    return await admin_withdraw_pending_count_fragment(request)
+
 @app.post("/admin/payouts/{payout_id}/pay") # type: ignore
 async def admin_payout_pay_route(request: Request):
     return await admin_payout_pay(request)
@@ -232,6 +258,10 @@ async def notifications_mark_all_read_route(request: Request):
 @app.get("/notifications/unread-count") # type: ignore
 async def notifications_unread_count_route(request: Request):
     return await notifications_unread_count_fragment(request)
+
+@app.get("/notifications/menu") # type: ignore
+async def notifications_dropdown_menu_route(request: Request):
+    return await notifications_dropdown_menu(request)
 
 @app.get("/client/dashboard") # type: ignore
 async def client_dashboard_route(request: Request):
@@ -264,6 +294,11 @@ async def realtor_referrals_route(request: Request):
 @app.get("/realtor/commissions") # type: ignore
 async def realtor_commissions_route(request: Request):
     return realtor_commissions(request)
+
+@app.get("/realtor/transactions") # type: ignore
+async def realtor_transactions_route(request: Request):
+    from routes.realtor import realtor_transactions
+    return realtor_transactions(request)
 
 # Realtor avatar (navbar)
 @app.get("/realtor/profile/avatar") # type: ignore

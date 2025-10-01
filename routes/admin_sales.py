@@ -10,6 +10,7 @@ from backend.src.api.admin_sales import (
     ensure_admin_sales_schema,
     get_pending_sales_count, get_pending_payouts_count
 )
+import math
 
 DEFAULT_COMMISSION_RATE = 0.10  # 10%
 
@@ -31,6 +32,18 @@ async def admin_sales_list(request: Request):
     ensure_admin_sales_schema()
     rows = get_all_sales()
 
+    # Pagination
+    per_page = 10
+    try:
+        page = int(request.query_params.get('page', '1'))
+    except Exception:
+        page = 1
+    total = len(rows)
+    total_pages = max(1, math.ceil(total / per_page))
+    page = max(1, min(page, total_pages))
+    start = (page - 1) * per_page
+    page_rows = rows[start:start+per_page]
+
     # Flash messages via session (preferred)
     toast_script = None
     flash = request.session.pop('flash', None) if hasattr(request, 'session') else None
@@ -48,20 +61,51 @@ async def admin_sales_list(request: Request):
         elif toast == 'error':
             toast_script = Script("showToast('Operation failed', 'danger')")
 
+    # Badge class mapping for statuses
+    def badge_cls(status: str) -> str:
+        status = (status or '').lower()
+        if status in ('approved', 'paid', 'success'):
+            return 'badge bg-success'
+        if status in ('pending', 'in_progress', 'processing'):
+            return 'badge bg-warning'
+        if status in ('rejected', 'failed', 'cancelled', 'error'):
+            return 'badge bg-danger'
+        return 'badge bg-secondary'
+
+    def action_dropdown(s):
+        items = []
+        items.append(Li(A('View', hx_get=f"/admin/sales/{s['id']}", hx_target="#main-content", cls='dropdown-item')))
+        if s['status'] == 'pending':
+            items.append(Li(A('Approve', hx_post=f"/admin/sales/{s['id']}/approve", hx_target="#main-content", cls='dropdown-item')))
+            items.append(Li(A('Reject', hx_post=f"/admin/sales/{s['id']}/reject", hx_target="#main-content", hx_confirm='Reject this sale?', cls='dropdown-item')))
+        return Div(
+            Button(cls='btn btn-sm btn-outline-secondary dropdown-toggle', data_bs_toggle='dropdown'),
+            Ul(*items, cls='dropdown-menu'),
+            cls='dropdown'
+        )
+
     def row_to_tr(idx, s):
         return Tr(
-            Td(str(idx+1)),
+            Td(str(start + idx + 1)),
             Td(s["property_name"] or f"Property {s['property_id']}") ,
             Td(f"{s['client_first_name']} {s['client_last_name']}") ,
             Td(f"₦{float(s['amount']):,.2f}"),
-            Td(Span(s['status'].title(), cls=f"badge bg-{'success' if s['status']=='approved' else 'warning' if s['status']=='pending' else 'danger'}")),
+            Td(Span(s['status'].title(), cls=badge_cls(s['status']))),
             Td(s['created_at'] or ''),
-            Td(
-                A(I(cls="fe fe-eye"), hx_get=f"/admin/sales/{s['id']}", hx_target="#main-content", cls="text-info me-2", title="View"),
-                (Button("Approve", cls="btn btn-sm btn-success me-2", hx_post=f"/admin/sales/{s['id']}/approve", hx_target="#main-content") if s['status']=='pending' else Fragment()),
-                (Button("Reject", cls="btn btn-sm btn-danger", hx_post=f"/admin/sales/{s['id']}/reject", hx_target="#main-content") if s['status']=='pending' else Fragment()),
-            ),
+            Td(action_dropdown(s)),
         )
+
+    # Pagination controls
+    def pagination_controls():
+        if total_pages <= 1:
+            return Fragment()
+        nav_items = []
+        prev_disabled = ' disabled' if page <= 1 else ''
+        next_disabled = ' disabled' if page >= total_pages else ''
+        nav_items.append(Li(A('Previous', hx_get=f"/admin/sales?page={page-1}", hx_target='#main-content', cls=f'page-link{prev_disabled}'), cls='page-item'))
+        nav_items.append(Li(Span(f"Page {page} of {total_pages}", cls='page-link disabled'), cls='page-item'))
+        nav_items.append(Li(A('Next', hx_get=f"/admin/sales?page={page+1}", hx_target='#main-content', cls=f'page-link{next_disabled}'), cls='page-item'))
+        return Nav(Ul(*nav_items, cls='pagination'))
 
     content = Div(
         H1("Sales Approvals"),
@@ -72,14 +116,17 @@ async def admin_sales_list(request: Request):
             cls="row"
         ),
         Div(
-            Table(
-                Thead(Tr(Th("S/N"), Th("Property"), Th("Client"), Th("Amount"), Th("Status"), Th("Date"), Th("Actions"))),
-                Tbody(*(row_to_tr(i, s) for i, s in enumerate(rows)) if rows else Tr(Td("No sales found", colspan="7", cls="text-center text-muted py-4"))),
-                cls="table table-striped table-hover"
+            Div(
+                Table(
+                    Thead(Tr(Th("S/N"), Th("Property"), Th("Client"), Th("Amount"), Th("Status"), Th("Date"), Th("Action"))),
+                    Tbody(*(row_to_tr(i, s) for i, s in enumerate(page_rows)) if page_rows else Tr(Td("No sales found", colspan="7", cls="text-center text-muted py-4"))),
+                    cls="table table-striped table-hover"
+                ),
+                cls="table-responsive"
             ),
+            pagination_controls(),
             cls="card"
         ),
-        # Include toasts (no global notification-update trigger here)
         (toast_script if toast_script else Fragment()),
         cls="container-fluid"
     )
@@ -145,7 +192,7 @@ Input(type="text", name="reject_reason", placeholder="Reason (required)", requir
     return content if request.headers.get("HX-Request") else Layout(content, user_role="Admin")
 
 
-# Actions
+# Action
 async def admin_sale_approve(request: Request):
     user, redirect = _require_admin(request)
     if redirect: return redirect
@@ -221,17 +268,44 @@ async def admin_payouts_list(request: Request):
             Td(str(idx+1)),
             Td(r['realtor_email'] or r['realtor_id']),
             Td(f"₦{float(r['amount']):,.2f}"),
-            Td(r['method'] or ''),
+            Td(Span(p['status'].title(), cls=badge_cls(p['status']))),
             Td(r['decided_at'] or ''),
         )
+    # Pagination
+    per_page = 10
+    try:
+        page = int(request.query_params.get('page', '1'))
+    except Exception:
+        page = 1
+    total = len(rows)
+    total_pages = max(1, math.ceil(total / per_page))
+    page = max(1, min(page, total_pages))
+    start = (page - 1) * per_page
+    page_rows = rows[start:start+per_page]
+
+    def pagination_controls():
+        if total_pages <= 1:
+            return Fragment()
+        nav_items = []
+        prev_disabled = ' disabled' if page <= 1 else ''
+        next_disabled = ' disabled' if page >= total_pages else ''
+        nav_items.append(Li(A('Previous', hx_get=f"/admin/payouts?page={page-1}", hx_target='#main-content', cls=f'page-link{prev_disabled}'), cls='page-item'))
+        nav_items.append(Li(Span(f"Page {page} of {total_pages}", cls='page-link disabled'), cls='page-item'))
+        nav_items.append(Li(A('Next', hx_get=f"/admin/payouts?page={page+1}", hx_target='#main-content', cls=f'page-link{next_disabled}'), cls='page-item'))
+        return Nav(Ul(*nav_items, cls='pagination'))
+
     content = Div(
         H1("Payouts (Approved Withdrawals)"),
         Div(
-            Table(
-                Thead(Tr(Th("S/N"), Th("Realtor"), Th("Amount"), Th("Method"), Th("Approved On"))),
-                Tbody(*(row_to_tr(i, r) for i, r in enumerate(rows)) if rows else Tr(Td("No approved withdrawals", colspan="5", cls="text-center text-muted py-4"))),
-                cls="table table-striped table-hover"
+            Div(
+                Table(
+                    Thead(Tr(Th("S/N"), Th("Realtor"), Th("Amount"), Th("Status"), Th("Approved On"))),
+                    Tbody(*(row_to_tr(i, r) for i, r in enumerate(page_rows)) if page_rows else Tr(Td("No approved withdrawals", colspan="5", cls="text-center text-muted py-4"))),
+                    cls="table table-striped table-hover"
+                ),
+                cls="table-responsive"
             ),
+            pagination_controls(),
             cls="card"
         ),
         (toast_script if toast_script else Fragment()),
@@ -248,6 +322,18 @@ async def admin_commissions_list(request: Request):
     if redirect: return redirect
     rows = get_payouts()
 
+    # Pagination
+    per_page = 10
+    try:
+        page = int(request.query_params.get('page', '1'))
+    except Exception:
+        page = 1
+    total = len(rows)
+    total_pages = max(1, math.ceil(total / per_page))
+    page = max(1, min(page, total_pages))
+    start = (page - 1) * per_page
+    page_rows = rows[start:start+per_page]
+
     # Flash toast
     toast_script = None
     flash = request.session.pop('flash', None) if hasattr(request, 'session') else None
@@ -256,33 +342,65 @@ async def admin_commissions_list(request: Request):
         level = flash.get('level') or 'info'
         toast_script = Script(f"showToast({msg!r}, {level!r})")
 
+    def badge_cls(status: str) -> str:
+        status = (status or '').lower()
+        if status in ('approved', 'paid', 'success'):
+            return 'badge bg-success'
+        if status in ('pending', 'in_progress', 'processing'):
+            return 'badge bg-warning'
+        if status in ('rejected', 'failed', 'cancelled', 'error'):
+            return 'badge bg-danger'
+        return 'badge bg-secondary'
+
+    def action_dropdown(p):
+        items = []
+        if p['status'] == 'pending':
+            items.append(Li(A('Approve', hx_post=f"/admin/commissions/{p['id']}/approve", hx_target="#main-content", cls='dropdown-item')))
+            items.append(Li(A('Reject', hx_post=f"/admin/commissions/{p['id']}/reject", hx_target="#main-content", hx_confirm='Reject this commission?', cls='dropdown-item')))
+        return Div(
+            Button(cls='btn btn-sm btn-outline-secondary dropdown-toggle', data_bs_toggle='dropdown'),
+            Ul(*items, cls='dropdown-menu'),
+            cls='dropdown'
+        )
+
     def row_to_tr(idx, p):
         commission = float(p['amount']) if p['amount'] is not None else 0.0
         sale_amount = float(p['sale_amount']) if p['sale_amount'] is not None else 0.0
         rate = float(p['commission_rate']) if p['commission_rate'] is not None else 0.0
         rate_pct = f"{rate*100:.2f}%"
         return Tr(
-            Td(str(idx+1)),
+            Td(str(start + idx + 1)),
             Td(p['realtor_email'] or p['realtor_id']),
             Td(f"₦{sale_amount:,.2f}"),
-            Td(rate_pct),
             Td(f"₦{commission:,.2f}"),
-            Td(Span(p['status'].title(), cls=f"badge bg-{'success' if p['status']=='approved' else 'warning' if p['status']=='pending' else 'danger'}")),
+            Td(Span(p['status'].title(), cls=badge_cls(p['status']))),
             Td(p['created_at'] or ''),
-            Td(
-                (Form(Button("Approve", type="submit", cls="btn btn-sm btn-success me-2"), hx_post=f"/admin/commissions/{p['id']}/approve", hx_target="#main-content") if p['status']=='pending' else Fragment()),
-                (Form(Button("Reject", type="submit", cls="btn btn-sm btn-danger"), hx_post=f"/admin/commissions/{p['id']}/reject", hx_target="#main-content") if p['status']=='pending' else Fragment()),
-            )
+            Td(action_dropdown(p))
         )
+
+    def pagination_controls():
+        if total_pages <= 1:
+            return Fragment()
+        nav_items = []
+        prev_disabled = ' disabled' if page <= 1 else ''
+        next_disabled = ' disabled' if page >= total_pages else ''
+        nav_items.append(Li(A('Previous', hx_get=f"/admin/commissions?page={page-1}", hx_target='#main-content', cls=f'page-link{prev_disabled}'), cls='page-item'))
+        nav_items.append(Li(Span(f"Page {page} of {total_pages}", cls='page-link disabled'), cls='page-item'))
+        nav_items.append(Li(A('Next', hx_get=f"/admin/commissions?page={page+1}", hx_target='#main-content', cls=f'page-link{next_disabled}'), cls='page-item'))
+        return Nav(Ul(*nav_items, cls='pagination'))
 
     content = Div(
         H1("Commissions Management"),
         Div(
-            Table(
-                Thead(Tr(Th("S/N"), Th("Realtor"), Th("Sale Amount"), Th("Rate"), Th("Commission"), Th("Status"), Th("Created"), Th("Actions"))),
-                Tbody(*(row_to_tr(i, p) for i, p in enumerate(rows)) if rows else Tr(Td("No commissions", colspan="9", cls="text-center text-muted py-4"))),
-                cls="table table-striped table-hover"
+            Div(
+                Table(
+                    Thead(Tr(Th("S/N"), Th("Realtor"), Th("Sale Amount"), Th("Commission"), Th("Status"), Th("Created"), Th("Action"))),
+                    Tbody(*(row_to_tr(i, p) for i, p in enumerate(page_rows)) if page_rows else Tr(Td("No commissions", colspan="9", cls="text-center text-muted py-4"))),
+                    cls="table table-striped table-hover"
+                ),
+                cls="table-responsive"
             ),
+            pagination_controls(),
             cls="card"
         ),
         (toast_script if toast_script else Fragment()),
@@ -319,6 +437,18 @@ async def admin_withdraw_requests_list(request: Request):
     if redirect: return redirect
     rows = get_withdraw_requests()
 
+    # Pagination
+    per_page = 10
+    try:
+        page = int(request.query_params.get('page', '1'))
+    except Exception:
+        page = 1
+    total = len(rows)
+    total_pages = max(1, math.ceil(total / per_page))
+    page = max(1, min(page, total_pages))
+    start = (page - 1) * per_page
+    page_rows = rows[start:start+per_page]
+
     # Flash toast
     toast_script = None
     flash = request.session.pop('flash', None) if hasattr(request, 'session') else None
@@ -327,34 +457,60 @@ async def admin_withdraw_requests_list(request: Request):
         level = flash.get('level') or 'info'
         toast_script = Script(f"showToast({msg!r}, {level!r})")
 
+    def badge_cls(status: str) -> str:
+        status = (status or '').lower()
+        if status in ('approved', 'paid', 'success'):
+            return 'badge bg-success'
+        if status in ('pending', 'in_progress', 'processing'):
+            return 'badge bg-warning'
+        if status in ('rejected', 'failed', 'cancelled', 'error'):
+            return 'badge bg-danger'
+        return 'badge bg-secondary'
+
+    def action_dropdown(r):
+        items = []
+        if r['status'] == 'pending':
+            items.append(Li(A('Approve', hx_post=f"/admin/withdraw-requests/{r['id']}/approve", hx_target="#main-content", hx_confirm='Approve this withdrawal request?', cls='dropdown-item')))
+            items.append(Li(A('Reject', hx_post=f"/admin/withdraw-requests/{r['id']}/reject", hx_target="#main-content", hx_confirm='Reject this withdrawal request?', cls='dropdown-item')))
+        return Div(
+            Button(cls='btn btn-sm btn-outline-secondary dropdown-toggle', data_bs_toggle='dropdown'),
+            Ul(*items, cls='dropdown-menu'),
+            cls='dropdown'
+        )
+
     def row_to_tr(idx, r):
         return Tr(
-            Td(str(idx+1)),
+            Td(str(start + idx + 1)),
             Td(r['realtor_email'] or r['realtor_id']),
             Td(f"₦{float(r['amount']):,.2f}"),
-            Td(r['method'] or ''),
-            Td(r['status'].title()),
+            Td(Span((r['status'] or '').title(), cls=badge_cls(r['status']))),
             Td(r['created_at'] or ''),
-            Td(
-                (Form(
-                    Button("Approve", type="submit", cls="btn btn-sm btn-success me-2"),
-                    hx_post=f"/admin/withdraw-requests/{r['id']}/approve", hx_target="#main-content"
-                ) if r['status']=='pending' else Fragment()),
-                (Form(
-                    Button("Reject", type="submit", cls="btn btn-sm btn-danger"),
-                    hx_post=f"/admin/withdraw-requests/{r['id']}/reject", hx_target="#main-content"
-                ) if r['status']=='pending' else Fragment()),
-            )
+            Td(action_dropdown(r))
         )
+
+    def pagination_controls():
+        if total_pages <= 1:
+            return Fragment()
+        nav_items = []
+        prev_disabled = ' disabled' if page <= 1 else ''
+        next_disabled = ' disabled' if page >= total_pages else ''
+        nav_items.append(Li(A('Previous', hx_get=f"/admin/withdraw-requests?page={page-1}", hx_target='#main-content', cls=f'page-link{prev_disabled}'), cls='page-item'))
+        nav_items.append(Li(Span(f"Page {page} of {total_pages}", cls='page-link disabled'), cls='page-item'))
+        nav_items.append(Li(A('Next', hx_get=f"/admin/withdraw-requests?page={page+1}", hx_target='#main-content', cls=f'page-link{next_disabled}'), cls='page-item'))
+        return Nav(Ul(*nav_items, cls='pagination'))
 
     content = Div(
         H1("Withdraw Requests"),
         Div(
-            Table(
-                Thead(Tr(Th("S/N"), Th("Realtor"), Th("Amount"), Th("Method"), Th("Status"), Th("Requested"), Th("Actions"))),
-                Tbody(*(row_to_tr(i, r) for i, r in enumerate(rows)) if rows else Tr(Td("No requests", colspan="7", cls="text-center text-muted py-4"))),
-                cls="table table-striped table-hover"
+            Div(
+                Table(
+                    Thead(Tr(Th("S/N"), Th("Realtor"), Th("Amount"), Th("Status"), Th("Requested"), Th("Action"))),
+                    Tbody(*(row_to_tr(i, r) for i, r in enumerate(page_rows)) if page_rows else Tr(Td("No requests", colspan="7", cls="text-center text-muted py-4"))),
+                    cls="table table-striped table-hover"
+                ),
+                cls="table-responsive"
             ),
+            pagination_controls(),
             cls="card"
         ),
         (toast_script if toast_script else Fragment()),
@@ -394,6 +550,19 @@ async def admin_payouts_pending_count_fragment(request: Request):
     count = get_pending_payouts_count()
     badge_cls = "badge bg-danger ms-2" if count > 0 else "badge bg-secondary ms-2"
     return Span(str(count), id="admin-payouts-pending-badge", cls=badge_cls)
+
+
+# Withdraw requests count fragment (pending)
+from backend.src.api.wallets import get_withdraw_requests as _get_all_withdraws
+
+async def admin_withdraw_pending_count_fragment(request: Request):
+    try:
+        rows = _get_all_withdraws()
+        count = len([r for r in rows if (r.get('status') or '') == 'pending'])
+    except Exception:
+        count = 0
+    badge_cls = "badge bg-danger ms-2" if count > 0 else "badge bg-secondary ms-2"
+    return Span(str(count), id="admin-withdraw-pending-badge", cls=badge_cls)
 
 
 async def admin_payout_pay(request: Request):
