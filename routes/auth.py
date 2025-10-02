@@ -35,7 +35,8 @@ async def forgot_password(request: Request):
         
         # In a real app, you would email this link.
         # For now, we print it to the console for demonstration.
-        reset_link = f"{request.url.scheme}://{request.url.netloc}/reset-password?token={token}"
+        from backend.src.utils.urls import absolute_url
+        reset_link = absolute_url(request, f"/reset-password?token={token}")
         print("-" * 50)
         print(f"PASSWORD RESET LINK (for demo purposes): {reset_link}")
         print("-" * 50)
@@ -135,7 +136,8 @@ async def register(request: Request):
     except Exception:
         pass
     
-    verify_link = f"{request.url.scheme}://{request.url.netloc}/verify-account?token={token}"
+    from backend.src.utils.urls import absolute_url
+    verify_link = absolute_url(request, f"/verify-account?token={token}")
     # Send verification email via SMTP
     try:
         from backend.src.utils.mailer import send_mail
