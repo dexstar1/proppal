@@ -147,36 +147,38 @@ def Sidebar(user_role: str = "Client", user_display: str | None = None):
     ]
 
     # Shared content for both sidebars
-    sidebar_content = (
+    sidebar_content = Div(
         Div(
             avatar(avatar_size="xl",
                    src="/assets/images/cozyhavens_logo.png", alt="..."),
-            cls="d-flex flex-column text-center align-items-center p-3 mb-3 border-bottom-logo"
+            cls="d-flex flex-column text-center align-items-center p-3 mb-3 border-bottom-logo",
+            tabindex="-1"
         ),
         Ul(*sidebar_items, cls="nav nav-pills flex-column"),
-        Ul(*profile_items, cls="nav nav-pills flex-column"),
+        Ul(*profile_items, cls="nav nav-pills flex-column mt-2 border-top"),
+        id="sidebar"
     )
 
     # Desktop sidebar (fixed and togglable)
     desktop_sidebar = Nav(
         *sidebar_content,
         id="desktop-sidebar",
-        cls="d-none d-lg-flex flex-column flex-shrink-0 p-4 bg-dark vh-100",
+        cls="d-sm-none d-lg-flex flex-column flex-shrink-0 p-4 bg-dark vh-100",
         style="position: fixed; top: 0; left: 0; width: 240px; z-index: 1020;overflow-y:scroll;"
     )
 
-    # Mobile sidebar (off-canvas)
+    # Mobile sidebar (off-canvas) — hidden on load, slides from left when shown
     mobile_sidebar = Div(
-        Div(H5("Menu", cls="offcanvas-title"),
-            Button(cls="btn-close", data_bs_dismiss="offcanvas"),
-            cls="offcanvas-header"),
-        Div(
-            Nav(*sidebar_content, cls="d-flex flex-column flex-shrink-0 p-3 bg-dark h-100"),
-            cls="offcanvas-body p-0"
-        ),
-        id="sidebar",
-        cls="offcanvas offcanvas-start d-lg-none",
-        tabindex="-1"
-    )
-
+            Div(I(cls="fa fa-close sidebar-close", type="button", data_bs_dismiss="offcanvas", aria_label="Close"),
+                cls="offcanvas-header"
+            ),
+            Div(
+                sidebar_content,
+                cls="offcanvas-body p-0"
+            ),
+            id="mobileSidebar",
+            tabindex="-1",
+            aria_labelledby="mobileSidebarLabel",
+            cls="offcanvas offcanvas-start d-lg-none bg-dark"
+        )
     return Fragment(desktop_sidebar, mobile_sidebar)

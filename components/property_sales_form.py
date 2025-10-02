@@ -438,7 +438,7 @@ def PropertySalesForm(properties: List[dict] = None, sale_data: dict = None):
         ),
         
         # JavaScript for form interactions
-        Script("""
+        Script(r"""
             // Corner piece toggle
             document.getElementById('corner-select').addEventListener('change', function() {
                 const cornerTotal = document.getElementById('corner-total');
@@ -476,7 +476,7 @@ def PropertySalesForm(properties: List[dict] = None, sale_data: dict = None):
                 resetSelect(locSelect, 'Select Size');
                 sizes.forEach(s => {
                     const o = document.createElement('option');
-                    o.value = s.toLowerCase().replace(/\s+/g,'_');
+                    o.value = s.toLowerCase().replace(/\s/g,'_');
                     o.textContent = s;
                     locSelect.appendChild(o);
                 });
@@ -487,7 +487,7 @@ def PropertySalesForm(properties: List[dict] = None, sale_data: dict = None):
                 resetSelect(planSelect, 'Select Plan');
                 plans.forEach(p => {
                     const o = document.createElement('option');
-                    o.value = p.toLowerCase().replace(/\s+/g,'_');
+                    o.value = p.toLowerCase().replace(/\s/g,'_');
                     o.textContent = p;
                     planSelect.appendChild(o);
                 });

@@ -8,35 +8,32 @@ def Layout(content, user_role: str = "Client", show_nav: bool = True, user_displ
     Base layout that wraps all pages with a responsive fixed/off-canvas sidebar, a top navbar, and the main content area.
     Set show_nav=False for public pages (e.g., login/register) to avoid rendering authenticated UI elements.
     """
-    # CSS for handling the responsive margin and the collapsed state of the desktop sidebar
-    style = Style("""
-        .main-content-wrapper {
-            transition: margin-left 0.2s ease-in-out;
-        }
-        @media (min-width: 992px) {
-            .main-content-wrapper {
-                margin-left: 240px;
-            }
-            body.sidebar-collapsed .main-content-wrapper {
-                margin-left: 0;
-            }
-            body.sidebar-collapsed #desktop-sidebar {
-                display: none !important;
-            }
-        }
-    """)
 
-    # JS for the desktop sidebar toggle
-    desktop_toggle_js = Script("""
-        const toggleButton = document.getElementById('desktop-sidebar-toggle');
-        if (toggleButton) {
-            toggleButton.addEventListener('click', function() {
-                document.body.classList.toggle('sidebar-collapsed');
-            });
-        }
-    """)
 
     bootstrap_js = Script(src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js")
+
+    # Minimal offcanvas CSS to ensure correct hidden/slide behavior if Bootstrap CSS is not present
+    offcanvas_style = Style("""
+        .offcanvas {
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            z-index: 1045;
+            visibility: hidden;
+            transform: translateX(-100%);
+            transition: transform .3s ease-in-out, visibility 0s linear .3s;
+            background-color: inherit;
+        }
+        .offcanvas-start { left: 0; width: 280px; }
+        .offcanvas.show {
+            visibility: visible;
+            transform: none;
+            transition: transform .3s ease-in-out;
+        }
+        .offcanvas-backdrop { position: fixed; top:0; left:0; width:100%; height:100%; background-color: rgba(0,0,0,.5); z-index: 1040; }
+        .offcanvas-backdrop.fade { opacity: 0; transition: opacity .15s linear; }
+        .offcanvas-backdrop.show { opacity: .5; }
+    """)
 
     # Bootstrap toast helper
     toast_container = Div(id="toast-container", cls="position-fixed top-0 end-0 p-3", style="z-index: 1100;")
@@ -66,7 +63,7 @@ def Layout(content, user_role: str = "Client", show_nav: bool = True, user_displ
     if not show_nav:
         # Public/simple layout without sidebar/navbar to avoid protected HTMX calls
         return Div(
-            style,
+            offcanvas_style,
             Div(
                 content,
                 id="main-content",
@@ -78,20 +75,44 @@ def Layout(content, user_role: str = "Client", show_nav: bool = True, user_displ
             toast_js
         )
 
+    
+    mobile_footnav = Div(
+        A(I(cls="fa-solid fa-gauge"), href="/realtor/dashboard", hx_get="/realtor/dashboard", hx_target="#main-content", hx_push_url="true", data_bs_dismiss="offcanvas", cls="text-white btn btn-dark me-3 col-2", title="View"),
+        A(I(cls="fa fa-solid fa-magnifying-glass"), href="/realtor/dashboard", hx_get="/realtor/dashboard", hx_target="#main-content", hx_push_url="true", data_bs_dismiss="offcanvas", cls="text-white btn btn-dark me-3 col-2", title="View"),
+        A(I(cls="fa fa-solid fa-chart-line"), href="/realtor/sales", hx_get="/realtor/sales", hx_target="#main-content", hx_push_url="true", data_bs_dismiss="offcanvas", cls="text-white btn btn-dark me-3 col-2", title="View"),
+        A(I(cls="fa-solid fa-wallet"), href="/realtor/withdraw", hx_get="/realtor/withdraw", hx_target="#main-content", hx_push_url="true", data_bs_dismiss="offcanvas", cls="text-white btn btn-dark me-3 col-2", title="View"),
+        A(I(cls="fe fe-menu"), id="hamburger", cls="text-white btn btn-dark me-3 col-2", title="Menu", data_bs_toggle="offcanvas", data_bs_target="#mobileSidebar", aria_controls="mobileSidebar"),
+        id="foot_nav",
+        cls="row d-lg-none border-top"
+    )
+
+    offcanvas_close_js = Script("""
+        document.addEventListener('click', function(ev){
+            const a = ev.target.closest('#mobileSidebar a, #foot_nav a');
+            if (!a) return;
+            if (a.id === 'hamburger') return;
+            const el = document.getElementById('mobileSidebar');
+            if (!el) return;
+            const inst = bootstrap.Offcanvas.getInstance(el);
+            if (inst) { inst.hide(); }
+        });
+    """)
+
     return Div(
-        style,
+        offcanvas_style,
         Sidebar(user_role=user_role, user_display=user_display),
         Div(
-            Navbar(user_role=user_role),
+            Div(Navbar(user_role=user_role), cls="d-sm-none d-lg-flex"),
             Div(
                 content,
                 id="main-content",
                 cls="p-8", style="background-color:#f5f6fa;"
             ),
+            mobile_footnav,
             cls="main-content-wrapper"
         ),
         toast_container,
         bootstrap_js,
-        desktop_toggle_js,
-        toast_js
+        toast_js,
+        offcanvas_close_js
     )
