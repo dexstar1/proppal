@@ -220,8 +220,13 @@ async def realtor_account(request: Request):
         summary = Div(
             H2("My Account", cls="mb-4"),
             Div(
-                Img(src=(to_val('profile_picture') or '/assets/img/properties/placeholder.png'), cls="rounded-circle", style="width: 100px; height: 100px; object-fit: cover;"),
                 Div(
+                    Img(src=(to_val('profile_picture') or '/assets/img/properties/placeholder.png'), cls="rounded-circle", style="width: 100px; height: 100px; object-fit: cover;")
+                    ,cls="col-12 col-md-3 mb-4"
+                ),
+                Div(
+                    Div(
+                        
                     P(Strong("Name: "), Span(name_display or '—')),
                     P(Strong("Email: "), Span(getattr(user, 'email', ''))),
                     P(Strong("Gender: "), Span(to_val('gender') or '-')),
@@ -238,47 +243,54 @@ async def realtor_account(request: Request):
                         cls='mb-2'
                     ),
                     P(Strong("Referred By Code: "), Span(ref_by_code or '—')),
-                    cls="ms-3"
+                    cls="card"
+                    ),
+                    cls="col-12 col-md-7 card p-4 mb-4"
                 ),
-                cls="d-flex align-items-top mb-4 justify-content-between w-50"
+                cls="row mb-4"
             )
         )
         form = Form(
-            H3("Update Profile Information", cls="mb-4"),
             Div(
+                H6("Update Profile Information", cls="mb-4"),
                 Div(Label("Gender", cls="form-label"), Select(
                     Option("Select", value=""),
                     Option("Male", value="male", selected=(to_val('gender')=='male')),
                     Option("Female", value="female", selected=(to_val('gender')=='female')),
                     name="gender", cls="form-select form-control"), cls="col-md-4"),
                 Div(Label("Address", cls="form-label"), Textarea(to_val('address'), name="address", rows="2", cls="form-control"), cls="col-md-8"),
-                cls="row g-3 mb-4"
+                cls="card col-12 g-3 my-4 p-4"
             ),
-            H3("Profile Picture", cls="mb-3"),
-            Div(Label("Upload Image", cls="form-label"), Input(type="file", name="profile_picture", accept=".jpg,.png,.jpeg,.webp", cls="form-control"), cls="mb-4"),
-            H3("Bank Information", cls="mb-3"),
             Div(
-                Div(Label("Bank Name", cls="form-label"), Input(type="text", name="bank_name", value=to_val('bank_name'), cls="form-control"), cls="col-md-4"),
-                Div(Label("Account Number", cls="form-label"), Input(type="text", name="account_number", value=to_val('account_number'), cls="form-control"), cls="col-md-4"),
-                Div(Label("Account Name", cls="form-label"), Input(type="text", name="account_name", value=to_val('account_name'), cls="form-control"), cls="col-md-4"),
-                cls="row g-3 mb-4"
+                H6("Profile Picture", cls="mb-4"),
+                Div(Label("Upload Image", cls="form-label"), Input(type="file", name="profile_picture", accept=".jpg,.png,.jpeg,.webp", cls="form-control"), cls="mb-4")
+            , cls="card col-12 my-4 p-4"
+            ),
+            Div(
+                H6("Bank Information", cls="mb-4"),
+                Div(
+                   Div(Label("Bank Name", cls="form-label"), Input(type="text", name="bank_name", value=to_val('bank_name'), cls="form-control"), cls="col-md-4"),
+                   Div(Label("Account Number", cls="form-label"), Input(type="text", name="account_number", value=to_val('account_number'), cls="form-control"), cls="col-md-4"),
+                   Div(Label("Account Name", cls="form-label"), Input(type="text", name="account_name", value=to_val('account_name'), cls="form-control"), cls="col-md-4"),
+                   cls="row mb-4"
+                ), cls="card col-12 my-4 p-4"
             ),
             Button("Save Changes", type="submit", cls="btn btn-primary"),
             enctype="multipart/form-data",
             hx_post="/realtor/account",
             hx_target="#main-content",
-            cls="card p-4 mb-4"
+            cls="row my-4"
         )
 
         change_password_form = Form(
-            H3("Change Password", cls="mb-3"),
-            Div(Label("Current Password", cls="form-label"), Input(type="password", name="current_password", required=True, cls="form-control"), cls="mb-3"),
-            Div(Label("New Password", cls="form-label"), Input(type="password", name="new_password", required=True, minlength="8", cls="form-control"), cls="mb-3"),
-            Div(Label("Confirm New Password", cls="form-label"), Input(type="password", name="confirm_password", required=True, minlength="8", cls="form-control"), cls="mb-3"),
+            H6("Change Password", cls="mb-4"),
+            Div(Label("Current Password", cls="form-label"), Input(type="password", name="current_password", required=True, cls="form-control"), cls="mb-4"),
+            Div(Label("New Password", cls="form-label"), Input(type="password", name="new_password", required=True, minlength="8", cls="form-control"), cls="mb-4"),
+            Div(Label("Confirm New Password", cls="form-label"), Input(type="password", name="confirm_password", required=True, minlength="8", cls="form-control"), cls="mb-4"),
             Button("Update Password", type="submit", cls="btn btn-outline-primary"),
             hx_post="/realtor/account/password",
             hx_target="#main-content",
-            cls="card p-4"
+            cls="card row p-4 my-4"
         )
         content = Div(summary, form, change_password_form, cls="container mt-4")
         # Wrap in Layout when not HTMX

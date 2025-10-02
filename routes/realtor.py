@@ -185,7 +185,7 @@ def realtor_dashboard_content(user_role: str = "Realtor", wallet_balance: float 
                     cls="table table-responsive table-sm"
                 ),
                 card_cls="card mb-4 col-12 shadow"
-            ),cls="col-12"
+            ),cls="col-12 my-4"
             ),
         cls="row"
         ),
@@ -277,7 +277,7 @@ def get_property_by_id(property_id: int) -> Optional[Property]:
 def realtor_properties_content(request: Request):
     properties = get_all_properties()
     return Div(
-        H1("My Properties"),
+        H1("Properties"),
         P("View all available property listings."),
         Table(
             Thead(Tr(Th("S/N"), Th("Image"), Th("Title"), Th("Location"), Th("Price"), Th("Action"))),
@@ -291,7 +291,7 @@ def realtor_properties_content(request: Request):
                     A(I(cls="fe fe-eye"), hx_get=f"/realtor/properties/{prop.id}", hx_target="#main-content", cls="text-info me-3", title="View"),
                 )
             ) for i, prop in enumerate(properties)]),
-            cls="table table-responsive table-striped"
+            cls="table table-responsive table-striped card p-4"
         ),
         cls="container-fluid"
     )
@@ -627,9 +627,9 @@ def realtor_withdraw_content(user_id: int):
                         Button("Submit Request", type="submit", cls="btn btn-primary"),
                         hx_post="/realtor/withdraw",
                         hx_target="#main-content"
-                    ), cls="card"
+                    ), cls="card p-4"
                     ),
-                    cls="p-4 mb-4 col-12 col-md-6 col-xl-6"
+                    cls="mb-4 col-12 col-md-6 col-xl-6"
                 ), 
                 cls="row"
             ),

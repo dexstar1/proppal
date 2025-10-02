@@ -82,7 +82,7 @@ def admin_dashboard_content():
                 Td('Yes' if u['is_verified'] else 'No'),
                 Td((u['status'] or 'active').title())
             ) for u in latest_users) if latest_users else Tr(Td('No users', colspan='7', cls='text-center text-muted py-4'))),
-            cls="table table-sm table-hover"
+            cls="table table-responsive table-sm table-hover"
         ),
         cls='table-responsive'
     )
@@ -151,7 +151,7 @@ def admin_properties_content():
                 Td(f"${float(_safe_get(prop, 'price') or 0):,.2f}"),
                 Td(action_dropdown(prop))
             ) for i, prop in enumerate(properties)]),
-            cls="table table-striped"
+            cls="table table-responsive table-striped"
         ),
         cls="container-fluid"
     )
@@ -342,7 +342,7 @@ def admin_users_content(search_q: str = '', role_f: str = 'all', status_f: str =
     # Filters UI
     filters = Form(
         Div(
-            Div(Label("Search", cls='form-label'), Input(type='search', name='q', value=search_q or '', cls='form-control'), cls='col-md-3'),
+            Div(Label("Search", cls='form-label'), Input(type='search', name='q', value=search_q or '', cls='form-control'), cls='col-md-4'),
             Div(Label("Role", cls='form-label'), Select(
                 Option('All', value='all', selected=(role_f=='all')),
                 Option('Admin', value='admin', selected=(role_f=='admin')),
@@ -362,11 +362,11 @@ def admin_users_content(search_q: str = '', role_f: str = 'all', status_f: str =
                 Option('10', value='10', selected=(per_page==10)),
                 Option('25', value='25', selected=(per_page==25)),
                 Option('50', value='50', selected=(per_page==50)),
-                name='per_page', cls='form-select form-control'), cls='col-md-1'),
-            Div(Label(""), Button('Apply', cls='btn btn-primary w-100'), cls='col-md-2'),
+                name='per_page', cls='form-select form-control'), cls='col-md-2'),
+            Div(Label(""), Button('Apply', cls='btn btn-primary w-100'), cls='col-md-3 my-3'),
             cls='row g-2'
         ),
-        hx_get='/admin/users', hx_target='#main-content', cls='card p-3 mb-3'
+        hx_get='/admin/users', hx_target='#main-content', cls='card p-4 mb-4'
     )
 
     table = Div(
@@ -382,9 +382,9 @@ def admin_users_content(search_q: str = '', role_f: str = 'all', status_f: str =
                 Td(Span((u['status'] or 'active').title(), cls=f"badge bg-{'success' if (u['status'] or 'active')=='active' else 'warning'}")),
                 Td(actions_cell(u))
             ) for u in rows) if rows else Tr(Td('No users', colspan='8', cls='text-center text-muted py-4'))),
-            cls="table table-striped table-hover"
+            cls="table table-responsive table-striped table-hover"
         ),
-        cls='table-responsive'
+        cls='table-responsive my-4'
     )
 
     # Pagination controls
@@ -403,7 +403,7 @@ def admin_analytics_content():
     return Div(H1("Analytics Dashboard"), Div(Card(title="Monthly Revenue", content="Chart placeholder"), Card(title="User Growth", content="Chart placeholder")), cls="container-fluid")
 
 def admin_payouts_content():
-    return Div(H1("Payout Management"), Table(Thead(Tr(Th("ID"), Th("User"), Th("Amount"), Th("Status"), Th("Action"))), Tbody(Tr(Td("#P001"), Td("Jane Smith"), Td("$1,200"), Td("Pending"), Td(Button("Approve", cls="btn btn-sm btn-success")))), cls="table table-striped"), cls="container-fluid")
+    return Div(H1("Payout Management"), Table(Thead(Tr(Th("ID"), Th("User"), Th("Amount"), Th("Status"), Th("Action"))), Tbody(Tr(Td("#P001"), Td("Jane Smith"), Td("$1,200"), Td("Pending"), Td(Button("Approve", cls="btn btn-sm btn-success")))), cls="table table-responsive table-striped"), cls="container-fluid")
 
 # --- Page Route Functions ---
 

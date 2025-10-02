@@ -6948,6 +6948,10 @@ button.bg-dark:hover {
     display: flex !important;
 }
 
+.d-flex .gap-2 {
+    gap: 1rem;
+}
+
 .d-inline-flex {
     display: inline-flex !important;
 }
@@ -18918,6 +18922,11 @@ a.text-decoration-underline:hover {
 
 #main-content {
     min-height: 100vh !important;
+    overflow-x: hidden;
+}
+
+#main-content.p-8 {
+    padding: 1.5rem;
 }
 
 .card.p-4 {
@@ -18953,4 +18962,50 @@ span#notifications-badge,
     height: 25px;
     width: 25px;
     padding: 8px;
+}
+
+.nav-link i {
+    margin-right: 10px;
+}
+
+#foot_nav {
+    position: fixed;
+    bottom: 0;
+}
+
+#foot_nav .btn {
+    height: calc(1.5rem + 1.75rem + 2px);
+    white-space: nowrap;
+    min-width: 85px;
+}
+
+@media (max-width: 992px) {
+
+    #desktop-sidebar,
+    .border-bottom-logo,
+    .nav-form {
+        display: none !important;
+    }
+
+    .sidebar-close {
+        position: absolute;
+        right: -50px;
+        font-size: 24px;
+    }
+
+    #main-content.p-8 {
+        padding: 1rem !important;
+    }
+
+    nav.navbar.navbar-expand.navbar-light.pt-lg-6.d-sm-none {
+        background-color: #000 !important;
+    }
+
+    .mobile-logo{
+        width:4rem;
+        height:3rem;
+    }
+    .mobile-logo img{
+        border-radius: none !important;
+    }
 }

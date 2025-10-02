@@ -79,15 +79,15 @@ async def notifications_list(request: Request):
                 A("Read All", cls="badge badge-dark", disabled=(unread_count==0), hx_post="/notifications/mark-all-read", hx_target="#main-content"),
                 cls="d-flex align-items-center"
             ),
-            cls="d-flex align-items-center justify-content-between mb-3"
+            cls="mb-4"
         ),
         Div(
             Table(
                 Thead(Tr(Th("Title"), Th("Message"), Th("Date"), Th("Action"))),
                 Tbody(*(row_to_tr(n) for n in page_rows) if page_rows else Tr(Td("No notifications", colspan="5", cls="text-center text-muted py-4"))),
-                cls="table table-striped table-hover"
+                cls="table table-responsive table-striped table-hover"
             ),
-            cls="table-responsive"
+            cls="card my-4"
         ),
         pagination_controls(),
         cls="container-fluid"

@@ -1,24 +1,16 @@
 from fasthtml.common import *
+from components.avatar import avatar
 
 def Navbar(user_role: str = "Client"):
     """A navigation bar with toggles for desktop/mobile sidebars, a search form, and user action icons."""
     badge_id = "notifications-badge-admin" if user_role == "Admin" else ("notifications-badge-realtor" if user_role == "Realtor" else "notifications-badge")
     return Nav(
         Div(
-            # Mobile sidebar toggle
-            Button(
-                I(cls="fe fe-menu"),
-                cls="btn btn-ghost d-lg-none",
-                type="button",
-                data_bs_toggle="offcanvas",
-                data_bs_target="#sidebar"
-            ),
-            # Desktop sidebar toggle
-            Button(
-                I(cls="fe fe-menu"),
-                cls="btn btn-ghost d-none d-lg-block text-left",
-                type="button",
-                id="desktop-sidebar-toggle"
+            Div(
+                avatar(avatar_size="xl",
+                    src="/assets/images/cozyhavens_logo.png", alt="..."),
+                cls="text-left align-items-left mobile-logo",
+                tabindex="-1"
             ),
             Form(
                 Div(
@@ -37,7 +29,7 @@ def Navbar(user_role: str = "Client"):
                     ),
                     cls="input-group"
                 ),
-                cls="navbar-form w-100 mx-3",
+                cls="navbar-form w-100 mx-3 nav-form",
                 style="max-width: 550px;"
             ),
         Ul(
@@ -74,5 +66,5 @@ def Navbar(user_role: str = "Client"):
             ),
             cls="container-fluid"
         ),
-        cls="navbar navbar-expand navbar-light pt-0 pt-lg-6"
+        cls="navbar navbar-expand navbar-light pt-lg-6 d-sm-none"
     )
