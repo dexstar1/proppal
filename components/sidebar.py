@@ -81,22 +81,6 @@ def Sidebar(user_role: str = "Client", user_display: str | None = None):
                     cls="nav-item"
                 )
             )
-        elif link == '/admin/commissions':
-            sidebar_items.append(
-                Li(
-                    Div(
-                        A(I(cls=icon), " " + text,
-                          href=link, hx_get=link, hx_target="#main-content", hx_push_url="true",
-                          cls="nav-link text-light d-inline-flex align-items-center"),
-                        Span("0", id="admin-payouts-pending-badge",
-                             cls="badge bg-secondary ms-2",
-                             hx_get="/admin/payouts/pending-count",
-                             hx_trigger="revealed, every 20s", hx_swap="outerHTML"),
-                        cls="d-flex align-items-center"
-                    ),
-                    cls="nav-item"
-                )
-            )
         elif link == '/admin/withdraw-requests':
             sidebar_items.append(
                 Li(
@@ -141,6 +125,7 @@ def Sidebar(user_role: str = "Client", user_display: str | None = None):
             )
 
     profile_items = [
+        Li(cls="border-top mt-4"),
         Li(A(I(cls=icons['Sign out']), " Sign out",
              href="/logout", cls="nav-link text-light d-inline-flex align-items-center"),
            cls="nav-item"),
@@ -151,11 +136,11 @@ def Sidebar(user_role: str = "Client", user_display: str | None = None):
         Div(
             avatar(avatar_size="xl",
                    src="/assets/images/cozyhavens_logo.png", alt="..."),
-            cls="d-flex flex-column text-center align-items-center p-3 mb-3 border-bottom-logo",
+            cls="d-flex flex-column text-center align-items-center p-3 mb-4",
             tabindex="-1"
         ),
         Ul(*sidebar_items, cls="nav nav-pills flex-column"),
-        Ul(*profile_items, cls="nav nav-pills flex-column mt-2 border-top"),
+        Ul(*profile_items, cls="nav nav-pills flex-column"),
         id="sidebar"
     )
 

@@ -17,6 +17,16 @@ import math
 
 def realtor_dashboard_content(user_role: str = "Realtor", wallet_balance: float = 0.0, commissions: list = None, stats: dict | None = None, withdraws: list | None = None, display_name: str | None = None, referral_code: str | None = None):
     """Content-only version for HTMX requests"""
+
+#get referral code if not redirected from account verification
+    try:
+        from backend.src.api.referrals import ensure_referrals_schema, get_or_create_referral_code
+        ensure_referrals_schema()
+        my_rfcode = get_or_create_referral_code(int(user.id))
+    except Exception:
+        my_rfcode = None
+
+
     commissions = commissions or []
     # Normalize to dicts to avoid sqlite3.Row attribute surprises
     try:
@@ -63,8 +73,7 @@ def realtor_dashboard_content(user_role: str = "Realtor", wallet_balance: float 
             ))
         return Fragment(*rows)
     return Div(
-        P("Welcome"),
-        H1(f"{user_role} - {display_name}") if display_name else H1(user_role),
+        H5(f"Welcome back, {display_name}"),
         P("At a glance, view you account summary and statistics"),
         Div(
             Div(
@@ -165,7 +174,7 @@ def realtor_dashboard_content(user_role: str = "Realtor", wallet_balance: float 
                     Tbody(commission_rows()),
                     cls="table table-responsive table-sm"
                 ),
-                card_cls="card"
+                card_cls="card p-4"
             ), cls="col-12 my-4"
             ),
             Div(
@@ -184,7 +193,7 @@ def realtor_dashboard_content(user_role: str = "Realtor", wallet_balance: float 
                     ),
                     cls="table table-responsive table-sm"
                 ),
-                card_cls="card mb-4 col-12 shadow"
+                card_cls="card p-4 mb-4 col-12 shadow"
             ),cls="col-12 my-4"
             ),
         cls="row"
@@ -252,6 +261,7 @@ def realtor_dashboard(request: Request):
         last = getattr(user, 'last_name', None) or getattr(user, 'lastname', None)
         name = f"{(first or '').strip()} {(last or '').strip()}".strip()
         disp = name or _display_name_from_email(getattr(user, 'email', ''))
+        referral_code = getattr(user, 'referral_code', None) or getattr(user, 'code', None)
     else:
         disp = None
     if request.headers.get("HX-Request"):
@@ -279,19 +289,22 @@ def realtor_properties_content(request: Request):
     return Div(
         H1("Properties"),
         P("View all available property listings."),
-        Table(
-            Thead(Tr(Th("S/N"), Th("Image"), Th("Title"), Th("Location"), Th("Price"), Th("Action"))),
-            Tbody(*[Tr(
-                Td(f"{i + 1}"),
-                Td(Img(src=prop.images[0], cls="img-thumbnail", style="max-width: 70px;") if prop.images else "No Image"),
-                Td(prop.name),
-                Td(f"{prop.city or ''}, {prop.state or ''}"),
-                Td(f"${prop.price:,.2f}"),
-                Td(
-                    A(I(cls="fe fe-eye"), hx_get=f"/realtor/properties/{prop.id}", hx_target="#main-content", cls="text-info me-3", title="View"),
-                )
-            ) for i, prop in enumerate(properties)]),
-            cls="table table-responsive table-striped card p-4"
+        Div(
+            Table(
+                Thead(Tr(Th("S/N"), Th("Image"), Th("Title"), Th("Location"), Th("Price"), Th("Action"))),
+                Tbody(*[Tr(
+                    Td(f"{i + 1}"),
+                    Td(Img(src=prop.images[0], cls="img-thumbnail", style="max-width: 70px;") if prop.images else "No Image"),
+                    Td(prop.name),
+                    Td(f"{prop.city or ''}, {prop.state or ''}"),
+                    Td(f"${prop.price:,.2f}"),
+                    Td(
+                        A(I(cls="fe fe-eye"), hx_get=f"/realtor/properties/{prop.id}", hx_target="#main-content", cls="text-info me-3", title="View"),
+                    )
+                ) for i, prop in enumerate(properties)]),
+                cls="table table-responsive table-striped table-hover"
+            ),
+            cls="card"
         ),
         cls="container-fluid"
     )
@@ -375,7 +388,7 @@ def realtor_referrals(request: Request):
         Table(
             Thead(Tr(Th("Month"), Th("Signups"), Th(""))),
             Tbody(*(bar_row(m, c) for m, c in hist) if hist else Tr(Td("No referrals yet", colspan="3", cls="text-center text-muted py-4"))),
-            cls="table table-responsive table-sm"
+            cls="table table-responsive table-striped table-hover table-sm"
         ), cls="card p-4"
         ), cls="col-md-6 my-4"
     )
@@ -406,7 +419,7 @@ def realtor_referrals(request: Request):
         Table(
             Thead(Tr(Th('Email'), Th('Joined'), Th('Referred At'))),
             Tbody(*(down_row(dict(d) if not isinstance(d, dict) else d) for d in downs) if downs else Tr(Td('No downlines yet', colspan='3', cls='text-center text-muted py-4'))),
-            cls='table table-responsive table-sm'
+            cls='table table-responsive table-striped table-hover table-sm'
         ),cls="card p-4"
         ), cls="col-md-6 my-4"
     )
@@ -491,9 +504,9 @@ def realtor_transactions_content(user_id: int, type_filter: str = 'all', status_
     status_rejected = filter_badge('Rejected', tf, 'rejected', sf == 'rejected')
 
     controls = Div(
-        Div(type_all, type_sales, type_withdrawals, cls='mb-2'),
-        Div(status_all, status_pending, status_approved, status_rejected, cls='mb-3'),
-        cls='d-flex flex-column'
+        Div(type_all, type_sales, type_withdrawals, cls='mb-4 col-12 col-md-6'),
+        Div(status_all, status_pending, status_approved, status_rejected, cls='mb-3 col-12 col-md-6'),
+        cls='row my-4'
     )
 
     table = Div(
@@ -504,7 +517,7 @@ def realtor_transactions_content(user_id: int, type_filter: str = 'all', status_
         ),
         cls='table-responsive'
     )
-    return Div(H1('My Transactions', cls='mb-3'), controls, table, cls='container-fluid')
+    return Div(H1('My Transactions', cls='mb-3'), controls, Div(table,cls="card"), cls='container-fluid')
 
 
 def realtor_transactions(request: Request):
@@ -564,7 +577,7 @@ def realtor_commissions_content(user_id: int):
         ),
         cls="table-responsive"
     )
-    return Div(H1("My Commissions", cls="mb-3"), table, cls="container-fluid")
+    return Div(H1("My Commissions", cls="mb-3"), Div(table, cls="card"), cls="container-fluid")
 
 def realtor_commissions(request: Request):
     user = request.scope.get('user')
@@ -616,7 +629,7 @@ def realtor_withdraw_content(user_id: int):
             H1("Withdraw Funds", cls="mb-3"),
             Div(
                 Div(
-                Card(title="Wallet Balance", content=f"₦{bal:,.2f}", card_cls="card mb-4"),
+                Card(title="Wallet Balance", content=f"₦{bal:,.2f}", card_cls="card p-4 mb-4"),
                 cls="col-12 col-md-6 col-xl-6"
                 ),
                 Div(

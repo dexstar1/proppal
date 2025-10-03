@@ -7,10 +7,34 @@ def Navbar(user_role: str = "Client"):
     return Nav(
         Div(
             Div(
-                avatar(avatar_size="xl",
-                    src="/assets/images/cozyhavens_logo.png", alt="..."),
-                cls="text-left align-items-left mobile-logo",
+                (A(
+                    Img(src="/assets/img/properties/placeholder.png", cls="rounded-circle", style="width:32px;height:32px;object-fit:cover;", id="nav-profile-avatar", hx_get="/realtor/profile/avatar", hx_trigger="load", hx_swap="outerHTML"),
+                    cls="nav-link p-0 d-flex align-items-center"
+                    ) if user_role == "Realtor" else A(
+                        I(cls="fe fe-user"),
+                        cls="nav-link",
+                        href="#"
+                    )),
+                cls="text-left align-items-left mobile-avatar",
                 tabindex="-1"
+            ),
+            Div(
+                A(
+                Span(
+                    I(cls="fe fe-bell"),
+                    "0",
+                    id=badge_id,
+                    cls='badge bg-white ms-2',
+                    hx_get='/notifications/unread-count',
+                    hx_trigger='load',
+                    hx_target=f"#{badge_id}",
+                    hx_swap='outerHTML'
+                ),
+                cls="nav-link",
+                hx_get="/notifications",
+                hx_target="#main-content"
+                ),
+                cls="nav-item me-3 align-items-center mobile-notif"
             ),
             Form(
                 Div(
@@ -39,7 +63,7 @@ def Navbar(user_role: str = "Client"):
                         I(cls="fe fe-bell"),
                         "0",
                         id=badge_id,
-                        cls='badge bg-white ms-2',
+                        cls='ms-2',
                         hx_get='/notifications/unread-count',
                         hx_trigger='load',
                         hx_target=f"#{badge_id}",
@@ -49,7 +73,7 @@ def Navbar(user_role: str = "Client"):
                     hx_get="/notifications",
                     hx_target="#main-content"
                     ),
-                    cls="nav-item me-3 d-flex align-items-center"
+                    cls="nav-item me-3 align-items-center mobile-notif"
                 ),
                 Li(
                     (A(
@@ -60,11 +84,11 @@ def Navbar(user_role: str = "Client"):
                         cls="nav-link",
                         href="#"
                     )),
-                    cls="nav-item"
+                    cls="nav-item desktop-avatar"
                 ),
                 cls="navbar-nav flex-row align-items-center"
             ),
             cls="container-fluid"
         ),
-        cls="navbar navbar-expand navbar-light pt-lg-6 d-sm-none"
+        cls="navbar navbar-expand navbar-light pt-lg-6 w-100"
     )

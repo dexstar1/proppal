@@ -2087,7 +2087,7 @@ pre code {
 
 @media (max-width:575.98px) {
     .table-responsive-sm {
-        display: block;
+        display: table;
         width: 100%;
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
@@ -2100,7 +2100,7 @@ pre code {
 
 @media (max-width:767.98px) {
     .table-responsive-md {
-        display: block;
+        display: table;
         width: 100%;
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
@@ -2113,7 +2113,7 @@ pre code {
 
 @media (max-width:991.98px) {
     .table-responsive-lg {
-        display: block;
+        display: table;
         width: 100%;
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
@@ -2126,7 +2126,7 @@ pre code {
 
 @media (max-width:1199.98px) {
     .table-responsive-xl {
-        display: block;
+        display: table;
         width: 100%;
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
@@ -2138,7 +2138,7 @@ pre code {
 }
 
 .table-responsive {
-    display: block;
+    display: table;
     width: 100%;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
@@ -2149,7 +2149,7 @@ pre code {
 }
 
 .form-control {
-    display: block;
+    display: table;
     width: 100%;
     height: calc(1.5em + 1.75rem + 2px);
     padding: .875rem 1.5rem;
@@ -18971,26 +18971,59 @@ span#notifications-badge,
 #foot_nav {
     position: fixed;
     bottom: 0;
+    display: flex;
+    width: 100vw;
+    overflow-x: hidden;
 }
 
 #foot_nav .btn {
     height: calc(1.5rem + 1.75rem + 2px);
     white-space: nowrap;
-    min-width: 85px;
+    min-width: fit-content;
+    width: 100px;
 }
+
+.main-content-wrapper {
+    margin-left: 220px;
+}
+
+.desktop-avatar {
+    display: flex !important;
+}
+
+.mobile-avatar {
+    display: none !important;
+}
+
+.mobile_notif{
+    display:none !important;
+}
+.desktop_notif{
+    display:flex !important;
+}
+
 
 @media (max-width: 992px) {
 
     #desktop-sidebar,
     .border-bottom-logo,
-    .nav-form {
+    .nav-form,
+    .desktop-avatar {
         display: none !important;
+    }
+
+    .mobile-avatar {
+        display: flex !important;
     }
 
     .sidebar-close {
         position: absolute;
         right: -50px;
         font-size: 24px;
+    }
+
+    .main-content-wrapper {
+        margin-left: 0px;
     }
 
     #main-content.p-8 {
@@ -19001,11 +19034,18 @@ span#notifications-badge,
         background-color: #000 !important;
     }
 
-    .mobile-logo{
-        width:4rem;
-        height:3rem;
+    #mobileSidebar li.nav-item {
+        padding: 10px;
     }
-    .mobile-logo img{
-        border-radius: none !important;
+
+    #desktop_hamburger {
+        display: none;
     }
+    .mobile_notif{
+        display:flex !important;
+    }
+    .desktop_notif{
+        display:none !important;
+    }
+
 }

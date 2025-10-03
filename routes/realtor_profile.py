@@ -221,7 +221,7 @@ async def realtor_account(request: Request):
             H2("My Account", cls="mb-4"),
             Div(
                 Div(
-                    Img(src=(to_val('profile_picture') or '/assets/img/properties/placeholder.png'), cls="rounded-circle", style="width: 100px; height: 100px; object-fit: cover;")
+                    Img(src=(to_val('profile_picture') or '/assets/img/properties/placeholder.png'), cls="rounded-circle", style="width: 200px; height: 200px; object-fit: cover;")
                     ,cls="col-12 col-md-3 mb-4"
                 ),
                 Div(

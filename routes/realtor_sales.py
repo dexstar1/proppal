@@ -57,14 +57,14 @@ def realtor_sales_dashboard_content(sales_data: list = None):
                 Card(
                     title="Pending Approval", 
                     content=f"{len([s for s in sales_data if s.status == 'pending'])} Pending", 
-                    card_cls="card col-12 col-md-4 mb-4 h-100 shadow"
+                    card_cls="card shadow"
                 ), cls="col-12 col-md-4 mb-4 h-100"
             ),
             Div(
                 Card(
                     title="Approved Sales", 
                     content=f"{len([s for s in sales_data if s.status == 'approved'])} Approved", 
-                    card_cls="card col-12 col-md-4 mb-4 h-100 shadow"
+                    card_cls="card shadow"
                 ), cls="col-12 col-md-4 mb-4 h-100"
             ),
             Div(
@@ -80,45 +80,48 @@ def realtor_sales_dashboard_content(sales_data: list = None):
                     hx_get="/realtor/sales",
                     hx_target="#main-content"
                 ),
-                cls="mb-4 d-flex align-items-center"
+                cls="mb-4 col-4"
             ),
             Div(
-                H4("Recent Sales", cls="mb-3"),
-                Table(
-                    Thead(
-                        Tr(
-                            Th("S/N"),
-                            Th("Property"),
-                            Th("Client"),
-                            Th("Amount"),
-                            Th("Status"),
-                            Th("Date"),
-                            Th("Action")
-                        )
-                    ),
-                    Tbody(
-                        *[Tr(
-                            Td(f"{i + 1}"),
-                            Td(sale.property_name or f"Property {sale.property_id}"),
-                            Td(f"{sale.client_first_name} {sale.client_last_name}"),
-                            Td(f"₦{sale.amount:,.2f}"),
-                            Td(
-                                Span(
-                                    sale.status.title(),
-                                    cls=f"badge bg-{'success' if sale.status == 'approved' else 'warning' if sale.status == 'pending' else 'danger'}"
-                                )
-                            ),
-                            Td(sale.created_at.strftime("%b %d, %Y")),
-                            Td(action_dropdown(sale))
-                        ) for i, sale in enumerate(sales_data)] if sales_data else [
+                Div(
+                    H4("Recent Sales", cls="mb-3"),
+                    Table(
+                        Thead(
                             Tr(
-                                Td("No sales found", colspan="7", cls="text-center text-muted py-4")
+                                Th("S/N"),
+                                Th("Property"),
+                                Th("Client"),
+                                Th("Amount"),
+                                Th("Status"),
+                                Th("Date"),
+                                Th("Action")
                             )
-                        ]
+                        ),
+                        Tbody(
+                            *[Tr(
+                                Td(f"{i + 1}"),
+                                Td(sale.property_name or f"Property {sale.property_id}"),
+                                Td(f"{sale.client_first_name} {sale.client_last_name}"),
+                                Td(f"₦{sale.amount:,.2f}"),
+                                Td(
+                                    Span(
+                                        sale.status.title(),
+                                        cls=f"badge bg-{'success' if sale.status == 'approved' else 'warning' if sale.status == 'pending' else 'danger'}"
+                                    )
+                                ),
+                                Td(sale.created_at.strftime("%b %d, %Y")),
+                                Td(action_dropdown(sale))
+                            ) for i, sale in enumerate(sales_data)] if sales_data else [
+                                Tr(
+                                    Td("No sales found", colspan="7", cls="text-center text-muted py-4")
+                                )
+                            ]
+                        ),
+                        cls="table table-responsive table-striped table-hover"
                     ),
-                    cls="table table-responsive table-striped table-hover"
+                    cls="card p-4 my-4"
                 ),
-                cls="card p-4 my-4"
+                cls="col-12"
             ),
             cls="row"
         ),
