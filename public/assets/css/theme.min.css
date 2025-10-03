@@ -19048,4 +19048,11 @@ span#notifications-badge,
         display:none !important;
     }
 
+    .table-responsive {
+        display: block !important;
+    }
+    #sidebar{
+        overflow-y:scroll !important;
+    }
+
 }

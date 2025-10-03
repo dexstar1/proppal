@@ -78,7 +78,7 @@ def Layout(content, user_role: str = "Client", show_nav: bool = True, user_displ
     
     mobile_footnav = Div(
         A(I(cls="fa-solid fa-gauge"), href="/realtor/dashboard", hx_get="/realtor/dashboard", hx_target="#main-content", hx_push_url="true", data_bs_dismiss="offcanvas", cls="text-white btn btn-dark", title="View"),
-        A(I(cls="fa fa-solid fa-magnifying-glass"), href="/realtor/dashboard", hx_get="/realtor/dashboard", hx_target="#main-content", hx_push_url="true", data_bs_dismiss="offcanvas", cls="text-white btn btn-dark", title="View"),
+        A(I(cls="fa-solid fa-building"), href="/realtor/dashboard", hx_get="/realtor/dashboard", hx_target="#main-content", hx_push_url="true", data_bs_dismiss="offcanvas", cls="text-white btn btn-dark", title="View"),
         A(I(cls="fa fa-solid fa-chart-line"), href="/realtor/sales", hx_get="/realtor/sales", hx_target="#main-content", hx_push_url="true", data_bs_dismiss="offcanvas", cls="text-white btn btn-dark", title="View"),
         A(I(cls="fa-solid fa-wallet"), href="/realtor/withdraw", hx_get="/realtor/withdraw", hx_target="#main-content", hx_push_url="true", data_bs_dismiss="offcanvas", cls="text-white btn btn-dark", title="View"),
         A(I(cls="fe fe-menu"), id="hamburger", cls="text-white btn btn-dark", title="Menu", data_bs_toggle="offcanvas", data_bs_target="#mobileSidebar", aria_controls="mobileSidebar"),
